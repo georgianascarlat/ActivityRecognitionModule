@@ -28,11 +28,11 @@ public abstract class HMM {
 
         System.arraycopy(initialStateProbabilities, 0, this.initialStateProbabilities, 0, numStates);
 
-        for(int i=0;i<numStates;i++){
+        for (int i = 0; i < numStates; i++) {
             System.arraycopy(transitionMatrix[i], 0, this.transitionMatrix[i], 0, numStates);
         }
 
-        for(int i=0;i<numStates;i++){
+        for (int i = 0; i < numStates; i++) {
             System.arraycopy(emissionMatrix[i], 0, this.emissionMatrix[i], 0, numObservableVariables);
         }
 
@@ -40,10 +40,16 @@ public abstract class HMM {
     }
 
     public abstract double[][] forward(int[] observations);
+
     public abstract double[][] backward(int[] observations);
+
     public abstract double epsilon(int t, int i, int j, int[] observations, double[][] forward, double[][] backward);
+
     public abstract double gamma(int i, int t, int[] observations, double[][] forward, double[][] backward);
+
     public abstract double observationsProbability(int[] observations);
+
+    public abstract Viterbi viterbi(int[] observations);
 
 
     public static double safeDivide(double n, double d) {
@@ -54,13 +60,11 @@ public abstract class HMM {
     }
 
 
-
-
     /**
      * Reads the HMM from a file.
-     *
+     * <p/>
      * Format:
-     *
+     * <p/>
      * numStates numObservableVariables
      * initialStateProbabilities (1 X numStates )
      * transitionMatrix  (numStates X numStates )
@@ -80,19 +84,19 @@ public abstract class HMM {
         transitionMatrix = new double[numStates][numStates];
         emissionMatrix = new double[numStates][numObservableVariables];
 
-        for(int i=0;i<numStates;i++){
+        for (int i = 0; i < numStates; i++) {
             initialStateProbabilities[i] = scanner.nextDouble();
         }
 
-        for(int i=0;i<numStates;i++){
-            for(int j=0;j<numStates;j++){
+        for (int i = 0; i < numStates; i++) {
+            for (int j = 0; j < numStates; j++) {
                 transitionMatrix[i][j] = scanner.nextDouble();
             }
         }
 
-        for(int i=0;i<numStates;i++){
-            for(int j=0;j<numObservableVariables;j++){
-                emissionMatrix[i][j]= scanner.nextDouble();
+        for (int i = 0; i < numStates; i++) {
+            for (int j = 0; j < numObservableVariables; j++) {
+                emissionMatrix[i][j] = scanner.nextDouble();
             }
         }
 
@@ -102,9 +106,9 @@ public abstract class HMM {
 
     /**
      * Writes the HMM to a file.
-     *
+     * <p/>
      * Format:
-     *
+     * <p/>
      * numStates numObservableVariables
      * initialStateProbabilities (1 X numStates )
      * transitionMatrix  (numStates X numStates )
@@ -180,7 +184,6 @@ public abstract class HMM {
             System.out.println();
         }
     }
-
 
 
     public int getNumStates() {

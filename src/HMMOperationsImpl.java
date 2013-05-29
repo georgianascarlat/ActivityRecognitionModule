@@ -4,8 +4,6 @@ public class HMMOperationsImpl implements HMMOperations {
     public static final double DELTA = 0.00001;
 
 
-
-
     @Override
     public HMM train(int[] observations, int maxIterations, HMM hmm) {
         int T = observations.length;
@@ -64,7 +62,7 @@ public class HMMOperationsImpl implements HMMOperations {
             }
 
 
-            newHMM = new HMMCalculus(numStates,numObservableVariables,initialStateProbabilities,transitionMatrix,emissionMatrix);
+            newHMM = new HMMCalculus(numStates, numObservableVariables, initialStateProbabilities, transitionMatrix, emissionMatrix);
 
             p0 = Math.log(hmm.observationsProbability(observations));
             p1 = Math.log(newHMM.observationsProbability(observations));
@@ -72,12 +70,46 @@ public class HMMOperationsImpl implements HMMOperations {
 
             hmm = newHMM;
 
-            if((p1 - p0)<DELTA)
+            if ((p1 - p0) < DELTA)
                 break;
 
 
         }
 
         return hmm;
+    }
+
+    @Override
+    public Prediction predict(HMM hmm, int[] observations) {
+        int T = observations.length;
+        Viterbi viterbi = hmm.viterbi(observations);
+        int predictions[] = new int[T];
+        double probability, max_p = 0;
+        int max_i = 0;
+
+
+        for (int i = 0; i < hmm.getNumStates(); i++) {
+
+            if (viterbi.getDelta()[i][T - 1] > max_p) {
+                max_p = viterbi.getDelta()[i][T - 1];
+                max_i = i;
+
+
+            }
+
+
+        }
+
+        predictions[T - 1] = max_i;
+        probability = max_p;
+
+        for (int t = T - 2; t >= 0; t--) {
+
+            predictions[t] = viterbi.getParents()[predictions[t + 1]][t + 1];
+
+        }
+
+
+        return new Prediction(observations, predictions, probability);
     }
 }
