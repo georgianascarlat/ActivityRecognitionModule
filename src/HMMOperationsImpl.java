@@ -5,7 +5,59 @@ public class HMMOperationsImpl implements HMMOperations {
 
 
     @Override
-    public HMM train(int[] observations, int maxIterations, HMM hmm) {
+    public HMM trainSupervised(int numStates, int numObservableVariables, int[][] observations, int[][] hiddenStates) {
+        HMM hmm = new HMMCalculus(numStates,numObservableVariables);
+        int A[][] = new int[numStates][numStates];
+        int B[][] = new int[numStates][numObservableVariables];
+        int pi[] = new int[numStates];
+        int numSequences = observations.length;
+        int sequenceLength = observations[0].length;
+        int sum_pi = 0, sum_A[] = new int[numStates], sum_B[] = new int[numStates];
+
+        /*check to see if the dimensions correspond*/
+        if(numSequences != hiddenStates.length || sequenceLength != hiddenStates[0].length)
+            throw new IllegalArgumentException("Observations and states dimensions must match");
+
+        /*count number of appearances*/
+        for(int s=0;s<numSequences;s++){
+            /* count the number of appearances for each initial state*/
+            pi[hiddenStates[s][0]] ++;
+            /* count total number of appearances for all initial states*/
+            sum_pi++;
+            for(int i=0;i<sequenceLength;i++){
+                /*count the number of appearances for each state-emission*/
+                B[hiddenStates[s][i]][observations[s][i]] ++;
+                /*count total number of emissions from each state*/
+                sum_B[hiddenStates[s][i]]++;
+
+
+                if(i>0){
+                    /*count the number of appearances for each  transition s1-s2*/
+                    A[hiddenStates[s][i-1]][hiddenStates[s][i]] ++;
+                    /*count the total number of transitions from s1*/
+                    sum_A[hiddenStates[s][i-1]] ++;
+                }
+            }
+        }
+
+        /* compute probabilities based on frequency*/
+        for(int i=0;i<numStates;i++){
+            hmm.initialStateProbabilities[i] = HMM.safeDivide(pi[i],sum_pi);
+
+            for(int j=0;j<numStates;j++){
+                hmm.transitionMatrix[i][j] = HMM.safeDivide(A[i][j],sum_A[i]);
+            }
+
+            for(int k=0;k<numObservableVariables;k++){
+                hmm.emissionMatrix[i][k] = HMM.safeDivide(B[i][k],sum_B[i]);
+            }
+        }
+
+        return hmm;
+    }
+
+    @Override
+    public HMM trainUnsupervised(int[] observations, int maxIterations, HMM hmm) {
         int T = observations.length;
         double[][] fwd;
         double[][] bwd;

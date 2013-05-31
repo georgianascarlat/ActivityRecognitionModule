@@ -1,3 +1,8 @@
+import org.junit.Before;
+import org.junit.Test;
+
+import java.util.Arrays;
+
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 
@@ -8,7 +13,7 @@ public class HMMOperationsTest {
     private HMMOperations hmmOperations;
     public static final double EPSILON = 0.01;
 
-    @org.junit.Before
+    @Before
     public void setUp() throws Exception {
 
         hmmOperations = new HMMOperationsImpl();
@@ -18,8 +23,41 @@ public class HMMOperationsTest {
 
     }
 
+    @Test
+    public void testLearnSupervised(){
 
-    @org.junit.Test
+        int observations[][] = {{0,0,1,0,1,0},
+                                {1,0,1,0,1,0},
+                                {1,0,0,1,1,0},
+                                {1,0,1,1,1,0},
+                                {1,0,0,1,0,1},
+                                {0,0,1,0,0,1},
+                                {0,0,1,1,0,1},
+                                {0,1,1,1,0,0}};
+        int states[][] = {{0,0,0,1,0,0},
+                {1,0,0,1,0,0},
+                {0,0,1,0,0,0},
+                {0,0,0,0,1,0},
+                {1,0,0,0,1,0},
+                {0,0,0,1,1,0},
+                {1,0,0,0,0,0},
+                {1,0,1,0,0,0}};
+        double expectedInitialProbabilities[] = {0.5,0.5};
+        double expectedTransitionMatrix[][] = {{3.0/4,1.0/4},{11.0/12,1.0/12}};
+        double expectedEmissionMatrix[][] = {{17.0/36,19.0/36},{2.0/3,1.0/3}};
+        HMM hmm = hmmOperations.trainSupervised(2,2,observations,states);
+
+
+        assertArrayEquals(expectedInitialProbabilities,hmm.getInitialStateProbabilities(),EPSILON);
+        for(int i=0;i<2;i++){
+            assertArrayEquals(expectedTransitionMatrix[i],hmm.getTransitionMatrix()[i],EPSILON);
+            assertArrayEquals(expectedEmissionMatrix[i],hmm.getEmissionMatrix()[i],EPSILON);
+        }
+
+    }
+
+
+    @Test
     public void testPredict1() throws Exception {
 
         int observations[] = {2, 2, 1, 0, 1, 3, 2, 0, 0};
@@ -35,7 +73,7 @@ public class HMMOperationsTest {
 
     }
 
-    @org.junit.Test
+    @Test
     public void testPredict2() throws Exception {
 
 
@@ -49,7 +87,7 @@ public class HMMOperationsTest {
 
     }
 
-    @org.junit.Test
+    @Test
     public void testPredict3() throws Exception {
 
 
@@ -64,7 +102,7 @@ public class HMMOperationsTest {
 
     }
 
-    @org.junit.Test
+    @Test
     public void testPredict4() throws Exception {
 
 
@@ -78,7 +116,7 @@ public class HMMOperationsTest {
 
     }
 
-    @org.junit.Test
+    @Test
     public void testPredict5() throws Exception {
 
 
@@ -95,7 +133,7 @@ public class HMMOperationsTest {
 
     }
 
-    @org.junit.Test
+    @Test
     public void testPredict6() throws Exception {
 
 
@@ -111,7 +149,7 @@ public class HMMOperationsTest {
 
     }
 
-    @org.junit.Test
+    @Test
     public void testPredict7() throws Exception {
 
 

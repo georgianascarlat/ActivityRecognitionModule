@@ -6,6 +6,10 @@ import java.io.FileNotFoundException;
 public class HMMCalculus extends HMM {
 
 
+    public HMMCalculus(int numStates, int numObservableVariables) {
+       super(numStates, numObservableVariables);
+    }
+
     public HMMCalculus(String fileName) throws FileNotFoundException {
         super(fileName);
     }

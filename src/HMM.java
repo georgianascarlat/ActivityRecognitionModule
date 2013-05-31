@@ -17,14 +17,18 @@ public abstract class HMM {
         loadModel(fileName);
     }
 
-    protected HMM(int numStates, int numObservableVariables, double[] initialStateProbabilities, double[][] transitionMatrix, double[][] emissionMatrix) {
+    public HMM(int numStates, int numObservableVariables) {
         this.numStates = numStates;
         this.numObservableVariables = numObservableVariables;
 
         this.initialStateProbabilities = new double[numStates];
         this.transitionMatrix = new double[numStates][numStates];
         this.emissionMatrix = new double[numStates][numObservableVariables];
+    }
 
+    protected HMM(int numStates, int numObservableVariables, double[] initialStateProbabilities, double[][] transitionMatrix, double[][] emissionMatrix) {
+
+        this(numStates,numObservableVariables);
 
         System.arraycopy(initialStateProbabilities, 0, this.initialStateProbabilities, 0, numStates);
 
