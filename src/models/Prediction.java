@@ -1,3 +1,5 @@
+package models;
+
 import java.util.Arrays;
 
 public class Prediction {
@@ -37,7 +39,7 @@ public class Prediction {
 
     @Override
     public String toString() {
-        return "Prediction{" +
+        return "models.Prediction{" +
                 "observations=" + Arrays.toString(observations) +
                 ", predictions=" + Arrays.toString(predictions) +
                 ", probability=" + probability +

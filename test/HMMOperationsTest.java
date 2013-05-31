@@ -1,7 +1,10 @@
+import hmm.HMM;
+import hmm.HMMCalculus;
+import hmm.HMMOperations;
+import hmm.HMMOperationsImpl;
+import models.Prediction;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.Arrays;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
@@ -24,34 +27,34 @@ public class HMMOperationsTest {
     }
 
     @Test
-    public void testLearnSupervised(){
+    public void testLearnSupervised() {
 
-        int observations[][] = {{0,0,1,0,1,0},
-                                {1,0,1,0,1,0},
-                                {1,0,0,1,1,0},
-                                {1,0,1,1,1,0},
-                                {1,0,0,1,0,1},
-                                {0,0,1,0,0,1},
-                                {0,0,1,1,0,1},
-                                {0,1,1,1,0,0}};
-        int states[][] = {{0,0,0,1,0,0},
-                {1,0,0,1,0,0},
-                {0,0,1,0,0,0},
-                {0,0,0,0,1,0},
-                {1,0,0,0,1,0},
-                {0,0,0,1,1,0},
-                {1,0,0,0,0,0},
-                {1,0,1,0,0,0}};
-        double expectedInitialProbabilities[] = {0.5,0.5};
-        double expectedTransitionMatrix[][] = {{3.0/4,1.0/4},{11.0/12,1.0/12}};
-        double expectedEmissionMatrix[][] = {{17.0/36,19.0/36},{2.0/3,1.0/3}};
-        HMM hmm = hmmOperations.trainSupervised(2,2,observations,states);
+        int observations[][] = {{0, 0, 1, 0, 1, 0},
+                {1, 0, 1, 0, 1, 0},
+                {1, 0, 0, 1, 1, 0},
+                {1, 0, 1, 1, 1, 0},
+                {1, 0, 0, 1, 0, 1},
+                {0, 0, 1, 0, 0, 1},
+                {0, 0, 1, 1, 0, 1},
+                {0, 1, 1, 1, 0, 0}};
+        int states[][] = {{0, 0, 0, 1, 0, 0},
+                {1, 0, 0, 1, 0, 0},
+                {0, 0, 1, 0, 0, 0},
+                {0, 0, 0, 0, 1, 0},
+                {1, 0, 0, 0, 1, 0},
+                {0, 0, 0, 1, 1, 0},
+                {1, 0, 0, 0, 0, 0},
+                {1, 0, 1, 0, 0, 0}};
+        double expectedInitialProbabilities[] = {0.5, 0.5};
+        double expectedTransitionMatrix[][] = {{3.0 / 4, 1.0 / 4}, {11.0 / 12, 1.0 / 12}};
+        double expectedEmissionMatrix[][] = {{17.0 / 36, 19.0 / 36}, {2.0 / 3, 1.0 / 3}};
+        HMM hmm = hmmOperations.trainSupervised(2, 2, observations, states);
 
 
-        assertArrayEquals(expectedInitialProbabilities,hmm.getInitialStateProbabilities(),EPSILON);
-        for(int i=0;i<2;i++){
-            assertArrayEquals(expectedTransitionMatrix[i],hmm.getTransitionMatrix()[i],EPSILON);
-            assertArrayEquals(expectedEmissionMatrix[i],hmm.getEmissionMatrix()[i],EPSILON);
+        assertArrayEquals(expectedInitialProbabilities, hmm.getInitialStateProbabilities(), EPSILON);
+        for (int i = 0; i < 2; i++) {
+            assertArrayEquals(expectedTransitionMatrix[i], hmm.getTransitionMatrix()[i], EPSILON);
+            assertArrayEquals(expectedEmissionMatrix[i], hmm.getEmissionMatrix()[i], EPSILON);
         }
 
     }

@@ -1,3 +1,7 @@
+package hmm;
+
+import models.Viterbi;
+
 import java.io.*;
 import java.text.DecimalFormat;
 import java.util.Scanner;
@@ -28,7 +32,7 @@ public abstract class HMM {
 
     protected HMM(int numStates, int numObservableVariables, double[] initialStateProbabilities, double[][] transitionMatrix, double[][] emissionMatrix) {
 
-        this(numStates,numObservableVariables);
+        this(numStates, numObservableVariables);
 
         System.arraycopy(initialStateProbabilities, 0, this.initialStateProbabilities, 0, numStates);
 
@@ -65,7 +69,7 @@ public abstract class HMM {
 
 
     /**
-     * Reads the HMM from a file.
+     * Reads the hmm.HMM from a file.
      * <p/>
      * Format:
      * <p/>
@@ -109,7 +113,7 @@ public abstract class HMM {
     }
 
     /**
-     * Writes the HMM to a file.
+     * Writes the hmm.HMM to a file.
      * <p/>
      * Format:
      * <p/>

@@ -1,3 +1,7 @@
+package hmm;
+
+import models.Viterbi;
+
 import java.io.FileNotFoundException;
 
 /**
@@ -7,7 +11,7 @@ public class HMMCalculus extends HMM {
 
 
     public HMMCalculus(int numStates, int numObservableVariables) {
-       super(numStates, numObservableVariables);
+        super(numStates, numObservableVariables);
     }
 
     public HMMCalculus(String fileName) throws FileNotFoundException {
@@ -160,7 +164,7 @@ public class HMMCalculus extends HMM {
 
     /**
      * Computes delta[i][t] = max_over_q_1..q_t-1( P(q_1,..q_t = Si,O_1,..O_t)
-     * and a matrix of parents used for backtracking (used by the Viterbi algorithm).
+     * and a matrix of parents used for backtracking (used by the models.Viterbi algorithm).
      *
      * @param observations observation sequence (given as observable variable indices)
      * @return object containing delta and a matrix of parents used for backtracking
