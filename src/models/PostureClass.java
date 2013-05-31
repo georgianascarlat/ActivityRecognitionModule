@@ -22,9 +22,7 @@ public enum PostureClass {
         name = s;
     }
 
-    public boolean equalsName(String otherName) {
-        return (otherName == null) ? false : name.equals(otherName);
-    }
+
 
     public String toString() {
         return name;

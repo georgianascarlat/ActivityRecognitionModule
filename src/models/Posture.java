@@ -46,6 +46,16 @@ public class Posture {
 
     }
 
+
+    /**
+     * Computes the total number of observable variables that can
+     * be obtained from all the combinations of the classes whose names are given.
+     *
+     *
+     * @param postureClasses names of the posture classes
+     *
+     * @return total number of observable variables
+     */
     public static int computeNumObservableVariables(List<String> postureClasses) {
         int num = 1;
 
@@ -59,6 +69,17 @@ public class Posture {
         return num;
     }
 
+    /**
+     * Compute the index of the observation represented by
+     * the posture classes whose names are given.
+     *
+     * Practically, it maps an observation from a list of
+     * posture classes to a unique index.
+     *
+     * @param postureClasses names of the posture classes
+     *
+     * @return index of the observation
+     */
     public int computeObservationIndex(List<String> postureClasses) {
         int index = 0, product;
         List<Integer> maxDomain = new ArrayList<Integer>();
@@ -86,6 +107,10 @@ public class Posture {
         }
 
         return index;
+    }
+
+    public int getActivity() {
+        return activity;
     }
 
     private Integer unMapClassName(String name) {
