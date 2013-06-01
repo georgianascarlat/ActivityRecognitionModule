@@ -1,13 +1,12 @@
 package utils;
 
 
+import models.Activity;
 import models.Posture;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class Utils {
 
@@ -15,6 +14,35 @@ public class Utils {
     public static final String HMM_DIRECTORY = "learned_HMMs/";
     public static final String DATA_DIRECTORY = "data/";
     public static final String ACTIVITY_FILE = "activity/activity_recognition.txt";
+
+    public static final Map<Activity, List<String>> activityMap = initActivitiesMap();
+
+    /**
+     * Initialise the mapping from activities to their list of postures of interest.
+     *
+     * @return mapping from activities to their list of postures of interest
+     */
+    private static Map<Activity, List<String>> initActivitiesMap() {
+        Map<Activity, List<String>> map = new EnumMap<Activity, List<String>>(Activity.class);
+        List<String> interestingPostures;
+
+        interestingPostures = new LinkedList<String>();
+        interestingPostures.add("generalPosture");
+        interestingPostures.add("leftLegFirst");
+        interestingPostures.add("rightLegFirst");
+        interestingPostures.add("leftLegSecond");
+        interestingPostures.add("rightLegSecond");
+        map.put(Activity.Walking, interestingPostures);
+
+        interestingPostures = new LinkedList<String>();
+        interestingPostures.add("generalPosture");
+        map.put(Activity.LyingDown, interestingPostures);
+
+        return map;
+
+
+    }
+
 
     /**
      * Make sorted list of the names of all the files in a directory.

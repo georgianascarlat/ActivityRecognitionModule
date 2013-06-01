@@ -17,35 +17,6 @@ import static utils.Utils.getTrainPostures;
 public class CreateHMM {
 
 
-    private static final Map<Activity, List<String>> activityMap = initActivitiesMap();
-
-    /**
-     * Initialise the mapping from activities to their list of postures of interest.
-     *
-     * @return mapping from activities to their list of postures of interest
-     */
-    private static Map<Activity, List<String>> initActivitiesMap() {
-        Map<Activity, List<String>> map = new EnumMap<Activity, List<String>>(Activity.class);
-        List<String> interestingPostures;
-
-        interestingPostures = new LinkedList<String>();
-        interestingPostures.add("generalPosture");
-        interestingPostures.add("leftLegFirst");
-        interestingPostures.add("rightLegFirst");
-        interestingPostures.add("leftLegSecond");
-        interestingPostures.add("rightLegSecond");
-        map.put(Activity.Walking, interestingPostures);
-
-        interestingPostures = new LinkedList<String>();
-        interestingPostures.add("generalPosture");
-        map.put(Activity.LyingDown, interestingPostures);
-
-        return map;
-
-
-    }
-
-
     public static void main(String args[]) throws IOException {
 
         /*read the posture information from training files*/
@@ -68,7 +39,7 @@ public class CreateHMM {
      */
     private static void createActivityHMM(Activity activity, List<List<Posture>> postures) throws IOException {
 
-        List<String> posturesOfInterest = activityMap.get(activity);
+        List<String> posturesOfInterest = Utils.activityMap.get(activity);
         int numObservableVariables = Posture.computeNumObservableVariables(posturesOfInterest);
         int numStates = 2, numSequences = postures.size(), sequenceLength = postures.get(0).size();
         HMMOperations hmmOperations = new HMMOperationsImpl();
