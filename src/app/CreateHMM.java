@@ -85,9 +85,19 @@ public class CreateHMM {
 
         System.out.println(hiddenStates);
         System.out.println(observations);
+
+
+//        double trans[][] = hmm.getTransitionMatrix();
+//        double initial[] = hmm.getInitialStateProbabilities();
+//
+//        for(int i=0;i<numStates;i++){
+//            initial[i] = 1.0/numStates;
+//            for(int j=0;j<numStates;j++){
+//                trans[i][j] = 1.0/numStates;
+//            }
+//        }
+
         hmm.print();
-
-
         /*save the model into it's corresponding file*/
         hmm.saveModel(Utils.HMM_DIRECTORY + activity.getName() + ".txt");
 

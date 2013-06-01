@@ -247,11 +247,23 @@ public class ActivityRecognition {
         HMMOperations hmmOperations = new HMMOperationsImpl();
         List<String> posturesOfInterest = Utils.activityMap.get(activity);
 
-        /* transform posture information into observation index*/
-        int observation = posture.computeObservationIndex(posturesOfInterest);
+        /* load HMM for the current activity */
+        hmm = new HMMCalculus(Utils.HMM_DIRECTORY + activity.getName() + ".txt");
 
         /* obtain list of past observations */
         List<Integer> observations = activityObservationsMap.get(activity);
+
+        /* transform posture information into observation index*/
+        int observation = posture.computeObservationIndex(posturesOfInterest);
+
+        /* if the posture is misclassified then no activity is detected*/
+        if(observation < 0){
+
+            int size = observations.size()+1;
+            int obs[] = new int[size], pred[] = new int[size];
+
+            return new Prediction(obs,pred,0.0);
+        }
 
         /* add new observation to list*/
         activityObservationsMap.remove(activity);
@@ -259,8 +271,7 @@ public class ActivityRecognition {
         activityObservationsMap.put(activity,observations);
 
 
-        /* load HMM for the current activity */
-        hmm = new HMMCalculus(Utils.HMM_DIRECTORY + activity.getName() + ".txt");
+
 
         /* predict */
         prediction = hmmOperations.predict(hmm,ArrayUtils.toPrimitive(observations.toArray(new Integer[0])));
