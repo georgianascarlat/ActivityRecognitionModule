@@ -6,6 +6,10 @@ import models.Prediction;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 
@@ -29,7 +33,7 @@ public class HMMOperationsTest {
     @Test
     public void testLearnSupervised() {
 
-        int observations[][] = {{0, 0, 1, 0, 1, 0},
+        Integer observations[][] = {{0, 0, 1, 0, 1, 0},
                 {1, 0, 1, 0, 1, 0},
                 {1, 0, 0, 1, 1, 0},
                 {1, 0, 1, 1, 1, 0},
@@ -37,7 +41,7 @@ public class HMMOperationsTest {
                 {0, 0, 1, 0, 0, 1},
                 {0, 0, 1, 1, 0, 1},
                 {0, 1, 1, 1, 0, 0}};
-        int states[][] = {{0, 0, 0, 1, 0, 0},
+        Integer states[][] = {{0, 0, 0, 1, 0, 0},
                 {1, 0, 0, 1, 0, 0},
                 {0, 0, 1, 0, 0, 0},
                 {0, 0, 0, 0, 1, 0},
@@ -45,10 +49,23 @@ public class HMMOperationsTest {
                 {0, 0, 0, 1, 1, 0},
                 {1, 0, 0, 0, 0, 0},
                 {1, 0, 1, 0, 0, 0}};
+
+        int numSequences = observations.length, sequenceLength = observations[0].length;
+        List<List<Integer>> obs = new ArrayList<List<Integer>>(), hS = new ArrayList<List<Integer>>();
+        List<Integer> aux;
+
+        for(int s=0;s<numSequences;s++){
+            aux = Arrays.asList(observations[s]);
+            obs.add(aux);
+            aux = Arrays.asList(states[s]);
+            hS.add(aux);
+        }
+
+
         double expectedInitialProbabilities[] = {0.5, 0.5};
         double expectedTransitionMatrix[][] = {{3.0 / 4, 1.0 / 4}, {11.0 / 12, 1.0 / 12}};
         double expectedEmissionMatrix[][] = {{17.0 / 36, 19.0 / 36}, {2.0 / 3, 1.0 / 3}};
-        HMM hmm = hmmOperations.trainSupervised(2, 2, observations, states);
+        HMM hmm = hmmOperations.trainSupervised(2, 2, obs, hS);
 
 
         assertArrayEquals(expectedInitialProbabilities, hmm.getInitialStateProbabilities(), EPSILON);

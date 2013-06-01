@@ -6,14 +6,12 @@ import hmm.HMMOperations;
 import hmm.HMMOperationsImpl;
 import models.Activity;
 import models.Posture;
+import utils.FileNameComparator;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.EnumMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class CreateHMM {
 
@@ -66,7 +64,6 @@ public class CreateHMM {
      * Creates a HMM for a given activity using the observations deduced
      * from the list of postures.
      *
-     * Attention: The sequences in the list must all have the same size!
      *
      * @param activity  activity for which to create the HMM
      * @param postures  list of sequences of postures to be used as training set
@@ -76,28 +73,36 @@ public class CreateHMM {
         List<String> posturesOfInterest = activityMap.get(activity);
         int numObservableVariables = Posture.computeNumObservableVariables(posturesOfInterest);
         int numStates = 2, numSequences = postures.size(), sequenceLength = postures.get(0).size();
-        int[][] observations = new int[numSequences][sequenceLength];
-        int[][] hiddenStates = new int[numSequences][sequenceLength];
         HMMOperations hmmOperations = new HMMOperationsImpl();
         HMM hmm;
+        List<List<Integer>> observations = new ArrayList<List<Integer>>(),
+                hiddenStates = new ArrayList<List<Integer>>();
+        List<Integer> aux_o,aux_s;
 
 
 
         /* transform posture information into observable variables and hidden states*/
-        for(int s = 0;s<numSequences;s++){
-            for(int i=0;i<sequenceLength;i++){
+        for(List<Posture> sequence:postures){
+
+            aux_o = new ArrayList<Integer>();
+            aux_s = new ArrayList<Integer>();
+
+            for(Posture posture:sequence){
 
                 /* transform posture information into observation index*/
-                observations[s][i] = postures.get(s).get(i).computeObservationIndex(posturesOfInterest);
-                /* get the tagged activity, state 1 means the activity is detected, 0 otherwise*/
-                hiddenStates[s][i] = postures.get(s).get(i).getActivity() == activity.getIndex()?1:0;
+                aux_o.add(posture.computeObservationIndex(posturesOfInterest));
 
+                /* get the tagged activity, state 1 means the activity is detected, 0 otherwise*/
+                aux_s.add(posture.getActivity() == activity.getIndex()?1:0);
             }
-            //System.out.println();
+            observations.add(aux_o);
+            hiddenStates.add(aux_s);
         }
+
 
         /* train the model using the observations and hidden states*/
         hmm =  hmmOperations.trainSupervised(numStates,numObservableVariables,observations,hiddenStates);
+
 
         /*save the model into it's corresponding file*/
         hmm.saveModel(HMM_DIRECTORY+activity.getName()+".txt");
@@ -149,11 +154,12 @@ public class CreateHMM {
                 filesInDirectory = new LinkedList<String>();
                 directoryFiles = file.listFiles();
                 for(File subFile:directoryFiles){
-                    if(subFile.isFile() && !subFile.getAbsolutePath().endsWith("~")){
-                        filesInDirectory.add(subFile.getAbsolutePath());
+                    if(subFile.isFile() && !subFile.getPath().endsWith("~")){
+                        filesInDirectory.add(subFile.getPath());
                     }
                 }
 
+                Collections.sort(filesInDirectory, new FileNameComparator());
                 fileNames.add(filesInDirectory);
 
             }

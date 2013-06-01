@@ -3,43 +3,54 @@ package hmm;
 import models.Prediction;
 import models.Viterbi;
 
+import java.util.List;
+
 public class HMMOperationsImpl implements HMMOperations {
 
     public static final double DELTA = 0.00001;
 
 
     @Override
-    public HMM trainSupervised(int numStates, int numObservableVariables, int[][] observations, int[][] hiddenStates) {
+    public HMM trainSupervised(int numStates, int numObservableVariables, List<List<Integer>> observations, List<List<Integer>> hiddenStates) {
         HMM hmm = new HMMCalculus(numStates, numObservableVariables);
         int A[][] = new int[numStates][numStates];
         int B[][] = new int[numStates][numObservableVariables];
         int pi[] = new int[numStates];
-        int numSequences = observations.length;
-        int sequenceLength = observations[0].length;
+        int numSequences = observations.size();
+        int sequenceLength;
         int sum_pi = 0, sum_A[] = new int[numStates], sum_B[] = new int[numStates];
 
         /*check to see if the dimensions correspond*/
-        if (numSequences != hiddenStates.length || sequenceLength != hiddenStates[0].length)
+        if (numSequences != hiddenStates.size())
             throw new IllegalArgumentException("Observations and states dimensions must match");
 
         /*count number of appearances*/
         for (int s = 0; s < numSequences; s++) {
+
             /* count the number of appearances for each initial state*/
-            pi[hiddenStates[s][0]]++;
+            pi[hiddenStates.get(s).get(0)]++;
             /* count total number of appearances for all initial states*/
             sum_pi++;
+
+            sequenceLength = observations.get(s).size();
+
+            /*check to see if the dimensions correspond*/
+            if(sequenceLength != hiddenStates.get(s).size())
+                throw new IllegalArgumentException("Observations and states dimensions must match");
+
             for (int i = 0; i < sequenceLength; i++) {
+
                 /*count the number of appearances for each state-emission*/
-                B[hiddenStates[s][i]][observations[s][i]]++;
+                B[hiddenStates.get(s).get(i)][observations.get(s).get(i)]++;
                 /*count total number of emissions from each state*/
-                sum_B[hiddenStates[s][i]]++;
+                sum_B[hiddenStates.get(s).get(i)]++;
 
 
                 if (i > 0) {
                     /*count the number of appearances for each  transition s1-s2*/
-                    A[hiddenStates[s][i - 1]][hiddenStates[s][i]]++;
+                    A[hiddenStates.get(s).get(i-1)][hiddenStates.get(s).get(i)]++;
                     /*count the total number of transitions from s1*/
-                    sum_A[hiddenStates[s][i - 1]]++;
+                    sum_A[hiddenStates.get(s).get(i-1)]++;
                 }
             }
         }

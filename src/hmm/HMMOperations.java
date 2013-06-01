@@ -2,6 +2,8 @@ package hmm;
 
 import models.Prediction;
 
+import java.util.List;
+
 public interface HMMOperations {
 
 
@@ -17,7 +19,7 @@ public interface HMMOperations {
      * @return
      */
     public HMM trainSupervised(int numStates, int numObservableVariables,
-                               int[][] observations, int[][] hiddenStates);
+                               List<List<Integer>> observations, List<List<Integer>> hiddenStates);
 
     /**
      * Train a hmm.HMM given a sequence of observations
