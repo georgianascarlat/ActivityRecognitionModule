@@ -54,7 +54,7 @@ public class HMMOperationsTest {
         List<List<Integer>> obs = new ArrayList<List<Integer>>(), hS = new ArrayList<List<Integer>>();
         List<Integer> aux;
 
-        for(int s=0;s<numSequences;s++){
+        for (int s = 0; s < numSequences; s++) {
             aux = Arrays.asList(observations[s]);
             obs.add(aux);
             aux = Arrays.asList(states[s]);

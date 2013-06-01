@@ -4,13 +4,13 @@ package models;
 public enum Activity {
 
 
-    Walking(1,"walking"),
-    LyingDown(2,"lying down");
+    Walking(1, "walking"),
+    LyingDown(2, "lying down");
 
     private final String name;
     private final int index;
 
-    private Activity(int index,String name) {
+    private Activity(int index, String name) {
         this.name = name;
         this.index = index;
     }

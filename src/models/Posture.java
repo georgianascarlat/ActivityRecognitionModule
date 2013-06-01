@@ -51,9 +51,7 @@ public class Posture {
      * Computes the total number of observable variables that can
      * be obtained from all the combinations of the classes whose names are given.
      *
-     *
      * @param postureClasses names of the posture classes
-     *
      * @return total number of observable variables
      */
     public static int computeNumObservableVariables(List<String> postureClasses) {
@@ -72,12 +70,11 @@ public class Posture {
     /**
      * Compute the index of the observation represented by
      * the posture classes whose names are given.
-     *
+     * <p/>
      * Practically, it maps an observation from a list of
      * posture classes to a unique index.
      *
      * @param postureClasses names of the posture classes
-     *
      * @return index of the observation
      */
     public int computeObservationIndex(List<String> postureClasses) {

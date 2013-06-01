@@ -35,7 +35,7 @@ public class HMMOperationsImpl implements HMMOperations {
             sequenceLength = observations.get(s).size();
 
             /*check to see if the dimensions correspond*/
-            if(sequenceLength != hiddenStates.get(s).size())
+            if (sequenceLength != hiddenStates.get(s).size())
                 throw new IllegalArgumentException("Observations and states dimensions must match");
 
             for (int i = 0; i < sequenceLength; i++) {
@@ -48,9 +48,9 @@ public class HMMOperationsImpl implements HMMOperations {
 
                 if (i > 0) {
                     /*count the number of appearances for each  transition s1-s2*/
-                    A[hiddenStates.get(s).get(i-1)][hiddenStates.get(s).get(i)]++;
+                    A[hiddenStates.get(s).get(i - 1)][hiddenStates.get(s).get(i)]++;
                     /*count the total number of transitions from s1*/
-                    sum_A[hiddenStates.get(s).get(i-1)]++;
+                    sum_A[hiddenStates.get(s).get(i - 1)]++;
                 }
             }
         }

@@ -23,7 +23,6 @@ public enum PostureClass {
     }
 
 
-
     public String toString() {
         return name;
     }
