@@ -24,7 +24,7 @@ public class Utils {
     public static final String SKELETON_PREFIX = "skeleton_";
     public static final String TMP = "~";
 
-    public static boolean USE_OBJECT_RECOGNITION = true;
+    public static boolean USE_OBJECT_RECOGNITION = false;
 
     /**
      * Initialise the mapping from activities to their list of postures of interest.
