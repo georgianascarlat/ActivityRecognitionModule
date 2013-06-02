@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<project name="HAR" basedir="." default="activityRecognition">
+
+    <!-- Properties -->
+
+    <property name="src.dir" value="src" />
+    <property name="build.dir" value="build" />
+    <property name="lib.dir" value="lib" />
+
+    <path id="classpath">
+        <pathelement location="${build.dir}" />
+        <fileset dir="${lib.dir}" includes="*.jar"/>
+    </path>
+
+    <!-- Targets -->
+
+    <target name="compile" depends="clean">
+        <mkdir dir="${build.dir}" />
+        <javac classpathref = "classpath" srcdir="${src.dir}" destdir="${build.dir}" />
+    </target>
+
+    <target name="createRoomModel" depends="compile">
+        <java classname="app.CreateRoomModel" fork="true">
+            <classpath refid="classpath">
+
+            </classpath>
+
+        </java>
+    </target>
+
+    <target name="createHMM" depends="compile">
+        <java classname="app.CreateHMM" fork="true">
+            <classpath refid="classpath">
+
+            </classpath>
+
+        </java>
+    </target>
+
+    <target name="activityRecognition" depends="compile">
+        <java classname="app.ActivityRecognition" fork="true">
+            <classpath refid="classpath">
+
+            </classpath>
+
+        </java>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}" />
+    </target>
+
+</project>
