@@ -83,7 +83,7 @@ public class CreateHMM {
         System.out.println(observations);
 
 
-        //adjustStateProbabilitiesToEven(numStates, hmm);
+        adjustStateProbabilitiesToEven(numStates, hmm);
 
         hmm.print();
         /*save the model into it's corresponding file*/

@@ -6,6 +6,7 @@ import hmm.HMMCalculus;
 import hmm.HMMOperations;
 import hmm.HMMOperationsImpl;
 import models.*;
+import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang3.ArrayUtils;
 import utils.FileNameComparator;
 import utils.Pair;
@@ -28,7 +29,7 @@ public class ActivityRecognition {
 
 
     /* every activity has a list of observations */
-    public Map<Activity, List<Integer>> activityObservationsMap = initActivityObservationsMap();
+    public Map<Activity, CircularFifoBuffer> activityObservationsMap = initActivityObservationsMap();
 
     /* reference to the object recognition module*/
     private ObjectRecognition objectRecognition;
@@ -254,7 +255,7 @@ public class ActivityRecognition {
         hmm = new HMMCalculus(Utils.HMM_DIRECTORY + activity.getName() + ".txt");
 
         /* obtain list of past observations */
-        List<Integer> observations = activityObservationsMap.get(activity);
+        CircularFifoBuffer observations = activityObservationsMap.get(activity);
 
         /* transform posture information into observation index*/
         int observation = posture.computeObservationIndex(posturesOfInterest);
@@ -286,7 +287,7 @@ public class ActivityRecognition {
 
         /* predict */
         prediction = hmmOperations.predict(hmm,
-                ArrayUtils.toPrimitive(observations.toArray(new Integer[0])));
+                ArrayUtils.toPrimitive((Integer[])observations.toArray(new Integer[0])));
 
 
         return prediction;
@@ -296,13 +297,13 @@ public class ActivityRecognition {
 
 
 
-    private Map<Activity, List<Integer>> initActivityObservationsMap() {
+    private Map<Activity, CircularFifoBuffer> initActivityObservationsMap() {
 
-        Map<Activity, List<Integer>> map = new EnumMap<Activity, List<Integer>>(Activity.class);
+        Map<Activity, CircularFifoBuffer> map = new EnumMap<Activity, CircularFifoBuffer>(Activity.class);
 
         for (Activity activity : Activity.values()) {
 
-            map.put(activity, new ArrayList<Integer>());
+            map.put(activity, new CircularFifoBuffer(Utils.MAX_OBSERVATION_SIZE));
 
         }
 

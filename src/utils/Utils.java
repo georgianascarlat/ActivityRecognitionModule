@@ -23,6 +23,7 @@ public class Utils {
     public static final String POSTURE_PREFIX = "posture_";
     public static final String SKELETON_PREFIX = "skeleton_";
     public static final String TMP = "~";
+    public static final int MAX_OBSERVATION_SIZE = 15;
 
     public static boolean USE_OBJECT_RECOGNITION = false;
 
