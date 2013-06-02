@@ -1,14 +1,13 @@
 package tracking;
 
+import utils.Pair;
 import utils.Utils;
 
 import java.applet.Applet;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -19,10 +18,10 @@ public class DrawMap extends Applet implements Runnable {
     public static final int floorHeight = 5000;
     public static final String SKEL_DIR = "/home/nogai/An4/Licenta/ActivityRecognitionModule/skel/";
 
-    private Map map;
+    private RoomInfo map;
     private List<Snapshot> snapshotList = new ArrayList<Snapshot>();
 
-    private static final int widthParts = 80, heightParts =50;
+    private static final int widthParts = 80, heightParts = 50;
     private int count = 0, maxCount;
 
     private Image bi;
@@ -30,21 +29,20 @@ public class DrawMap extends Applet implements Runnable {
     private Thread animatie;
 
 
-
     @Override
     public void init() {
         super.init();
-        map = new Map(getSize().width, getSize().height, widthParts, heightParts);
+        map = new RoomInfo(getSize().width, getSize().height, widthParts, heightParts);
 
 
         List<String> fileNames = Utils.getFileNamesFromDirectory(new File(SKEL_DIR).listFiles());
 
 
-        for (String fileName:fileNames) {
+        for (String fileName : fileNames) {
 
             try {
                 //if(fileName.startsWith("skeleton_"))
-                    snapshotList.add(new Snapshot(fileName, widthParts, heightParts,floorWidth,floorHeight));
+                snapshotList.add(new Snapshot(fileName, widthParts, heightParts, floorWidth, floorHeight));
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -55,7 +53,7 @@ public class DrawMap extends Applet implements Runnable {
 
 
         //double buffering
-        bi = (BufferedImage) createImage(map.getWidth(), map.getHeight());
+        bi = createImage((int) map.getWidth(), (int) map.getHeight());
         big = (Graphics2D) bi.getGraphics();
 
         //initializare thread
@@ -65,20 +63,20 @@ public class DrawMap extends Applet implements Runnable {
     }
 
 
-
     public void paint(Graphics g) {
 
         Graphics2D gg;
         gg = (Graphics2D) g;
-        int x, y, highLight;
+        int x, y;
+        Pair<Integer, Integer> position;
 
-        highLight = snapshotList.get(count).getUserOnFloorPosition();
-        System.out.println("Count: " + (count + 5) + " Highlight: " + highLight);
+        position = snapshotList.get(count).getUserOnFloorPosition();
+        System.out.println("Count: " + (count + 5) + " Highlight: " + position);
 
 
         big.setColor(Color.white);
 
-        big.clearRect(0, 0, map.getWidth(), map.getHeight());
+        big.clearRect(0, 0, (int) map.getWidth(), (int) map.getHeight());
 
         big.setBackground(Color.black);
 
@@ -86,16 +84,16 @@ public class DrawMap extends Applet implements Runnable {
         for (int line = 0; line < heightParts; line++) {
             for (int column = 0; column < widthParts; column++) {
 
-                x = column * map.getWidthChunk();
-                y = line * map.getHeightChunk();
+                x = column * (int) map.getWidthChunk();
+                y = line * (int) map.getHeightChunk();
 
 
-                if ((line * map.getWidthParts() + column) == highLight) {
+                if (line == position.getFirst() && column == position.getSecond()) {
                     big.setColor(Color.green);
-                    big.fillRect(x, y, map.getWidthChunk(), map.getHeightChunk());
+                    big.fillRect(x, y, (int) map.getWidthChunk(), (int) map.getHeightChunk());
                 } else {
                     big.setColor(Color.blue);
-                    big.drawRect(x, y, map.getWidthChunk(), map.getHeightChunk());
+                    big.drawRect(x, y, (int) map.getWidthChunk(), (int) map.getHeightChunk());
 
                 }
 

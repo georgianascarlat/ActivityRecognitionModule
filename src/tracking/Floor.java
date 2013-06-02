@@ -1,9 +1,6 @@
 package tracking;
 
 import javax.vecmath.Point3d;
-import javax.vecmath.Point3d;
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class Floor {
@@ -19,10 +16,10 @@ public class Floor {
 
     public Floor(double floorWidth, double floorHeight) {
 
-        this.point1 = new Point3d(0,0,0);
-        this.point2 = new Point3d(floorWidth,0,0);
-        this.point3 = new Point3d(floorWidth,0,floorHeight);
-        this.point4 = new Point3d(0,0,floorHeight);
+        this.point1 = new Point3d(0, 0, 0);
+        this.point2 = new Point3d(floorWidth, 0, 0);
+        this.point3 = new Point3d(floorWidth, 0, floorHeight);
+        this.point4 = new Point3d(0, 0, floorHeight);
 
     }
 
@@ -42,7 +39,6 @@ public class Floor {
     public Point3d getPoint3() {
         return point3;
     }
-
 
 
     public Point3d getPoint4() {

@@ -1,7 +1,10 @@
 package utils;
 
 
+import app.ObjectRecognition;
 import models.Activity;
+import models.MovementClass;
+import models.ObjectClass;
 import models.Posture;
 
 import java.io.File;
@@ -14,8 +17,14 @@ public class Utils {
     public static final String HMM_DIRECTORY = "learned_HMMs/";
     public static final String DATA_DIRECTORY = "data/";
     public static final String ACTIVITY_FILE = "activity/activity_recognition.txt";
+    public static final String ROOM_MODEL_FILE = "room_model/room_model.txt";
 
     public static final Map<Activity, List<String>> activityMap = initActivitiesMap();
+    public static final String POSTURE_PREFIX = "posture_";
+    public static final String SKELETON_PREFIX = "skeleton_";
+    public static final String TMP = "~";
+
+    public static boolean USE_OBJECT_RECOGNITION = true;
 
     /**
      * Initialise the mapping from activities to their list of postures of interest.
@@ -45,9 +54,10 @@ public class Utils {
 
 
     /**
-     * Make sorted list of the names of all the files in a directory.
+     * Make sorted list of the posture names of all the files in a directory.
      *
      * @param directoryFiles files in directory
+     *
      * @return sorted list of the names of all the files in a directory
      */
     public static List<String> getFileNamesFromDirectory(File[] directoryFiles) {
@@ -55,7 +65,8 @@ public class Utils {
         filesInDirectory = new LinkedList<String>();
 
         for (File subFile : directoryFiles) {
-            if (subFile.isFile() && !subFile.getPath().endsWith("~")) {
+            if (subFile.isFile() && !subFile.getPath().endsWith(TMP) &&
+                    subFile.getName().contains(POSTURE_PREFIX)) {
                 filesInDirectory.add(subFile.getPath());
             }
         }
@@ -76,6 +87,10 @@ public class Utils {
         List<String> filesInDirectory;
 
         File[] files = new File(TRAIN_DIRECTORY).listFiles(), directoryFiles;
+
+        if(null == files)
+            return fileNames;
+
         for (File file : files) {
             if (file.isDirectory()) {
 
@@ -91,35 +106,44 @@ public class Utils {
     }
 
     /**
-     * Get a list of postures from a list of file names containing posture information.
+     * Get a list of pairs of posture objects and their corresponding skeleton file name
+     * from a list of posture file names containing posture information.
      *
      * @param filesInSequence file names containing posture information
-     * @return list of postures
+     *
+     * @return list of pairs of posture objects and their corresponding skeleton file name
+     *
      * @throws FileNotFoundException
      */
-    public static List<Posture> getPosturesFromFileSequence(List<String> filesInSequence) throws FileNotFoundException {
+    public static List<Pair<Posture,String>> getPosturesFromFileSequence(List<String> filesInSequence) throws FileNotFoundException {
 
-        List<Posture> sequencePostures;
-        sequencePostures = new LinkedList<Posture>();
+        List<Pair<Posture,String>> sequencePostures;
+        sequencePostures = new ArrayList<Pair<Posture, String>>();
+
         for (String fileName : filesInSequence) {
-            sequencePostures.add(new Posture(fileName));
+            String skeletonFileName = getSkeletonFile(fileName);
+            sequencePostures.add(new Pair<Posture, String>(new Posture(fileName),skeletonFileName));
         }
         return sequencePostures;
     }
 
 
     /**
-     * Read all the training files from the training directory
-     * and create a list of posture objects from all of them.
+     * Read all the training posture files from the training directory
+     * and create a list of posture object sequences from all of them,
+     * pairing each posture object with it's corresponding skeleton
+     * file name.
      *
-     * @return list of posture objects
+     * @return list of sequences of posture objects paired with their
+     * corresponding skeleton file name
+     *
      * @throws java.io.FileNotFoundException invalid file names
      */
-    public static List<List<Posture>> getTrainPostures() throws FileNotFoundException {
+    public static List<List<Pair<Posture,String>>> getTrainPostures() throws FileNotFoundException {
         List<List<String>> fileNames = getTrainingFileNames();
 
-        List<List<Posture>> postures = new LinkedList<List<Posture>>();
-        List<Posture> sequencePostures;
+        List<List<Pair<Posture,String>>> postures = new ArrayList<List<Pair<Posture, String>>>();
+        List<Pair<Posture,String>> sequencePostures;
         for (List<String> filesInSequence : fileNames) {
             sequencePostures = getPosturesFromFileSequence(filesInSequence);
             postures.add(sequencePostures);
@@ -127,5 +151,68 @@ public class Utils {
         }
 
         return postures;
+    }
+
+    /**
+     * Combines posture information with object recognition and position information
+     * to get an observation index.
+     *
+     * @param observation observation index for the posture
+     * @param skeletonFileName posture file name
+     * @param objectRecognition object recognition module reference
+     * @param  lastPosition the previous position
+     *
+     * @return a pair of observation index composed of posture and object detection information
+     * and the new position on the greed
+     */
+    public static Pair<Integer,Pair<Integer,Integer>> addObjectRecognitionObservation(int observation, String skeletonFileName,
+                                                      ObjectRecognition objectRecognition, Pair<Integer,Integer> lastPosition) {
+
+
+        /* get result from object detection module*/
+        Pair<ObjectClass, Pair<Integer, Integer>> result = objectRecognition.getResult(skeletonFileName);
+        ObjectClass objectClass = result.getFirst();
+
+        /* determine the type of movement based on the previous position and the current position*/
+        MovementClass movementClass = MovementClass.getMovement(lastPosition, result.getSecond());
+
+
+        /* update the last position */
+        lastPosition = result.getSecond();
+
+
+        /* combine the posture information with the object interaction
+        information and the movement information */
+        observation = addVariableToObservation(observation,
+                objectClass.getIndex(), ObjectClass.NUM_OBJECT_CLASSES);
+
+        observation = addVariableToObservation(observation,
+                movementClass.getIndex(), MovementClass.NUM_MOVES);
+
+        return new Pair<Integer, Pair<Integer, Integer>>(observation,lastPosition);
+    }
+
+
+
+
+    /**
+     * Add a new variable to an observation to obtain a new observation index.
+     *
+     * @param observation        old observation index
+     * @param variableIndex      index of variable to be added
+     * @param variableDomainSize variable domain size
+     * @return new observation index composed of the
+     *         old observation index and the new variable
+     */
+    public static int addVariableToObservation(int observation, int variableIndex, int variableDomainSize) {
+
+        return observation * variableDomainSize + (variableIndex - 1);
+    }
+
+
+    public static String getSkeletonFile(String postureFileName) {
+        String s = new String(postureFileName);
+
+        return s.replace(POSTURE_PREFIX, SKELETON_PREFIX);
     }
 }

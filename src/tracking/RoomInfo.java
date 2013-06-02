@@ -1,13 +1,13 @@
 package tracking;
 
-public class Map {
+public class RoomInfo {
 
-    private int width, height;
+    private double width, height;
     private int widthParts, heightParts;
-    private int widthChunk, heightChunk;
+    private double widthChunk, heightChunk;
     private int highLighted;
 
-    public Map(int width, int height, int widthParts, int heightParts) {
+    public RoomInfo(double width, double height, int widthParts, int heightParts) {
         this.width = width;
         this.height = height;
         this.widthParts = widthParts;
@@ -25,11 +25,11 @@ public class Map {
         return heightParts;
     }
 
-    public int getWidthChunk() {
+    public double getWidthChunk() {
         return widthChunk;
     }
 
-    public int getHeightChunk() {
+    public double getHeightChunk() {
         return heightChunk;
     }
 
@@ -41,7 +41,7 @@ public class Map {
         this.highLighted = highLighted;
     }
 
-    public int getWidth() {
+    public double getWidth() {
         return width;
     }
 
@@ -49,11 +49,21 @@ public class Map {
         this.width = width;
     }
 
-    public int getHeight() {
+    public double getHeight() {
         return height;
     }
 
     public void setHeight(int height) {
         this.height = height;
+    }
+
+    @Override
+    public String toString() {
+        return "RoomInfo{" +
+                "width=" + width +
+                ", height=" + height +
+                ", widthParts=" + widthParts +
+                ", heightParts=" + heightParts +
+                '}';
     }
 }

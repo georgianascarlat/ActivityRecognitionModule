@@ -1,5 +1,7 @@
 package tracking;
 
+import utils.Pair;
+
 import javax.vecmath.Point3d;
 import java.io.*;
 import java.util.LinkedList;
@@ -13,11 +15,11 @@ public class Snapshot {
     private User user;
     private Floor floor;
     private int widthParts, heigthParts;
-    private double EPSILON;
+    private double EPSILON = 0.1;
 
 
     public Snapshot(String fileName, int widthParts, int heightParts, double floorWidth, double floorHeight) throws IOException {
-          this(fileName, widthParts, heightParts,new Floor(floorWidth,floorHeight));
+        this(fileName, widthParts, heightParts, new Floor(floorWidth, floorHeight));
     }
 
     public Snapshot(String fileName, int widthParts, int heightParts, Floor floor) throws IOException {
@@ -31,10 +33,8 @@ public class Snapshot {
     /**
      * Read skeleton joint points from file and store them in a User object.
      *
-     * @param fileName  file name
-     *
-     * @return   User object containing skeleton joint points
-     *
+     * @param fileName file name
+     * @return User object containing skeleton joint points
      * @throws IOException
      */
     private User readUser(String fileName) throws IOException {
@@ -51,19 +51,19 @@ public class Snapshot {
 
         /* read error */
         strLine = readSingleLine(br);
-        error = new Integer(strLine.substring(0,strLine.length() -1));
+        error = new Integer(strLine.substring(0, strLine.length() - 1));
 
-        if(error == 1){
+        if (error == 1) {
             throw new IllegalArgumentException("Error in skeleton file");
         }
 
 
         /* throw away timestamp line and floor line*/
-        for(int i=0;i<2;i++)
+        for (int i = 0; i < 2; i++)
             readSingleLine(br);
 
         /* read each joint point line*/
-        for(int i=0;i< NUM_JOINTS;i++){
+        for (int i = 0; i < NUM_JOINTS; i++) {
             strLine = readSingleLine(br);
             strings.add(strLine);
         }
@@ -73,14 +73,14 @@ public class Snapshot {
 
     private String readSingleLine(BufferedReader br) throws IOException {
         String strLine;
-        if(((strLine = br.readLine()) == null)){
+        if (((strLine = br.readLine()) == null)) {
             throw new IllegalArgumentException("Invalid skeleton file format");
         }
         return strLine;
     }
 
 
-    public int getUserOnFloorPosition() {
+    public Pair<Integer, Integer> getUserOnFloorPosition() {
 
         Position position = new Position().calcPosition("TORSO");
         int line = position.getLine();
@@ -109,7 +109,8 @@ public class Snapshot {
         if (line > (heigthParts - 1))
             line = heigthParts - 1;
 
-        return line * widthParts + column;
+
+        return new Pair<Integer, Integer>(line, column);
 
     }
 

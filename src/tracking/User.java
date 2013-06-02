@@ -29,7 +29,7 @@ public class User {
         for (int i = 0; i < n; i++) {
 
             line = points.get(i);
-            line = line.substring(0,line.length() -1);
+            line = line.substring(0, line.length() - 1);
             tokens = line.split(",");
 
             if (tokens.length != 4) {

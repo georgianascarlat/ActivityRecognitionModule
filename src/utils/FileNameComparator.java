@@ -5,7 +5,7 @@ import java.util.Comparator;
 public class FileNameComparator implements Comparator<String> {
 
 
-    public static int getFileNumber(String s){
+    public static int getFileNumber(String s) {
 
         int index1 = s.lastIndexOf("_");
         int index2 = s.lastIndexOf(".txt");
@@ -20,7 +20,7 @@ public class FileNameComparator implements Comparator<String> {
 
         int num1, num2;
 
-        if(!s.endsWith(".txt") || !s2.endsWith(".txt") || !s.contains("_") || !s2.contains("_"))
+        if (!s.endsWith(".txt") || !s2.endsWith(".txt") || !s.contains("_") || !s2.contains("_"))
             return s.compareTo(s2);
 
 
