@@ -5,12 +5,9 @@ import utils.Pair;
 
 public enum MovementClass {
     STAY(1),
-    UP(2),
-    RIGHT(3),
-    DOWN(4),
-    LEFT(5);
+    MOVE(2);
 
-    public static final int NUM_MOVES = 5;
+    public static final int NUM_MOVES = 2;
 
     private int index;
 
@@ -35,23 +32,7 @@ public enum MovementClass {
 
         if (lastPosition == null || newPosition == null || lastPosition.equals(newPosition))
             return STAY;
-
-        i = lastPosition.getFirst();
-        j = lastPosition.getSecond();
-        new_i = newPosition.getFirst();
-        new_j = newPosition.getSecond();
-
-        if (Math.abs(j - new_j) < Math.abs(i - new_i)) {
-            if (new_i < i)
-                return UP;
-            else
-                return DOWN;
-        } else {
-            if (new_j < j)
-                return LEFT;
-            else
-                return RIGHT;
-        }
+        return MOVE;
 
     }
 }
