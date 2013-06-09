@@ -30,6 +30,9 @@ public class ActivityRecognition {
     /* every activity has a list of observations */
     public Map<Activity, CircularFifoBuffer> activityObservationsMap = initActivityObservationsMap();
 
+    /* the activity HMMs */
+    public Map<Activity,HMM> activityHMMMap ;
+
     /* reference to the object recognition module*/
     private ObjectRecognition objectRecognition;
 
@@ -38,6 +41,7 @@ public class ActivityRecognition {
 
     public ActivityRecognition() throws FileNotFoundException {
 
+        activityHMMMap = new EnumMap<Activity, HMM>(Activity.class);
         objectRecognition = new ObjectRecognition(Utils.ROOM_MODEL_FILE);
     }
 
@@ -250,9 +254,16 @@ public class ActivityRecognition {
         List<String> posturesOfInterest = Utils.activityMap.get(activity);
         String skeletonFileName = getSkeletonFile(postureFileName);
 
+        /* obtain the HMM for the current activity*/
+        hmm = activityHMMMap.get(activity);
 
-        /* load HMM for the current activity */
-        hmm = new HMMCalculus(Utils.HMM_DIRECTORY + activity.getName() + ".txt");
+        if(hmm == null) {
+
+            /* load HMM from file if it wasn't loaded before */
+            hmm = new HMMCalculus(Utils.HMM_DIRECTORY + activity.getName() + ".txt");
+            /* keep the HMM in the map for later use */
+            activityHMMMap.put(activity,hmm);
+        }
 
         /* obtain list of past observations */
         CircularFifoBuffer observations = activityObservationsMap.get(activity);
