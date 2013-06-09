@@ -90,8 +90,7 @@ public class ActivityRecognition {
 
                     Path child = dir.resolve(filename);
                     if (!Files.probeContentType(child).equals("text/plain")) {
-                        System.err.format("New file '%s'" +
-                                " is not a plain text file.%n", filename);
+
                         continue;
                     }
 
@@ -103,7 +102,7 @@ public class ActivityRecognition {
 
 
                 /* Verify file name */
-                if (!filename.toString().startsWith("posture_") || !filename.toString().endsWith(".txt")) {
+                if (!filename.toString().startsWith(READY_PREFIX) || !filename.toString().endsWith(".txt")) {
                     continue;
                 }
 
@@ -133,11 +132,12 @@ public class ActivityRecognition {
      * For each activity, the sequence is fed to it's corresponding HMM and the
      * predictions are aggregated. The best prediction is then chosen.
      *
-     * @param filename name of newly created file
+     * @param readyFilename name of newly created file
      * @throws IOException
      */
-    private void processNewFile(String filename) throws IOException {
+    private void processNewFile(String readyFilename) throws IOException {
 
+        String filename = Utils.getPostureFile(readyFilename);
         /*read posture information from file*/
         Posture posture = new Posture(filename);
         /* keep the predictions made by each activity HMM to later choose the best one*/

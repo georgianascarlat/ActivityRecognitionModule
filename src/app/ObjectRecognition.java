@@ -48,7 +48,8 @@ public class ObjectRecognition {
 
         /* use the skeleton file to create a Snapshot object*/
         try {
-            snapshot = new Snapshot(skeletonFileName, roomModel.getWidthParts(), roomModel.getHeightParts(), roomModel.getFloorWidth(), roomModel.getFloorHeight());
+            snapshot = new Snapshot(skeletonFileName, roomModel.getWidthParts(),
+                    roomModel.getHeightParts(), roomModel.getFloorWidth(), roomModel.getFloorHeight());
         } catch (IOException e) {
             e.printStackTrace();
             return new Pair<ObjectClass, Pair<Integer, Integer>>(ObjectClass.NO_OBJECT, null);

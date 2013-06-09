@@ -22,6 +22,7 @@ public class Utils {
     public static final Map<Activity, List<String>> activityMap = initActivitiesMap();
     public static final String POSTURE_PREFIX = "posture_";
     public static final String SKELETON_PREFIX = "skeleton_";
+    public static final String READY_PREFIX = "ready_d_";
     public static final String TMP = "~";
     public static final int MAX_OBSERVATION_SIZE = 15;
 
@@ -215,5 +216,11 @@ public class Utils {
         String s = new String(postureFileName);
 
         return s.replace(POSTURE_PREFIX, SKELETON_PREFIX);
+    }
+
+    public static String getPostureFile(String readyFilename) {
+        String s = new String(readyFilename);
+
+        return s.replace(READY_PREFIX,POSTURE_PREFIX);
     }
 }
