@@ -2,7 +2,12 @@ package hmm;
 
 import models.Prediction;
 import models.Viterbi;
+import org.apache.commons.lang3.ArrayUtils;
+import utils.HMMProbabilityPairComparator;
+import utils.Pair;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HMMOperationsImpl implements HMMOperations {
@@ -72,7 +77,7 @@ public class HMMOperationsImpl implements HMMOperations {
     }
 
     @Override
-    public HMM trainUnsupervised(int[] observations, int maxIterations, HMM hmm) {
+    public HMM trainUnsupervisedStartingFromKnownModel(int[] observations, int maxIterations, HMM hmm) {
         int T = observations.length;
         double[][] fwd;
         double[][] bwd;
@@ -148,24 +153,109 @@ public class HMMOperationsImpl implements HMMOperations {
 
     @Override
     public HMM trainUnsupervisedStartingFromRandom(int[] observations, int maxIterations, int numRandomInits, int numStates, int numObservableVariables) {
-        HMM newHMM,hmm = new HMMCalculus(numStates,numObservableVariables);
+        HMM newHMM, hmm = new HMMCalculus(numStates, numObservableVariables);
         double p0, p1;
 
-        for(int i=0;i<numRandomInits;i++){
-            newHMM = new HMMCalculus(numStates,numObservableVariables);
-            newHMM = trainUnsupervised(observations,maxIterations,newHMM);
+        for (int i = 0; i < numRandomInits; i++) {
+            newHMM = new HMMCalculus(numStates, numObservableVariables);
+            newHMM.randomInit();
+            newHMM = trainUnsupervisedStartingFromKnownModel(observations, maxIterations, newHMM);
 
             p0 = hmm.observationsProbability(observations);
             p1 = newHMM.observationsProbability(observations);
-            System.out.println(p0+" "+p1);
 
-            if(p1 > p0){
-                System.out.println("Found Better "+i);
+
+            if (p1 > p0) {
+
                 hmm = newHMM;
             }
         }
 
         return hmm;
+    }
+
+    @Override
+    public HMM trainUnsupervisedFromMultipleObservationSequences(List<List<Integer>> observations, int maxIterations, int numRandomInits, int numStates, int numObservableVariables) {
+        List<Pair<HMM, Double>> hmmList = new ArrayList<Pair<HMM, Double>>();
+        List<Pair<HMM, Integer>> newHMMList = new ArrayList<Pair<HMM, Integer>>();
+        HMM hmm;
+        double probability, sum, lastProbability = -1;
+        int index = 0;
+
+        for (List<Integer> sequence : observations) {
+
+            hmm = trainUnsupervisedStartingFromRandom(
+                    ArrayUtils.toPrimitive(sequence.toArray(new Integer[0])),
+                    maxIterations, numRandomInits, numStates, numObservableVariables);
+            probability = hmm.observationsProbability(observations);
+            hmmList.add(new Pair<HMM, Double>(hmm, probability));
+
+        }
+
+        /* sort HMMs by probability */
+        Collections.sort(hmmList, new HMMProbabilityPairComparator());
+        sum = 0;
+
+
+
+        /* create a list of pairs of HMMs and their ranking, where rank
+        * 1 means the worst hmm */
+        for (Pair<HMM, Double> element : hmmList) {
+
+            probability = element.getSecond();
+            if (lastProbability == -1 || Math.abs(probability - lastProbability) < DELTA)
+                index++;
+            lastProbability = probability;
+            newHMMList.add(new Pair<HMM, Integer>(element.getFirst(), index));
+            sum += index;
+
+        }
+
+
+        return combineHMMs(newHMMList, sum, numStates, numObservableVariables);
+    }
+
+    /**
+     * Combine multiple HMMs into one by doing a weighted average,
+     * where the weights are the rank of the probabilities of the observations
+     * for each HMM.
+     *
+     * @param hmmList                list of pairs of HMMs and their
+     *                               corresponding observations probability rank
+     * @param sum                    the sum of all the probability ranks for all the HMMs
+     * @param numStates              number of hidden states
+     * @param numObservableVariables number of observable variables
+     * @return combined HMM
+     */
+    private HMM combineHMMs(List<Pair<HMM, Integer>> hmmList,
+                            double sum, int numStates,
+                            int numObservableVariables) {
+
+        HMM combinedHMM = new HMMCalculus(numStates, numObservableVariables), hmm;
+        double initialStateProbabilities[] = combinedHMM.getInitialStateProbabilities();
+        double transitionMatrix[][] = combinedHMM.getTransitionMatrix();
+        double emissionMatrix[][] = combinedHMM.getEmissionMatrix(), weight;
+
+        for (Pair<HMM, Integer> element : hmmList) {
+
+            hmm = element.getFirst();
+            weight = (double) element.getSecond() / sum;
+
+            for (int i = 0; i < numStates; i++) {
+
+                initialStateProbabilities[i] += weight * hmm.getInitialStateProbabilities()[i];
+
+                for (int j = 0; j < numStates; j++) {
+                    transitionMatrix[i][j] += weight * hmm.getTransitionMatrix()[i][j];
+                }
+
+                for (int j = 0; j < numObservableVariables; j++) {
+                    emissionMatrix[i][j] += weight * hmm.getEmissionMatrix()[i][j];
+                }
+            }
+        }
+
+        return combinedHMM;
     }
 
 

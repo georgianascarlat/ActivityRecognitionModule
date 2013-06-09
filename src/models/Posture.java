@@ -163,7 +163,7 @@ public class Posture {
 
         if (generalPosture < 0 || torsoFirst < 0 || torsoSecond < 0 || head < 0 ||
                 leftHandFirst < 0 || rightHandFirst < 0 || leftHandSecond < 0 || rightHandSecond < 0 ||
-                leftLegFirst < 0 || rightLegFirst < 0 || leftLegSecond < 0 || rightLegSecond < 0 )
+                leftLegFirst < 0 || rightLegFirst < 0 || leftLegSecond < 0 || rightLegSecond < 0)
             return false;
 
         if (generalPosture > domains.get("generalPosture"))

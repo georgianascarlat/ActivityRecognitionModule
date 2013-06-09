@@ -61,7 +61,6 @@ public class Utils {
      * Make sorted list of the posture names of all the files in a directory.
      *
      * @param directoryFiles files in directory
-     *
      * @return sorted list of the names of all the files in a directory
      */
     public static List<String> getFileNamesFromDirectory(File[] directoryFiles) {
@@ -92,7 +91,7 @@ public class Utils {
 
         File[] files = new File(TRAIN_DIRECTORY).listFiles(), directoryFiles;
 
-        if(null == files)
+        if (null == files)
             return fileNames;
 
         for (File file : files) {
@@ -114,9 +113,7 @@ public class Utils {
      * names containing posture information.
      *
      * @param filesInSequence file names containing posture information
-     *
      * @return list of posture objects
-     *
      * @throws FileNotFoundException
      */
     public static List<Posture> getPosturesFromFileSequence(List<String> filesInSequence) throws FileNotFoundException {
@@ -137,7 +134,6 @@ public class Utils {
      * and create a list of posture object sequences from all of them.
      *
      * @return list of sequences of posture objects
-     *
      * @throws java.io.FileNotFoundException invalid file names
      */
     public static List<List<Posture>> getTrainPostures() throws FileNotFoundException {
@@ -158,16 +154,15 @@ public class Utils {
      * Combines posture information with object recognition and position information
      * to get an observation index.
      *
-     * @param observation observation index for the posture
-     * @param skeletonFileName posture file name
+     * @param observation       observation index for the posture
+     * @param skeletonFileName  posture file name
      * @param objectRecognition object recognition module reference
-     * @param  lastPosition the previous position
-     *
+     * @param lastPosition      the previous position
      * @return a pair of observation index composed of posture and object detection information
-     * and the new position on the greed
+     *         and the new position on the greed
      */
-    public static Pair<Integer,Pair<Integer,Integer>> addObjectRecognitionObservation(int observation, String skeletonFileName,
-                                                      ObjectRecognition objectRecognition, Pair<Integer,Integer> lastPosition) {
+    public static Pair<Integer, Pair<Integer, Integer>> addObjectRecognitionObservation(int observation, String skeletonFileName,
+                                                                                        ObjectRecognition objectRecognition, Pair<Integer, Integer> lastPosition) {
 
 
         /* get result from object detection module*/
@@ -190,10 +185,8 @@ public class Utils {
         observation = addVariableToObservation(observation,
                 movementClass.getIndex(), MovementClass.NUM_MOVES);
 
-        return new Pair<Integer, Pair<Integer, Integer>>(observation,lastPosition);
+        return new Pair<Integer, Pair<Integer, Integer>>(observation, lastPosition);
     }
-
-
 
 
     /**
@@ -220,7 +213,7 @@ public class Utils {
     public static String getPostureFile(String readyFilename) {
         String s = new String(readyFilename);
 
-        return s.replace(READY_PREFIX,POSTURE_PREFIX);
+        return s.replace(READY_PREFIX, POSTURE_PREFIX);
     }
 
     /**
@@ -230,18 +223,18 @@ public class Utils {
      *
      * @param vector vector to be initialised
      */
-    public static void initRandomMarkovVector(double vector[]){
+    public static void initRandomMarkovVector(double vector[]) {
 
         Random random = new Random();
         int length = vector.length;
         double remaining = 1;
 
-        for(int i=0;i<length-1;i++){
+        for (int i = 0; i < length - 1; i++) {
 
-            vector[i] = random.nextDouble()*remaining;
+            vector[i] = random.nextDouble() * remaining;
             remaining -= vector[i];
         }
 
-        vector[length-1] = remaining;
+        vector[length - 1] = remaining;
     }
 }

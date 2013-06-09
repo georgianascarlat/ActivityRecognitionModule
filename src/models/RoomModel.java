@@ -17,8 +17,8 @@ public class RoomModel {
 
         gridMap = new int[roomInfo.getHeightParts()][roomInfo.getWidthParts()];
 
-        for(int i=0;i<roomInfo.getHeightParts();i++){
-            for(int j=0;j<roomInfo.getWidthParts();j++){
+        for (int i = 0; i < roomInfo.getHeightParts(); i++) {
+            for (int j = 0; j < roomInfo.getWidthParts(); j++) {
                 gridMap[i][j] = ObjectClass.NO_OBJECT.getIndex();
             }
         }

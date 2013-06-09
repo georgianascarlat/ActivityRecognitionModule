@@ -5,7 +5,9 @@ import hmm.HMM;
 import hmm.HMMCalculus;
 import hmm.HMMOperations;
 import hmm.HMMOperationsImpl;
-import models.*;
+import models.Activity;
+import models.Posture;
+import models.Prediction;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang3.ArrayUtils;
 import utils.FileNameComparator;
@@ -31,7 +33,7 @@ public class ActivityRecognition {
     public Map<Activity, CircularFifoBuffer> activityObservationsMap = initActivityObservationsMap();
 
     /* the activity HMMs */
-    public Map<Activity,HMM> activityHMMMap ;
+    public Map<Activity, HMM> activityHMMMap;
 
     /* reference to the object recognition module*/
     private ObjectRecognition objectRecognition;
@@ -193,8 +195,7 @@ public class ActivityRecognition {
      * taking into account the prediction probability.
      *
      * @param predictions mapping of activities and predictions
-     *
-     * @return  the map entry corresponding to  the best prediction
+     * @return the map entry corresponding to  the best prediction
      */
     private Map.Entry<Activity, Prediction> chooseBestPrediction(Map<Activity, Prediction> predictions) {
 
@@ -241,8 +242,8 @@ public class ActivityRecognition {
      * The prediction takes into account not only the last observation,
      * but also the sequence of observations made before that.
      *
-     * @param activity activity
-     * @param posture  posture information
+     * @param activity        activity
+     * @param posture         posture information
      * @param postureFileName posture file name
      * @return prediction
      * @throws FileNotFoundException
@@ -257,12 +258,12 @@ public class ActivityRecognition {
         /* obtain the HMM for the current activity*/
         hmm = activityHMMMap.get(activity);
 
-        if(hmm == null) {
+        if (hmm == null) {
 
             /* load HMM from file if it wasn't loaded before */
             hmm = new HMMCalculus(Utils.HMM_DIRECTORY + activity.getName() + ".txt");
             /* keep the HMM in the map for later use */
-            activityHMMMap.put(activity,hmm);
+            activityHMMMap.put(activity, hmm);
         }
 
         /* obtain list of past observations */
@@ -291,14 +292,11 @@ public class ActivityRecognition {
 
         /* predict */
         prediction = hmmOperations.predict(hmm,
-                ArrayUtils.toPrimitive((Integer[])observations.toArray(new Integer[0])));
+                ArrayUtils.toPrimitive((Integer[]) observations.toArray(new Integer[0])));
 
 
         return prediction;
     }
-
-
-
 
 
     private Map<Activity, CircularFifoBuffer> initActivityObservationsMap() {

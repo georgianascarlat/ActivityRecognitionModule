@@ -27,7 +27,6 @@ public class ObjectRecognition {
      * which object is on that cell.
      *
      * @param skeletonFileName posture file name
-     *
      * @return a pair of the object class and the position on the grid(line,column)
      */
     public Pair<ObjectClass, Pair<Integer, Integer>> getResult(String skeletonFileName) {

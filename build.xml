@@ -3,20 +3,20 @@
 
     <!-- Properties -->
 
-    <property name="src.dir" value="src" />
-    <property name="build.dir" value="build" />
-    <property name="lib.dir" value="lib" />
+    <property name="src.dir" value="src"/>
+    <property name="build.dir" value="build"/>
+    <property name="lib.dir" value="lib"/>
 
     <path id="classpath">
-        <pathelement location="${build.dir}" />
+        <pathelement location="${build.dir}"/>
         <fileset dir="${lib.dir}" includes="*.jar"/>
     </path>
 
     <!-- Targets -->
 
     <target name="compile" depends="clean">
-        <mkdir dir="${build.dir}" />
-        <javac classpathref = "classpath" srcdir="${src.dir}" destdir="${build.dir}" />
+        <mkdir dir="${build.dir}"/>
+        <javac classpathref="classpath" srcdir="${src.dir}" destdir="${build.dir}"/>
     </target>
 
     <target name="createRoomModel" depends="compile">
@@ -47,7 +47,7 @@
     </target>
 
     <target name="clean">
-        <delete dir="${build.dir}" />
+        <delete dir="${build.dir}"/>
     </target>
 
 </project>

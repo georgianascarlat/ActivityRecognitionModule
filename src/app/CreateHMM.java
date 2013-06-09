@@ -26,7 +26,7 @@ public class CreateHMM {
 
         /* create a HMM for each activity*/
         for (Activity activity : Activity.values()) {
-            if(Utils.USE_SIMPLE_HMM)
+            if (Utils.USE_SIMPLE_HMM)
                 createActivitySingleHMM(activity, postures);
             else
                 createActivityMultipleHMMs(activity, postures);
@@ -40,18 +40,16 @@ public class CreateHMM {
     }
 
     /**
-     *
      * Creates a HMM for a given activity using the observations deduced
      * from the list of posture sequences as observed variables and two
      * hidden states, one that means the activity has taken place and
      * one that means it hasn't.
-     *
+     * <p/>
      * The learning is supervised.
      *
      * @param activity activity for which to create the HMM
      * @param postures list of sequences of postures to be used as training set paired
-     * with their corresponding skeleton file name
-     *
+     *                 with their corresponding skeleton file name
      */
     private static void createActivitySingleHMM(Activity activity, List<List<Posture>> postures) throws IOException {
 
@@ -91,10 +89,9 @@ public class CreateHMM {
     }
 
 
-
     private static void processSequence(Activity activity, List<String> posturesOfInterest,
-             List<List<Integer>> observations, List<List<Integer>> hiddenStates,
-             List<Posture> sequence) {
+                                        List<List<Integer>> observations, List<List<Integer>> hiddenStates,
+                                        List<Posture> sequence) {
 
         List<Integer> aux_o = new ArrayList<Integer>();
         List<Integer> aux_s = new ArrayList<Integer>();
@@ -123,10 +120,10 @@ public class CreateHMM {
         double trans[][] = hmm.getTransitionMatrix();
         double initial[] = hmm.getInitialStateProbabilities();
 
-        for(int i=0;i<numStates;i++){
-            initial[i] = 1.0/numStates;
-            for(int j=0;j<numStates;j++){
-                trans[i][j] = 1.0/numStates;
+        for (int i = 0; i < numStates; i++) {
+            initial[i] = 1.0 / numStates;
+            for (int j = 0; j < numStates; j++) {
+                trans[i][j] = 1.0 / numStates;
             }
         }
     }

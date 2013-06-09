@@ -1,8 +1,10 @@
 package hmm;
 
 import models.Viterbi;
+import org.apache.commons.lang3.ArrayUtils;
 
 import java.io.FileNotFoundException;
+import java.util.List;
 
 /**
  *
@@ -126,6 +128,19 @@ public class HMMCalculus extends HMM {
 
         for (int i = 0; i < numStates; i++) {
             probability += forward[i][T - 1];
+        }
+
+        return probability;
+    }
+
+    @Override
+    public double observationsProbability(List<List<Integer>> observations) {
+        double probability = 1, p;
+
+        for (List<Integer> sequence : observations) {
+
+            p = observationsProbability(ArrayUtils.toPrimitive(sequence.toArray(new Integer[0])));
+            probability *= p;
         }
 
         return probability;
