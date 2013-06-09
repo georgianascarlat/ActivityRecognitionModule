@@ -147,6 +147,29 @@ public class HMMOperationsImpl implements HMMOperations {
     }
 
     @Override
+    public HMM trainUnsupervisedStartingFromRandom(int[] observations, int maxIterations, int numRandomInits, int numStates, int numObservableVariables) {
+        HMM newHMM,hmm = new HMMCalculus(numStates,numObservableVariables);
+        double p0, p1;
+
+        for(int i=0;i<numRandomInits;i++){
+            newHMM = new HMMCalculus(numStates,numObservableVariables);
+            newHMM = trainUnsupervised(observations,maxIterations,newHMM);
+
+            p0 = hmm.observationsProbability(observations);
+            p1 = newHMM.observationsProbability(observations);
+            System.out.println(p0+" "+p1);
+
+            if(p1 > p0){
+                System.out.println("Found Better "+i);
+                hmm = newHMM;
+            }
+        }
+
+        return hmm;
+    }
+
+
+    @Override
     public Prediction predict(HMM hmm, int[] observations) {
         int T = observations.length;
         Viterbi viterbi = hmm.viterbi(observations);

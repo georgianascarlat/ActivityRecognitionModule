@@ -22,15 +22,38 @@ public interface HMMOperations {
                                List<List<Integer>> observations, List<List<Integer>> hiddenStates);
 
     /**
-     * Train a hmm.HMM given a sequence of observations
-     * using the Baum-Welch algorithm.
+     * Train a HMM given a sequence of observations
+     * using the Baum-Welch algorithm starting from
+     * a known HMM.
      *
      * @param observations  sequence of observations
      * @param maxIterations maximum number of training iterations
-     * @param initialHMM    initial hmm.HMM
-     * @return trained hmm.HMM
+     * @param initialHMM    initial HMM
+     * @return trained HMM
      */
     public HMM trainUnsupervised(int[] observations, int maxIterations, HMM initialHMM);
+
+    /**
+     * Train a HMM given a sequence of observations
+     * using the Baum-Welch algorithm.
+     *
+     * The training starts from  a randomly initialised
+     * model. The initialisation is done many times so that
+     * the model will be prevented as much as possible form
+     * converging to a local maximum.
+     *
+     *
+     * @param observations sequence of observations
+     * @param maxIterations maximum number of training iterations
+     * @param numRandomInits number of times the model is randomly initialised
+     * @param numStates number of hidden states
+     * @param numObservableVariables number of observable variables
+     *
+     * @return  trained HMM
+     */
+    public HMM trainUnsupervisedStartingFromRandom(int[] observations, int maxIterations,
+                                                   int numRandomInits, int numStates,
+                                                   int numObservableVariables);
 
     /**
      * Predict a sequence of hidden states that correspond to

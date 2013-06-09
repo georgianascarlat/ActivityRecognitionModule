@@ -1,5 +1,8 @@
 package app;
 
+import hmm.HMM;
+import hmm.HMMOperations;
+import hmm.HMMOperationsImpl;
 import models.Posture;
 
 import java.io.IOException;
@@ -10,18 +13,11 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 
-        Posture posture = new Posture("train/sequence1/posture_1.txt");
-        System.out.println(posture);
+        int observations[] = {0,2,2,1};
+        HMMOperations operations = new HMMOperationsImpl();
+        HMM hmm = operations.trainUnsupervisedStartingFromRandom(observations,10,100,3,3);
 
-        List<String> list = new LinkedList<String>();
-        list.add("generalPosture");
-        list.add("torsoFirst");
-        list.add("torsoSecond");
-
-        System.out.println(Posture.computeNumObservableVariables(list));
-
-        System.out.println(posture.computeObservationIndex(list));
-
+        hmm.print();
 
     }
 }

@@ -1,10 +1,14 @@
 package hmm;
 
 import models.Viterbi;
+import utils.Utils;
 
 import java.io.*;
 import java.text.DecimalFormat;
+import java.util.Random;
 import java.util.Scanner;
+
+import static utils.Utils.initRandomMarkovVector;
 
 /**
  * Hidden Markov Model
@@ -28,6 +32,10 @@ public abstract class HMM {
         this.initialStateProbabilities = new double[numStates];
         this.transitionMatrix = new double[numStates][numStates];
         this.emissionMatrix = new double[numStates][numObservableVariables];
+
+        /* randomly init the probabilities*/
+        randomInit();
+
     }
 
     protected HMM(int numStates, int numObservableVariables, double[] initialStateProbabilities, double[][] transitionMatrix, double[][] emissionMatrix) {
@@ -65,6 +73,21 @@ public abstract class HMM {
             return 0;
         else
             return n / d;
+    }
+
+    /**
+     * Randomly initialises the probabilities for the HMM.
+     */
+    public void randomInit(){
+
+        initRandomMarkovVector(initialStateProbabilities);
+
+        for(int j=0;j<numStates;j++){
+            initRandomMarkovVector(transitionMatrix[j]);
+            initRandomMarkovVector(emissionMatrix[j]);
+        }
+
+
     }
 
 

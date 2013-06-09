@@ -26,6 +26,8 @@ public class Utils {
     public static final String TMP = "~";
     public static final int MAX_OBSERVATION_SIZE = 15;
 
+    public static final boolean USE_SIMPLE_HMM = true;
+
     //public static boolean USE_OBJECT_RECOGNITION = false;
 
     /**
@@ -219,5 +221,27 @@ public class Utils {
         String s = new String(readyFilename);
 
         return s.replace(READY_PREFIX,POSTURE_PREFIX);
+    }
+
+    /**
+     * Initialises the values of a vector with random
+     * values between 0.0 an 1.0 such that the sum of
+     * the vector elements is 1.
+     *
+     * @param vector vector to be initialised
+     */
+    public static void initRandomMarkovVector(double vector[]){
+
+        Random random = new Random();
+        int length = vector.length;
+        double remaining = 1;
+
+        for(int i=0;i<length-1;i++){
+
+            vector[i] = random.nextDouble()*remaining;
+            remaining -= vector[i];
+        }
+
+        vector[length-1] = remaining;
     }
 }

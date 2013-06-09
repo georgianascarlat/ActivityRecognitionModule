@@ -5,10 +5,7 @@ import hmm.HMM;
 import hmm.HMMOperations;
 import hmm.HMMOperationsImpl;
 import models.Activity;
-import models.MovementClass;
-import models.ObjectClass;
 import models.Posture;
-import utils.Pair;
 import utils.Utils;
 
 import java.io.IOException;
@@ -29,22 +26,34 @@ public class CreateHMM {
 
         /* create a HMM for each activity*/
         for (Activity activity : Activity.values()) {
-            createActivityHMM(activity, postures);
+            if(Utils.USE_SIMPLE_HMM)
+                createActivitySingleHMM(activity, postures);
+            else
+                createActivityMultipleHMMs(activity, postures);
         }
 
     }
 
+    private static void createActivityMultipleHMMs(Activity activity, List<List<Posture>> postures) {
+        //To change body of created methods use File | Settings | File Templates.
+        //TODO: create 2 HMMs
+    }
+
     /**
+     *
      * Creates a HMM for a given activity using the observations deduced
-     * from the list of posture sequences together with object interaction
-     * information and movement information.
+     * from the list of posture sequences as observed variables and two
+     * hidden states, one that means the activity has taken place and
+     * one that means it hasn't.
+     *
+     * The learning is supervised.
      *
      * @param activity activity for which to create the HMM
      * @param postures list of sequences of postures to be used as training set paired
      * with their corresponding skeleton file name
      *
      */
-    private static void createActivityHMM(Activity activity, List<List<Posture>> postures) throws IOException {
+    private static void createActivitySingleHMM(Activity activity, List<List<Posture>> postures) throws IOException {
 
         int numStates = 2;
         List<String> posturesOfInterest = Utils.activityMap.get(activity);
