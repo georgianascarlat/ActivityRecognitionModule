@@ -15,7 +15,6 @@ import utils.Utils;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.file.*;
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -137,20 +136,20 @@ public class ActivityRecognition {
      */
     private void processNewFile(String readyFilename) throws IOException {
 
-        String filename = Utils.getPostureFile(readyFilename);
+        String postureFile = Utils.getPostureFile(readyFilename);
         /*read posture information from file*/
-        Posture posture = new Posture(filename);
+        Posture posture = new Posture(postureFile);
         /* keep the predictions made by each activity HMM to later choose the best one*/
         Map<Activity, Prediction> predictions = new EnumMap<Activity, Prediction>(Activity.class);
         Prediction prediction;
         Map.Entry<Activity, Prediction> bestPrediction;
         String predictedActivity;
         int preds[], predictedActivityIndex;
-        int frameNumber = FileNameComparator.getFileNumber(filename);
+        int frameNumber = FileNameComparator.getFileNumber(postureFile);
 
         for (Activity activity : Activity.values()) {
             /* make a prediction using an activity's HMM*/
-            prediction = predictActivity(activity, posture, filename);
+            prediction = predictActivity(activity, posture, postureFile);
             predictions.put(activity, prediction);
         }
 
@@ -159,7 +158,7 @@ public class ActivityRecognition {
 
         preds = bestPrediction.getValue().getPredictions();
 
-        /* check to see if no activity has been detected */
+        /* check to see if an activity has been detected */
         if (preds[preds.length - 1] == 1) {
             predictedActivity = bestPrediction.getKey().getName();
             predictedActivityIndex = bestPrediction.getKey().getIndex();
@@ -190,7 +189,8 @@ public class ActivityRecognition {
      * taking into account the prediction probability.
      *
      * @param predictions mapping of activities and predictions
-     * @return the best prediction
+     *
+     * @return  the map entry corresponding to  the best prediction
      */
     private Map.Entry<Activity, Prediction> chooseBestPrediction(Map<Activity, Prediction> predictions) {
 
@@ -249,7 +249,7 @@ public class ActivityRecognition {
         HMMOperations hmmOperations = new HMMOperationsImpl();
         List<String> posturesOfInterest = Utils.activityMap.get(activity);
         String skeletonFileName = getSkeletonFile(postureFileName);
-        Pair<Integer, Pair<Integer, Integer>> result;
+
 
         /* load HMM for the current activity */
         hmm = new HMMCalculus(Utils.HMM_DIRECTORY + activity.getName() + ".txt");
@@ -269,13 +269,6 @@ public class ActivityRecognition {
             return new Prediction(obs, pred, 0.0);
         }
 
-        /* combine the posture information with the object interaction and position information*/
-        if (USE_OBJECT_RECOGNITION) {
-            result = addObjectRecognitionObservation(observation,
-                    skeletonFileName, objectRecognition, lastPosition);
-            observation = result.getFirst();
-            lastPosition = result.getSecond();
-        }
 
         /* add new observation to list*/
         activityObservationsMap.remove(activity);

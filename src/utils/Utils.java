@@ -26,7 +26,7 @@ public class Utils {
     public static final String TMP = "~";
     public static final int MAX_OBSERVATION_SIZE = 15;
 
-    public static boolean USE_OBJECT_RECOGNITION = false;
+    //public static boolean USE_OBJECT_RECOGNITION = false;
 
     /**
      * Initialise the mapping from activities to their list of postures of interest.
@@ -108,23 +108,23 @@ public class Utils {
     }
 
     /**
-     * Get a list of pairs of posture objects and their corresponding skeleton file name
-     * from a list of posture file names containing posture information.
+     * Get a list of posture objects from a list of posture file
+     * names containing posture information.
      *
      * @param filesInSequence file names containing posture information
      *
-     * @return list of pairs of posture objects and their corresponding skeleton file name
+     * @return list of posture objects
      *
      * @throws FileNotFoundException
      */
-    public static List<Pair<Posture,String>> getPosturesFromFileSequence(List<String> filesInSequence) throws FileNotFoundException {
+    public static List<Posture> getPosturesFromFileSequence(List<String> filesInSequence) throws FileNotFoundException {
 
-        List<Pair<Posture,String>> sequencePostures;
-        sequencePostures = new ArrayList<Pair<Posture, String>>();
+        List<Posture> sequencePostures;
+        sequencePostures = new ArrayList<Posture>();
 
         for (String fileName : filesInSequence) {
-            String skeletonFileName = getSkeletonFile(fileName);
-            sequencePostures.add(new Pair<Posture, String>(new Posture(fileName),skeletonFileName));
+
+            sequencePostures.add(new Posture(fileName));
         }
         return sequencePostures;
     }
@@ -132,20 +132,17 @@ public class Utils {
 
     /**
      * Read all the training posture files from the training directory
-     * and create a list of posture object sequences from all of them,
-     * pairing each posture object with it's corresponding skeleton
-     * file name.
+     * and create a list of posture object sequences from all of them.
      *
-     * @return list of sequences of posture objects paired with their
-     * corresponding skeleton file name
+     * @return list of sequences of posture objects
      *
      * @throws java.io.FileNotFoundException invalid file names
      */
-    public static List<List<Pair<Posture,String>>> getTrainPostures() throws FileNotFoundException {
+    public static List<List<Posture>> getTrainPostures() throws FileNotFoundException {
         List<List<String>> fileNames = getTrainingFileNames();
 
-        List<List<Pair<Posture,String>>> postures = new ArrayList<List<Pair<Posture, String>>>();
-        List<Pair<Posture,String>> sequencePostures;
+        List<List<Posture>> postures = new ArrayList<List<Posture>>();
+        List<Posture> sequencePostures;
         for (List<String> filesInSequence : fileNames) {
             sequencePostures = getPosturesFromFileSequence(filesInSequence);
             postures.add(sequencePostures);
