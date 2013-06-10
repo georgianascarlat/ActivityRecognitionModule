@@ -34,6 +34,12 @@ public abstract class HMM {
 
     }
 
+    public HMM(HMM hmm) {
+        this(hmm.getNumStates(),
+                hmm.getNumObservableVariables(), hmm.getInitialStateProbabilities(),
+                hmm.getTransitionMatrix(), hmm.getEmissionMatrix());
+    }
+
     protected HMM(int numStates, int numObservableVariables, double[] initialStateProbabilities, double[][] transitionMatrix, double[][] emissionMatrix) {
 
         this(numStates, numObservableVariables);
@@ -67,10 +73,17 @@ public abstract class HMM {
 
 
     public static double safeDivide(double n, double d) {
-        if (n == 0 || d == 0)
+        if (n == 0 || d == 0) {
+            return 0;
+        } else
+            return n / d;
+    }
+
+    public static double safeLog(double n) {
+        if (n == 0)
             return 0;
         else
-            return n / d;
+            return Math.log(n);
     }
 
     /**

@@ -11,6 +11,9 @@ import java.util.List;
  */
 public class HMMCalculus extends HMM {
 
+    public HMMCalculus(HMM hmm) {
+        super(hmm);
+    }
 
     public HMMCalculus(int numStates, int numObservableVariables) {
         super(numStates, numObservableVariables);

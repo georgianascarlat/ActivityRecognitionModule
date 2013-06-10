@@ -16,8 +16,7 @@ public interface HMMOperations {
      * @param numObservableVariables number of observable variables of the model
      * @param observations           sequences of observations
      * @param hiddenStates           sequences of hidden states corresponding to the observations
-     *
-     * @return  trained HMM
+     * @return trained HMM
      */
     public HMM trainSupervised(int numStates, int numObservableVariables,
                                List<List<Integer>> observations, List<List<Integer>> hiddenStates);
@@ -71,8 +70,7 @@ public interface HMMOperations {
      * @param numRandomInits         number of times the model is randomly initialised
      * @param numStates              number of hidden states
      * @param numObservableVariables number of observable variables
-     *
-     * @return   trained HMM
+     * @return trained HMM
      */
     public HMM trainUnsupervisedFromMultipleObservationSequences(List<List<Integer>> observations, int maxIterations,
                                                                  int numRandomInits, int numStates,

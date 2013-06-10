@@ -32,8 +32,11 @@ public class ActivityRecognition {
     /* every activity has a list of observations */
     public Map<Activity, CircularFifoBuffer> activityObservationsMap = initActivityObservationsMap();
 
-    /* the activity HMMs */
-    public Map<Activity, HMM> activityHMMMap;
+    /* the activity simple HMMs */
+    public Map<Activity, HMM> activitySimpleHMMMap;
+
+    /* the activity complex HMMs, formed out of two levels of HMMs */
+    public Map<Activity, Pair<HMM, HMM>> activityComplexHMMMap;
 
     /* reference to the object recognition module*/
     private ObjectRecognition objectRecognition;
@@ -43,7 +46,9 @@ public class ActivityRecognition {
 
     public ActivityRecognition() throws FileNotFoundException {
 
-        activityHMMMap = new EnumMap<Activity, HMM>(Activity.class);
+        activitySimpleHMMMap = new EnumMap<Activity, HMM>(Activity.class);
+        activityComplexHMMMap = new EnumMap<Activity, Pair<HMM, HMM>>(Activity.class);
+
         objectRecognition = new ObjectRecognition(Utils.ROOM_MODEL_FILE);
     }
 
@@ -250,21 +255,9 @@ public class ActivityRecognition {
      */
     private Prediction predictActivity(Activity activity, Posture posture, String postureFileName) throws FileNotFoundException {
         Prediction prediction;
-        HMM hmm;
         HMMOperations hmmOperations = new HMMOperationsImpl();
         List<String> posturesOfInterest = Utils.activityMap.get(activity);
-        String skeletonFileName = getSkeletonFile(postureFileName);
 
-        /* obtain the HMM for the current activity*/
-        hmm = activityHMMMap.get(activity);
-
-        if (hmm == null) {
-
-            /* load HMM from file if it wasn't loaded before */
-            hmm = new HMMCalculus(Utils.HMM_DIRECTORY + activity.getName() + ".txt");
-            /* keep the HMM in the map for later use */
-            activityHMMMap.put(activity, hmm);
-        }
 
         /* obtain list of past observations */
         CircularFifoBuffer observations = activityObservationsMap.get(activity);
@@ -288,13 +281,68 @@ public class ActivityRecognition {
         activityObservationsMap.put(activity, observations);
 
 
+        if (Utils.USE_SIMPLE_HMM) {
+
+            prediction = getPredictionFromSimpleHMM(activity, hmmOperations, observations);
+
+        } else {
+
+            prediction = getPredictionFromComplexHMM(activity, hmmOperations, observations);
+
+        }
+
+        return prediction;
+    }
+
+    private Prediction getPredictionFromComplexHMM(Activity activity, HMMOperations hmmOperations, CircularFifoBuffer observations) throws FileNotFoundException {
+        Pair<HMM, HMM> hmmPair;
+        HMM firstLevelHMM;
+        HMM secondLevelHMM;
+        Prediction prediction;/* obtain the HMMs for the current activity*/
+        hmmPair = activityComplexHMMMap.get(activity);
 
 
-        /* predict */
-        prediction = hmmOperations.predict(hmm,
+        if (hmmPair == null) {
+
+            /* load HMMs from files if they weren't loaded before */
+            firstLevelHMM = new HMMCalculus(HMM_DIRECTORY + activity.getName() + LEVEL_1_SUFFIX + TXT_SUFFIX);
+            secondLevelHMM = new HMMCalculus(HMM_DIRECTORY + activity.getName() + LEVEL_2_SUFFIX + TXT_SUFFIX);
+
+            /* keep the HMMs in the map for later use */
+            activityComplexHMMMap.put(activity, new Pair<HMM, HMM>(firstLevelHMM, secondLevelHMM));
+
+        } else {
+            firstLevelHMM = hmmPair.getFirst();
+            secondLevelHMM = hmmPair.getSecond();
+        }
+
+        /* predict sequence of observable variables for the second HMM */
+        prediction = hmmOperations.predict(firstLevelHMM,
                 ArrayUtils.toPrimitive((Integer[]) observations.toArray(new Integer[0])));
 
+        /* predict the activity*/
+        prediction = hmmOperations.predict(secondLevelHMM,
+                prediction.getPredictions());
+        return prediction;
+    }
 
+    private Prediction getPredictionFromSimpleHMM(Activity activity, HMMOperations hmmOperations, CircularFifoBuffer observations) throws FileNotFoundException {
+        HMM hmm;
+        Prediction prediction;/* obtain the HMM for the current activity*/
+        hmm = activitySimpleHMMMap.get(activity);
+
+        if (hmm == null) {
+
+            /* load HMM from file if it wasn't loaded before */
+            hmm = new HMMCalculus(HMM_DIRECTORY + activity.getName() + SINGLE_SUFFIX + TXT_SUFFIX);
+            /* keep the HMM in the map for later use */
+            activitySimpleHMMMap.put(activity, hmm);
+        }
+
+
+            /* predict */
+        prediction = hmmOperations.predict(hmm,
+                ArrayUtils.toPrimitive((Integer[]) observations.toArray(new Integer[0])));
         return prediction;
     }
 

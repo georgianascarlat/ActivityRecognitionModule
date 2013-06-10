@@ -77,13 +77,13 @@ public class HMMOperationsImpl implements HMMOperations {
     }
 
     @Override
-    public HMM trainUnsupervisedStartingFromKnownModel(int[] observations, int maxIterations, HMM hmm) {
+    public HMM trainUnsupervisedStartingFromKnownModel(int[] observations, int maxIterations, HMM initialHMM) {
         int T = observations.length;
         double[][] fwd;
         double[][] bwd;
+        HMM newHMM, hmm = new HMMCalculus(initialHMM);
         int numStates = hmm.getNumStates();
         int numObservableVariables = hmm.getNumObservableVariables();
-        HMM newHMM;
         double p0, p1;
 
 
@@ -91,13 +91,13 @@ public class HMMOperationsImpl implements HMMOperations {
         double transitionMatrix[][] = new double[numStates][numStates];
         double emissionMatrix[][] = new double[numStates][numObservableVariables];
 
+
         for (int s = 0; s < maxIterations; s++) {
 
 
             /* compute and backward matrices from the current model */
             fwd = hmm.forward(observations);
             bwd = hmm.backward(observations);
-
 
             /* re-estimation of initial state probabilities */
             for (int i = 0; i < numStates; i++)
@@ -109,10 +109,11 @@ public class HMMOperationsImpl implements HMMOperations {
                 for (int j = 0; j < numStates; j++) {
                     double numerator = 0;
                     double denominator = 0;
-                    for (int t = 0; t <= T - 1; t++) {
+                    for (int t = 0; t < T - 1; t++) {
                         numerator += hmm.epsilon(t, i, j, observations, fwd, bwd);
                         denominator += hmm.gamma(i, t, observations, fwd, bwd);
                     }
+
                     transitionMatrix[i][j] = HMM.safeDivide(numerator, denominator);
                 }
             }
@@ -129,6 +130,7 @@ public class HMMOperationsImpl implements HMMOperations {
                         numerator += g * (k == observations[t] ? 1 : 0);
                         denominator += g;
                     }
+
                     emissionMatrix[i][k] = HMM.safeDivide(numerator, denominator);
                 }
             }
@@ -136,15 +138,14 @@ public class HMMOperationsImpl implements HMMOperations {
 
             newHMM = new HMMCalculus(numStates, numObservableVariables, initialStateProbabilities, transitionMatrix, emissionMatrix);
 
-            p0 = Math.log(hmm.observationsProbability(observations));
-            p1 = Math.log(newHMM.observationsProbability(observations));
+            p0 = HMM.safeLog(hmm.observationsProbability(observations));
+            p1 = HMM.safeLog(newHMM.observationsProbability(observations));
 
-
-            hmm = newHMM;
 
             if ((p1 - p0) < DELTA)
                 break;
 
+            hmm = newHMM;
 
         }
 
@@ -155,6 +156,7 @@ public class HMMOperationsImpl implements HMMOperations {
     public HMM trainUnsupervisedStartingFromRandom(int[] observations, int maxIterations, int numRandomInits, int numStates, int numObservableVariables) {
         HMM newHMM, hmm = new HMMCalculus(numStates, numObservableVariables);
         double p0, p1;
+        //hmm.randomInit();
 
         for (int i = 0; i < numRandomInits; i++) {
             newHMM = new HMMCalculus(numStates, numObservableVariables);
@@ -195,7 +197,6 @@ public class HMMOperationsImpl implements HMMOperations {
         /* sort HMMs by probability */
         Collections.sort(hmmList, new HMMProbabilityPairComparator());
         sum = 0;
-
 
 
         /* create a list of pairs of HMMs and their ranking, where rank
