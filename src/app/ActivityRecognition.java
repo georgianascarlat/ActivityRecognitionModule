@@ -112,7 +112,7 @@ public class ActivityRecognition {
 
 
                 /* Verify file name */
-                if (!filename.toString().startsWith(READY_PREFIX) || !filename.toString().endsWith(".txt")) {
+                if (!filename.toString().startsWith(POSTURE_PREFIX) || !filename.toString().endsWith(".txt")) {
                     continue;
                 }
 
@@ -147,7 +147,7 @@ public class ActivityRecognition {
      */
     private void processNewFile(String readyFilename) throws IOException {
 
-        String postureFile = Utils.getPostureFile(readyFilename);
+        String postureFile = readyFilename;
         /*read posture information from file*/
         Posture posture = new Posture(postureFile);
         /* keep the predictions made by each activity HMM to later choose the best one*/

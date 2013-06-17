@@ -4,7 +4,7 @@ package models;
 public enum Activity {
 
 
-    Walking(1, "walking", 5),
+    Walking(1, "walking", 3),
     LyingDown(2, "lying down", 3);
 
     private final String name;

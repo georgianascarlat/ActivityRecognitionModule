@@ -321,7 +321,7 @@ public class HMMCalculus extends HMM {
         double max_p, p;
 
         for (int i = 0; i < numStates; i++) {
-            delta[i][0] = initialStateProbabilities[i] * emissionMatrix[i][observations[0]];
+            delta[i][0] = HMM.safeLog(initialStateProbabilities[i] * emissionMatrix[i][observations[0]]);
             parents[i][0] = 0;
         }
 
@@ -330,16 +330,22 @@ public class HMMCalculus extends HMM {
             for (int j = 0; j < numStates; j++) {
 
                 max_i = 0;
-                max_p = 0;
+                max_p = -Double.MAX_VALUE;
+
                 for (int i = 0; i < numStates; i++) {
-                    p = delta[i][t] * transitionMatrix[i][j];
+
+                    p = delta[i][t] + HMM.safeLog(transitionMatrix[i][j]);
+
                     if (p > max_p) {
+
                         max_p = p;
                         max_i = i;
+
                     }
+
                 }
 
-                delta[j][t + 1] = max_p * emissionMatrix[j][observations[t + 1]];
+                delta[j][t + 1] = max_p + HMM.safeLog(emissionMatrix[j][observations[t + 1]]);
                 parents[j][t + 1] = max_i;
 
             }

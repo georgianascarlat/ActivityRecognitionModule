@@ -263,4 +263,9 @@ public abstract class HMM {
     }
 
 
+    public static Double safeLog(double v) {
+        if (v == 0)
+            return 0.0;
+        return Math.log(v);
+    }
 }
