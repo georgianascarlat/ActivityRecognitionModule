@@ -79,12 +79,11 @@ public class HMMOperationsImpl implements HMMOperations {
     @Override
     public HMM trainUnsupervisedStartingFromKnownModel(int[] observations, int maxIterations, HMM initialHMM) {
         int T = observations.length;
-        double[][] fwd;
-        double[][] bwd;
+        double fwd[][], bwd[][], norms[] = new double[T];
         HMM newHMM, hmm = new HMMCalculus(initialHMM);
         int numStates = hmm.getNumStates();
         int numObservableVariables = hmm.getNumObservableVariables();
-        double p0, p1;
+        double p0, p1, gam;
 
 
         double initialStateProbabilities[] = new double[numStates];
@@ -94,14 +93,15 @@ public class HMMOperationsImpl implements HMMOperations {
 
         for (int s = 0; s < maxIterations; s++) {
 
+            /* compute forward and backward matrices from the current model */
+            fwd = hmm.forwardNormalized(observations, norms);
+            bwd = hmm.backwardNormalized(observations, norms);
 
-            /* compute and backward matrices from the current model */
-            fwd = hmm.forward(observations);
-            bwd = hmm.backward(observations);
 
             /* re-estimation of initial state probabilities */
-            for (int i = 0; i < numStates; i++)
+            for (int i = 0; i < numStates; i++) {
                 initialStateProbabilities[i] = hmm.gamma(i, 0, observations, fwd, bwd);
+            }
 
 
              /* re-estimation of transition probabilities */
@@ -110,11 +110,16 @@ public class HMMOperationsImpl implements HMMOperations {
                     double numerator = 0;
                     double denominator = 0;
                     for (int t = 0; t < T - 1; t++) {
-                        numerator += hmm.epsilon(t, i, j, observations, fwd, bwd);
-                        denominator += hmm.gamma(i, t, observations, fwd, bwd);
+
+                        gam = hmm.gamma(i, t, observations, fwd, bwd);
+
+                        numerator += hmm.epsilonNormalized(t, i, j, observations, gam, bwd, norms);
+
+                        denominator += gam;
                     }
 
                     transitionMatrix[i][j] = HMM.safeDivide(numerator, denominator);
+
                 }
             }
 
@@ -138,11 +143,11 @@ public class HMMOperationsImpl implements HMMOperations {
 
             newHMM = new HMMCalculus(numStates, numObservableVariables, initialStateProbabilities, transitionMatrix, emissionMatrix);
 
-            p0 = HMM.safeLog(hmm.observationsProbability(observations));
-            p1 = HMM.safeLog(newHMM.observationsProbability(observations));
+            p0 = hmm.logObservationsProbability(observations);
+            p1 = newHMM.logObservationsProbability(observations);
 
 
-            if ((p1 - p0) < DELTA)
+            if (p1 <= p0)
                 break;
 
             hmm = newHMM;
@@ -156,15 +161,15 @@ public class HMMOperationsImpl implements HMMOperations {
     public HMM trainUnsupervisedStartingFromRandom(int[] observations, int maxIterations, int numRandomInits, int numStates, int numObservableVariables) {
         HMM newHMM, hmm = new HMMCalculus(numStates, numObservableVariables);
         double p0, p1;
-        //hmm.randomInit();
+        hmm.randomInit();
 
         for (int i = 0; i < numRandomInits; i++) {
             newHMM = new HMMCalculus(numStates, numObservableVariables);
             newHMM.randomInit();
             newHMM = trainUnsupervisedStartingFromKnownModel(observations, maxIterations, newHMM);
 
-            p0 = hmm.observationsProbability(observations);
-            p1 = newHMM.observationsProbability(observations);
+            p0 = hmm.logObservationsProbability(observations);
+            p1 = newHMM.logObservationsProbability(observations);
 
 
             if (p1 > p0) {
@@ -189,7 +194,7 @@ public class HMMOperationsImpl implements HMMOperations {
             hmm = trainUnsupervisedStartingFromRandom(
                     ArrayUtils.toPrimitive(sequence.toArray(new Integer[0])),
                     maxIterations, numRandomInits, numStates, numObservableVariables);
-            probability = hmm.observationsProbability(observations);
+            probability = hmm.logObservationsProbability(observations);
             hmmList.add(new Pair<HMM, Double>(hmm, probability));
 
         }

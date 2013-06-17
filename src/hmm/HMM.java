@@ -59,15 +59,24 @@ public abstract class HMM {
 
     public abstract double[][] forward(int[] observations);
 
+    public abstract double[][] forwardNormalized(int[] observations, double norms[]);
+
     public abstract double[][] backward(int[] observations);
+
+    public abstract double[][] backwardNormalized(int[] observations, double[] norms);
 
     public abstract double epsilon(int t, int i, int j, int[] observations, double[][] forward, double[][] backward);
 
+    public abstract double epsilonNormalized(int t, int i, int j,
+                                             int[] observations, double gamma, double[][] backward, double[] norms);
+
     public abstract double gamma(int i, int t, int[] observations, double[][] forward, double[][] backward);
 
-    public abstract double observationsProbability(int[] observations);
 
-    public abstract double observationsProbability(List<List<Integer>> observations);
+    public abstract double logObservationsProbability(int[] observations);
+
+    public abstract double logObservationsProbability(List<List<Integer>> observations);
+
 
     public abstract Viterbi viterbi(int[] observations);
 
@@ -77,13 +86,6 @@ public abstract class HMM {
             return 0;
         } else
             return n / d;
-    }
-
-    public static double safeLog(double n) {
-        if (n == 0)
-            return 0;
-        else
-            return Math.log(n);
     }
 
     /**
@@ -259,4 +261,6 @@ public abstract class HMM {
     protected void setEmissionMatrix(double[][] emissionMatrix) {
         this.emissionMatrix = emissionMatrix;
     }
+
+
 }

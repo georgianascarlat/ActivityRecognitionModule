@@ -34,7 +34,7 @@ public class Utils {
     public static final int MAX_LEARN_ITERATIONS = 50;
     public static final int LEARN_NUM_RAND_INITS = 100;
 
-    public static final boolean USE_SIMPLE_HMM = true;
+    public static final boolean USE_SIMPLE_HMM = false;
 
     //public static boolean USE_OBJECT_RECOGNITION = false;
 
