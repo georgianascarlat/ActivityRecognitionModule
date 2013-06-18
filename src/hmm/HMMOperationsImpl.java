@@ -270,7 +270,7 @@ public class HMMOperationsImpl implements HMMOperations {
         int T = observations.length;
         Viterbi viterbi = hmm.viterbi(observations);
         int predictions[] = new int[T];
-        double probability, max_p = -Double.MAX_VALUE;
+        double probability, max_p = 0;
         int max_i = 0;
         int numStates = hmm.getNumStates();
 
@@ -296,7 +296,6 @@ public class HMMOperationsImpl implements HMMOperations {
 
         }
 
-        probability = Math.exp(probability);
 
         return new Prediction(observations, predictions, probability);
     }

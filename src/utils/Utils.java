@@ -28,13 +28,13 @@ public class Utils {
     public static final String LEVEL_1_SUFFIX = "_level_1";
     public static final String LEVEL_2_SUFFIX = "_level_2";
     public static final String TMP = "~";
-    public static final int MAX_OBSERVATION_SIZE = 15;
+    public static final int MAX_OBSERVATION_SIZE = 10;
 
 
     public static final int MAX_LEARN_ITERATIONS = 50;
     public static final int LEARN_NUM_RAND_INITS = 100;
 
-    public static final boolean USE_SIMPLE_HMM = false;
+    public static final boolean USE_SIMPLE_HMM = true;
 
     //public static boolean USE_OBJECT_RECOGNITION = false;
 
