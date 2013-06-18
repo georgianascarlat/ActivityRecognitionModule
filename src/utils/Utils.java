@@ -33,7 +33,7 @@ public class Utils {
     public static final boolean USE_SIMPLE_HMM = true;
     public static final boolean USE_CUSTOM_ACTIVITY_CLASSES = true;
 
-    //public static boolean USE_OBJECT_RECOGNITION = false;
+    public static boolean USE_ROOM_MODEL = true;
 
 
     /**

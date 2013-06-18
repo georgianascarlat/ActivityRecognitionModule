@@ -37,6 +37,10 @@ public class Prediction {
         return probability;
     }
 
+    public void setProbability(double probability) {
+        this.probability = probability;
+    }
+
     @Override
     public String toString() {
         return "models.Prediction{" +

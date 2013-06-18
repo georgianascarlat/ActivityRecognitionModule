@@ -22,6 +22,7 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
+import static activities.HumanActivity.humanActivityMap;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 import static utils.Utils.*;
@@ -39,8 +40,8 @@ public class ActivityRecognition {
     /* the activity complex HMMs, formed out of two levels of HMMs */
     public Map<Activity, Pair<HMM, HMM>> activityComplexHMMMap;
 
-    /* reference to the object recognition module*/
-    private RoomMovement roomMovement;
+
+    public static RoomMovement roomMovement;
 
     /* tha last position of the user on the grid*/
     private Pair<Integer, Integer> lastPosition = null;
@@ -111,7 +112,7 @@ public class ActivityRecognition {
                     continue;
                 }
 
-
+                //TODO: modify for ready
                 /* Verify file name */
                 if (!filename.toString().startsWith(POSTURE_PREFIX) || !filename.toString().endsWith(".txt")) {
                     continue;
@@ -148,6 +149,7 @@ public class ActivityRecognition {
      */
     private void processNewFile(String readyFilename) throws IOException {
 
+        //TODO: modify for ready
         String postureFile = readyFilename;
         /*read posture information from file*/
         Posture posture = new Posture(postureFile);
@@ -160,8 +162,17 @@ public class ActivityRecognition {
         int frameNumber = FileNameComparator.getFileNumber(postureFile);
 
         for (Activity activity : Activity.values()) {
+
             /* make a prediction using an activity's HMM*/
             prediction = predictActivity(activity, posture, postureFile);
+
+            /* may increase the probability of an activity according to the
+            * information obtained from the room model: new position and object interaction*/
+            if(Utils.USE_ROOM_MODEL){
+                humanActivityMap.get(activity).
+                        adjustPredictionUsingRoomModel(prediction,getSkeletonFile(postureFile));
+            }
+
             predictions.put(activity, prediction);
         }
 
@@ -257,7 +268,7 @@ public class ActivityRecognition {
     private Prediction predictActivity(Activity activity, Posture posture, String postureFileName) throws FileNotFoundException {
         Prediction prediction;
         HMMOperations hmmOperations = new HMMOperationsImpl();
-        List<String> posturesOfInterest = HumanActivity.activityMap.get(activity);
+        List<String> posturesOfInterest = HumanActivity.activityPosturesMap.get(activity);
         int observation;
 
         /* obtain list of past observations */
@@ -265,7 +276,7 @@ public class ActivityRecognition {
 
         /* transform posture information into observation index*/
         if (Utils.USE_CUSTOM_ACTIVITY_CLASSES) {
-            observation = HumanActivity.activityFactory(activity).getObservationClass(posture);
+            observation = humanActivityMap.get(activity).getObservationClass(posture);
         } else {
             observation = posture.computeObservationIndex(posturesOfInterest);
         }

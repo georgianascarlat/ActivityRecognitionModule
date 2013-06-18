@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static activities.HumanActivity.humanActivityMap;
 import static utils.Utils.*;
 
 
@@ -57,7 +58,7 @@ public class CreateHMM {
     private static void createActivityMultipleHMMs(Activity activity, List<List<Posture>> postures) throws IOException {
 
 
-        List<String> posturesOfInterest = HumanActivity.activityMap.get(activity);
+        List<String> posturesOfInterest = HumanActivity.activityPosturesMap.get(activity);
         int numStates = activity.getInternalStates();
         int numObservableVariables;
         HMMOperations operations = new HMMOperationsImpl();
@@ -70,7 +71,7 @@ public class CreateHMM {
         int length;
 
         if (Utils.USE_CUSTOM_ACTIVITY_CLASSES) {
-            numObservableVariables = HumanActivity.activityFactory(activity).getObservationDomainSize();
+            numObservableVariables = humanActivityMap.get(activity).getObservationDomainSize();
         } else {
             numObservableVariables = Posture.computeNumObservableVariables(posturesOfInterest);
         }
@@ -149,7 +150,7 @@ public class CreateHMM {
     private static void createActivitySingleHMM(Activity activity, List<List<Posture>> postures) throws IOException {
 
         int numStates = 2;
-        List<String> posturesOfInterest = HumanActivity.activityMap.get(activity);
+        List<String> posturesOfInterest = HumanActivity.activityPosturesMap.get(activity);
         int numObservableVariables;
         HMMOperations hmmOperations = new HMMOperationsImpl();
         List<List<Integer>> observations = new ArrayList<List<Integer>>();
@@ -157,7 +158,7 @@ public class CreateHMM {
         HMM hmm;
 
         if (Utils.USE_CUSTOM_ACTIVITY_CLASSES) {
-            numObservableVariables = HumanActivity.activityFactory(activity).getObservationDomainSize();
+            numObservableVariables = humanActivityMap.get(activity).getObservationDomainSize();
         } else {
             numObservableVariables = Posture.computeNumObservableVariables(posturesOfInterest);
         }
@@ -200,7 +201,7 @@ public class CreateHMM {
 
             /* transform posture information into observation index*/
             if (Utils.USE_CUSTOM_ACTIVITY_CLASSES) {
-                observation = HumanActivity.activityFactory(activity).getObservationClass(posture);
+                observation = humanActivityMap.get(activity).getObservationClass(posture);
             } else {
                 observation = posture.computeObservationIndex(posturesOfInterest);
             }

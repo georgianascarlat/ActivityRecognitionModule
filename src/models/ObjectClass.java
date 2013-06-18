@@ -4,7 +4,8 @@ package models;
 public enum ObjectClass {
     NO_OBJECT(1),
     CHAIR(2),
-    BICYCLE(3);
+    BICYCLE(3),
+    BED(4);
 
     public static final int NUM_OBJECT_CLASSES = 3;
 
@@ -26,6 +27,8 @@ public enum ObjectClass {
                 return CHAIR;
             case 3:
                 return BICYCLE;
+            case 4:
+                return BED;
             default:
                 throw new IllegalArgumentException("There is no object with index " + index);
         }

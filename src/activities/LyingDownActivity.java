@@ -1,7 +1,10 @@
 package activities;
 
-import models.Activity;
-import models.Posture;
+import app.ActivityRecognition;
+import models.*;
+import utils.Pair;
+
+import static app.ActivityRecognition.roomMovement;
 
 
 public class LyingDownActivity extends HumanActivity {
@@ -40,4 +43,33 @@ public class LyingDownActivity extends HumanActivity {
     public int getObservationDomainSize() {
         return 3;
     }
+
+    @Override
+    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName) {
+
+        Pair<ObjectClass, Pair<Integer, Integer>> result;
+        int lastIndex = prediction.getPredictions().length -1;
+        int lastPrediction = prediction.getPredictions()[lastIndex];
+        double probability = prediction.getProbability();
+
+        if(lastPrediction == 0)
+            return;
+
+        result = roomMovement.getMovementResult(skeletonFileName, JointPoint.TORSO);
+
+        if(result.getFirst().equals(ObjectClass.BED)){
+
+             prediction.setProbability(probability*1.7);
+        }
+
+        if(lastPosition1!= null && lastPosition1.equals(result.getSecond())){
+
+            prediction.setProbability(probability*1.5);
+        }
+
+        lastPosition1 = result.getSecond();
+
+    }
+
+
 }
