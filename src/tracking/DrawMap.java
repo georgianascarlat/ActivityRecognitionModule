@@ -1,5 +1,6 @@
 package tracking;
 
+import models.JointPoint;
 import utils.Pair;
 import utils.Utils;
 
@@ -70,7 +71,7 @@ public class DrawMap extends Applet implements Runnable {
         int x, y;
         Pair<Integer, Integer> position;
 
-        position = snapshotList.get(count).getUserOnFloorPosition();
+        position = snapshotList.get(count).getUserOnFloorPosition(JointPoint.TORSO);
         System.out.println("Count: " + (count + 5) + " Highlight: " + position);
 
 
