@@ -1,6 +1,7 @@
 package app;
 
 
+import activities.HumanActivity;
 import hmm.HMM;
 import hmm.HMMOperations;
 import hmm.HMMOperationsImpl;
@@ -55,11 +56,10 @@ public class CreateHMM {
      */
     private static void createActivityMultipleHMMs(Activity activity, List<List<Posture>> postures) throws IOException {
 
-        //TODO: do something about huge number of observation variables
 
-        List<String> posturesOfInterest = Utils.activityMap.get(activity);
+        List<String> posturesOfInterest = HumanActivity.activityMap.get(activity);
         int numStates = activity.getInternalStates();
-        int numObservableVariables = Posture.computeNumObservableVariables(posturesOfInterest);
+        int numObservableVariables ;
         HMMOperations operations = new HMMOperationsImpl();
         List<List<Integer>> observations = new ArrayList<List<Integer>>();
         List<List<Integer>> hiddenStates = new ArrayList<List<Integer>>();
@@ -68,6 +68,12 @@ public class CreateHMM {
         List<Integer> seq;
         Prediction prediction;
         int length;
+
+        if(Utils.USE_CUSTOM_ACTIVITY_CLASSES) {
+            numObservableVariables = HumanActivity.activityFactory(activity).getObservationDomainSize();
+        } else {
+            numObservableVariables  = Posture.computeNumObservableVariables(posturesOfInterest);
+        }
 
 
         /* transform posture information into observable variables and hidden states*/
@@ -143,12 +149,19 @@ public class CreateHMM {
     private static void createActivitySingleHMM(Activity activity, List<List<Posture>> postures) throws IOException {
 
         int numStates = 2;
-        List<String> posturesOfInterest = Utils.activityMap.get(activity);
-        int numObservableVariables = Posture.computeNumObservableVariables(posturesOfInterest);
+        List<String> posturesOfInterest = HumanActivity.activityMap.get(activity);
+        int numObservableVariables;
         HMMOperations hmmOperations = new HMMOperationsImpl();
         List<List<Integer>> observations = new ArrayList<List<Integer>>();
         List<List<Integer>> hiddenStates = new ArrayList<List<Integer>>();
         HMM hmm;
+
+        if(Utils.USE_CUSTOM_ACTIVITY_CLASSES) {
+           numObservableVariables = HumanActivity.activityFactory(activity).getObservationDomainSize();
+        } else {
+            numObservableVariables  = Posture.computeNumObservableVariables(posturesOfInterest);
+        }
+
 
         System.out.println();
         System.out.println(activity.getName());
@@ -180,12 +193,18 @@ public class CreateHMM {
 
         List<Integer> aux_o = new ArrayList<Integer>();
         List<Integer> aux_s = new ArrayList<Integer>();
+        int observation;
 
         for (Posture posture : sequence) {
 
 
             /* transform posture information into observation index*/
-            int observation = posture.computeObservationIndex(posturesOfInterest);
+            if(Utils.USE_CUSTOM_ACTIVITY_CLASSES){
+                observation = HumanActivity.activityFactory(activity).getObservationClass(posture);
+            } else {
+                observation = posture.computeObservationIndex(posturesOfInterest);
+            }
+
 
             /* check for correct classification (incorrect classification is ignored)*/
             if (observation >= 0) {

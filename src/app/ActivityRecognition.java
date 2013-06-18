@@ -1,6 +1,7 @@
 package app;
 
 
+import activities.HumanActivity;
 import hmm.HMM;
 import hmm.HMMCalculus;
 import hmm.HMMOperations;
@@ -256,14 +257,18 @@ public class ActivityRecognition {
     private Prediction predictActivity(Activity activity, Posture posture, String postureFileName) throws FileNotFoundException {
         Prediction prediction;
         HMMOperations hmmOperations = new HMMOperationsImpl();
-        List<String> posturesOfInterest = Utils.activityMap.get(activity);
-
+        List<String> posturesOfInterest = HumanActivity.activityMap.get(activity);
+        int observation;
 
         /* obtain list of past observations */
         CircularFifoBuffer observations = activityObservationsMap.get(activity);
 
         /* transform posture information into observation index*/
-        int observation = posture.computeObservationIndex(posturesOfInterest);
+        if(Utils.USE_CUSTOM_ACTIVITY_CLASSES){
+            observation = HumanActivity.activityFactory(activity).getObservationClass(posture);
+        } else {
+            observation = posture.computeObservationIndex(posturesOfInterest);
+        }
 
         /* if the posture is misclassified then no activity is detected*/
         if (observation < 0) {

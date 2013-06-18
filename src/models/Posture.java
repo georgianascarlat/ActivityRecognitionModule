@@ -233,5 +233,51 @@ public class Posture {
                 '}';
     }
 
+    public int getGeneralPosture() {
+        return generalPosture;
+    }
 
+    public int getTorsoFirst() {
+        return torsoFirst;
+    }
+
+    public int getTorsoSecond() {
+        return torsoSecond;
+    }
+
+    public int getHead() {
+        return head;
+    }
+
+    public int getLeftHandFirst() {
+        return leftHandFirst;
+    }
+
+    public int getRightHandFirst() {
+        return rightHandFirst;
+    }
+
+    public int getLeftHandSecond() {
+        return leftHandSecond;
+    }
+
+    public int getRightHandSecond() {
+        return rightHandSecond;
+    }
+
+    public int getLeftLegFirst() {
+        return leftLegFirst;
+    }
+
+    public int getRightLegFirst() {
+        return rightLegFirst;
+    }
+
+    public int getLeftLegSecond() {
+        return leftLegSecond;
+    }
+
+    public int getRightLegSecond() {
+        return rightLegSecond;
+    }
 }

@@ -19,7 +19,7 @@ public class Utils {
     public static final String ACTIVITY_FILE = "activity/activity_recognition.txt";
     public static final String ROOM_MODEL_FILE = "room_model/room_model.txt";
 
-    public static final Map<Activity, List<String>> activityMap = initActivitiesMap();
+
     public static final String POSTURE_PREFIX = "posture_";
     public static final String SKELETON_PREFIX = "skeleton_";
     public static final String READY_PREFIX = "ready_d_";
@@ -35,34 +35,9 @@ public class Utils {
     public static final int LEARN_NUM_RAND_INITS = 100;
 
     public static final boolean USE_SIMPLE_HMM = true;
+    public static final boolean USE_CUSTOM_ACTIVITY_CLASSES = true;
 
     //public static boolean USE_OBJECT_RECOGNITION = false;
-
-    /**
-     * Initialise the mapping from activities to their list of postures of interest.
-     *
-     * @return mapping from activities to their list of postures of interest
-     */
-    private static Map<Activity, List<String>> initActivitiesMap() {
-        Map<Activity, List<String>> map = new EnumMap<Activity, List<String>>(Activity.class);
-        List<String> interestingPostures;
-
-        interestingPostures = new LinkedList<String>();
-        interestingPostures.add("generalPosture");
-        interestingPostures.add("leftLegFirst");
-        interestingPostures.add("rightLegFirst");
-        interestingPostures.add("leftLegSecond");
-        interestingPostures.add("rightLegSecond");
-        map.put(Activity.Walking, interestingPostures);
-
-        interestingPostures = new LinkedList<String>();
-        interestingPostures.add("generalPosture");
-        map.put(Activity.LyingDown, interestingPostures);
-
-        return map;
-
-
-    }
 
 
     /**
