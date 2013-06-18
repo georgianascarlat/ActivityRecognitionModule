@@ -12,26 +12,23 @@ public class LyingDownActivity extends HumanActivity {
     }
 
 
-
     /**
      * Get the index of the observation class corresponding
      * to the posture information.
-     *
+     * <p/>
      * Index 0 - class horizontal
      * Index 1 - class toward horizontal
      * Index 2 - class not horizontal
      *
-     *
-     * @param posture   posture information
-     *
-     * @return  index of the observation class
+     * @param posture posture information
+     * @return index of the observation class
      */
     @Override
     public int getObservationClass(Posture posture) {
 
-        if(posture.getGeneralPosture() == 2)
+        if (posture.getGeneralPosture() == 2)
             return 0;
-        if(posture.getGeneralPosture() == 3
+        if (posture.getGeneralPosture() == 3
                 || posture.getLeftLegSecond() == 2
                 || posture.getRightLegSecond() == 2)
             return 1;

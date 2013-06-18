@@ -1,5 +1,6 @@
 package tracking;
 
+import models.JointPoint;
 import utils.Pair;
 
 import javax.vecmath.Point3d;
@@ -80,34 +81,21 @@ public class Snapshot {
     }
 
 
-    public Pair<Integer, Integer> getUserOnFloorPosition() {
+    public Pair<Integer, Integer> getUserOnFloorPosition(JointPoint jointPoint) {
 
-        Position position = new Position().calcPosition("TORSO");
+        Position position = new Position().calcPosition(jointPoint);
+
         int line = position.getLine();
         int column = position.getColumn();
-        double distance = position.getDist();
-
-        if (distance < EPSILON || column >= widthParts || line >= heigthParts) {
-
-            position = new Position().calcPosition("LEFT_FOOT");
-            line = position.getLine();
-            column = position.getColumn();
-            distance = position.getDist();
-
-        }
-
-        if (distance < EPSILON || column >= widthParts || line >= heigthParts) {
-
-            position = new Position().calcPosition("RIGHT_FOOT");
-            line = position.getLine();
-            column = position.getColumn();
-
-        }
 
         if (column > (widthParts - 1))
             column = widthParts - 1;
         if (line > (heigthParts - 1))
             line = heigthParts - 1;
+        if (line < 0)
+            line = 0;
+        if (column < 0)
+            column = 0;
 
 
         return new Pair<Integer, Integer>(line, column);
@@ -156,7 +144,7 @@ public class Snapshot {
             return column;
         }
 
-        public Position calcPosition(String skelPoint) {
+        public Position calcPosition(JointPoint jointPoint) {
             Point3d p1, p2, p3;
             Point3d floorNormal;
             Point3d projectionPoint;
@@ -175,7 +163,7 @@ public class Snapshot {
 
 
             floorNormal = Geometry.planNormal(p1, p2, p3);
-            projectionPoint = Geometry.projectPointOnPlan(floorNormal, p1, user.getSkeletonElement(skelPoint));
+            projectionPoint = Geometry.projectPointOnPlan(floorNormal, p1, user.getSkeletonElement(jointPoint));
             projection1 = Geometry.projectPointOnLine(projectionPoint, p1, p2);
             projection2 = Geometry.projectPointOnLine(projectionPoint, p2, p3);
 

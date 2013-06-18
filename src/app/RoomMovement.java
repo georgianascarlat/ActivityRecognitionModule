@@ -1,6 +1,7 @@
 package app;
 
 
+import models.JointPoint;
 import models.ObjectClass;
 import models.RoomModel;
 import tracking.Snapshot;
@@ -11,12 +12,13 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
-public class ObjectRecognition {
+public class RoomMovement {
 
 
+    public static final Pair<ObjectClass, Pair<Integer, Integer>> OBJECT_CLASS_PAIR_DEFAULT = new Pair<ObjectClass, Pair<Integer, Integer>>(ObjectClass.NO_OBJECT, null);
     private RoomModel roomModel;
 
-    public ObjectRecognition(String fileName) throws FileNotFoundException {
+    public RoomMovement(String fileName) throws FileNotFoundException {
 
         this.roomModel = new RoomModel(fileName);
     }
@@ -27,9 +29,10 @@ public class ObjectRecognition {
      * which object is on that cell.
      *
      * @param skeletonFileName posture file name
+     * @param jointPoint       the joint point of interest
      * @return a pair of the object class and the position on the grid(line,column)
      */
-    public Pair<ObjectClass, Pair<Integer, Integer>> getResult(String skeletonFileName) {
+    public Pair<ObjectClass, Pair<Integer, Integer>> getMovementResult(String skeletonFileName, JointPoint jointPoint) {
 
 
         Snapshot snapshot;
@@ -42,7 +45,7 @@ public class ObjectRecognition {
         /* first check if skeleton file exists*/
         if (!f.exists()) {
             System.err.println("File " + skeletonFileName + "doesn't exist.");
-            return new Pair<ObjectClass, Pair<Integer, Integer>>(ObjectClass.NO_OBJECT, null);
+            return OBJECT_CLASS_PAIR_DEFAULT;
         }
 
         /* use the skeleton file to create a Snapshot object*/
@@ -51,11 +54,11 @@ public class ObjectRecognition {
                     roomModel.getHeightParts(), roomModel.getFloorWidth(), roomModel.getFloorHeight());
         } catch (IOException e) {
             e.printStackTrace();
-            return new Pair<ObjectClass, Pair<Integer, Integer>>(ObjectClass.NO_OBJECT, null);
+            return OBJECT_CLASS_PAIR_DEFAULT;
         }
 
         /* obtain the user's position inside the grid*/
-        position = snapshot.getUserOnFloorPosition();
+        position = snapshot.getUserOnFloorPosition(jointPoint);
         line = position.getFirst();
         column = position.getSecond();
 

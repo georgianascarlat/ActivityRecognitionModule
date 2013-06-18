@@ -1,10 +1,6 @@
 package utils;
 
 
-import app.ObjectRecognition;
-import models.Activity;
-import models.MovementClass;
-import models.ObjectClass;
 import models.Posture;
 
 import java.io.File;
@@ -131,59 +127,6 @@ public class Utils {
         }
 
         return postures;
-    }
-
-    /**
-     * Combines posture information with object recognition and position information
-     * to get an observation index.
-     *
-     * @param observation       observation index for the posture
-     * @param skeletonFileName  posture file name
-     * @param objectRecognition object recognition module reference
-     * @param lastPosition      the previous position
-     * @return a pair of observation index composed of posture and object detection information
-     *         and the new position on the greed
-     */
-    public static Pair<Integer, Pair<Integer, Integer>> addObjectRecognitionObservation(int observation, String skeletonFileName,
-                                                                                        ObjectRecognition objectRecognition, Pair<Integer, Integer> lastPosition) {
-
-
-        /* get result from object detection module*/
-        Pair<ObjectClass, Pair<Integer, Integer>> result = objectRecognition.getResult(skeletonFileName);
-        ObjectClass objectClass = result.getFirst();
-
-        /* determine the type of movement based on the previous position and the current position*/
-        MovementClass movementClass = MovementClass.getMovement(lastPosition, result.getSecond());
-
-
-        /* update the last position */
-        lastPosition = result.getSecond();
-
-
-        /* combine the posture information with the object interaction
-        information and the movement information */
-        observation = addVariableToObservation(observation,
-                objectClass.getIndex(), ObjectClass.NUM_OBJECT_CLASSES);
-
-        observation = addVariableToObservation(observation,
-                movementClass.getIndex(), MovementClass.NUM_MOVES);
-
-        return new Pair<Integer, Pair<Integer, Integer>>(observation, lastPosition);
-    }
-
-
-    /**
-     * Add a new variable to an observation to obtain a new observation index.
-     *
-     * @param observation        old observation index
-     * @param variableIndex      index of variable to be added
-     * @param variableDomainSize variable domain size
-     * @return new observation index composed of the
-     *         old observation index and the new variable
-     */
-    public static int addVariableToObservation(int observation, int variableIndex, int variableDomainSize) {
-
-        return observation * variableDomainSize + (variableIndex - 1);
     }
 
 

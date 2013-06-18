@@ -15,13 +15,14 @@ public abstract class HumanActivity {
     public static final Map<Activity, List<String>> activityMap = initActivitiesMap();
 
     public abstract int getObservationClass(Posture posture);
+
     public abstract int getObservationDomainSize();
 
     public Activity getActivityType() {
         return activityType;
     }
 
-    public static HumanActivity activityFactory(Activity activity){
+    public static HumanActivity activityFactory(Activity activity) {
 
 
         switch (activity) {
@@ -33,7 +34,7 @@ public abstract class HumanActivity {
                 return new LyingDownActivity();
 
             default:
-                throw new IllegalArgumentException("No such activity "+activity.getName());
+                throw new IllegalArgumentException("No such activity " + activity.getName());
         }
     }
 

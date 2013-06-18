@@ -45,6 +45,10 @@ public class User {
 
     }
 
+    public Point3d getSkeletonElement(JointPoint jointPoint) {
+        return skeleton.get(jointPoint.getIndex());
+    }
+
     public Point3d getSkeletonElement(String name) {
 
         JointPoint jointPoint = JointPoint.valueOf(name);

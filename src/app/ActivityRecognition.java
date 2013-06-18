@@ -40,7 +40,7 @@ public class ActivityRecognition {
     public Map<Activity, Pair<HMM, HMM>> activityComplexHMMMap;
 
     /* reference to the object recognition module*/
-    private ObjectRecognition objectRecognition;
+    private RoomMovement roomMovement;
 
     /* tha last position of the user on the grid*/
     private Pair<Integer, Integer> lastPosition = null;
@@ -50,7 +50,7 @@ public class ActivityRecognition {
         activitySimpleHMMMap = new EnumMap<Activity, HMM>(Activity.class);
         activityComplexHMMMap = new EnumMap<Activity, Pair<HMM, HMM>>(Activity.class);
 
-        objectRecognition = new ObjectRecognition(Utils.ROOM_MODEL_FILE);
+        roomMovement = new RoomMovement(Utils.ROOM_MODEL_FILE);
     }
 
     public static void main(String args[]) throws IOException, URISyntaxException {
@@ -264,7 +264,7 @@ public class ActivityRecognition {
         CircularFifoBuffer observations = activityObservationsMap.get(activity);
 
         /* transform posture information into observation index*/
-        if(Utils.USE_CUSTOM_ACTIVITY_CLASSES){
+        if (Utils.USE_CUSTOM_ACTIVITY_CLASSES) {
             observation = HumanActivity.activityFactory(activity).getObservationClass(posture);
         } else {
             observation = posture.computeObservationIndex(posturesOfInterest);

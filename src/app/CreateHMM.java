@@ -59,7 +59,7 @@ public class CreateHMM {
 
         List<String> posturesOfInterest = HumanActivity.activityMap.get(activity);
         int numStates = activity.getInternalStates();
-        int numObservableVariables ;
+        int numObservableVariables;
         HMMOperations operations = new HMMOperationsImpl();
         List<List<Integer>> observations = new ArrayList<List<Integer>>();
         List<List<Integer>> hiddenStates = new ArrayList<List<Integer>>();
@@ -69,10 +69,10 @@ public class CreateHMM {
         Prediction prediction;
         int length;
 
-        if(Utils.USE_CUSTOM_ACTIVITY_CLASSES) {
+        if (Utils.USE_CUSTOM_ACTIVITY_CLASSES) {
             numObservableVariables = HumanActivity.activityFactory(activity).getObservationDomainSize();
         } else {
-            numObservableVariables  = Posture.computeNumObservableVariables(posturesOfInterest);
+            numObservableVariables = Posture.computeNumObservableVariables(posturesOfInterest);
         }
 
 
@@ -156,10 +156,10 @@ public class CreateHMM {
         List<List<Integer>> hiddenStates = new ArrayList<List<Integer>>();
         HMM hmm;
 
-        if(Utils.USE_CUSTOM_ACTIVITY_CLASSES) {
-           numObservableVariables = HumanActivity.activityFactory(activity).getObservationDomainSize();
+        if (Utils.USE_CUSTOM_ACTIVITY_CLASSES) {
+            numObservableVariables = HumanActivity.activityFactory(activity).getObservationDomainSize();
         } else {
-            numObservableVariables  = Posture.computeNumObservableVariables(posturesOfInterest);
+            numObservableVariables = Posture.computeNumObservableVariables(posturesOfInterest);
         }
 
 
@@ -199,7 +199,7 @@ public class CreateHMM {
 
 
             /* transform posture information into observation index*/
-            if(Utils.USE_CUSTOM_ACTIVITY_CLASSES){
+            if (Utils.USE_CUSTOM_ACTIVITY_CLASSES) {
                 observation = HumanActivity.activityFactory(activity).getObservationClass(posture);
             } else {
                 observation = posture.computeObservationIndex(posturesOfInterest);
