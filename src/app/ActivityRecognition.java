@@ -168,9 +168,9 @@ public class ActivityRecognition {
 
             /* may increase the probability of an activity according to the
             * information obtained from the room model: new position and object interaction*/
-            if(Utils.USE_ROOM_MODEL){
+            if (Utils.USE_ROOM_MODEL) {
                 humanActivityMap.get(activity).
-                        adjustPredictionUsingRoomModel(prediction,getSkeletonFile(postureFile));
+                        adjustPredictionUsingRoomModel(prediction, getSkeletonFile(postureFile));
             }
 
             predictions.put(activity, prediction);

@@ -34,10 +34,10 @@ public enum ObjectClass {
         }
     }
 
-    @Override
-    public String toString() {
-        return "ObjectClass {" +
-                "index=" + index +
-                '}';
+    public static boolean checkIndex(int index) {
+
+        return index >= 0 && index < 5;
     }
+
+
 }

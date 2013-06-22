@@ -1,14 +1,11 @@
 package activities;
 
 
-import app.RoomMovement;
 import models.Activity;
 import models.Posture;
 import models.Prediction;
 import utils.Pair;
-import utils.Utils;
 
-import java.io.FileNotFoundException;
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -18,13 +15,12 @@ public abstract class HumanActivity {
 
     protected Activity activityType;
     /* tha last position of the user on the grid*/
-    protected Pair<Integer,Integer> lastPosition1 = null, lastPosition2 = null;
+    protected Pair<Integer, Integer> lastPosition1 = null, lastPosition2 = null;
 
 
     public static final Map<Activity, List<String>> activityPosturesMap = initActivitiesMap();
     /* map activity type to activity objects*/
-    public static final Map<Activity,HumanActivity> humanActivityMap = HumanActivity.InitHumanActivityMap();
-
+    public static final Map<Activity, HumanActivity> humanActivityMap = HumanActivity.InitHumanActivityMap();
 
 
     public abstract int getObservationClass(Posture posture);
@@ -102,14 +98,13 @@ public abstract class HumanActivity {
 
         Map<Activity, HumanActivity> humanActivityMap = new EnumMap<Activity, HumanActivity>(Activity.class);
 
-        for(Activity activity:Activity.values()){
-            humanActivityMap.put(activity,activityFactory(activity));
+        for (Activity activity : Activity.values()) {
+            humanActivityMap.put(activity, activityFactory(activity));
         }
 
         return humanActivityMap;
 
     }
-
 
 
 }

@@ -68,21 +68,21 @@ public class WalkingActivity extends HumanActivity {
     public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName) {
 
         Pair<ObjectClass, Pair<Integer, Integer>> result1, result2;
-        int lastIndex = prediction.getPredictions().length -1;
+        int lastIndex = prediction.getPredictions().length - 1;
         int lastPrediction = prediction.getPredictions()[lastIndex];
         double probability = prediction.getProbability();
 
-        if(lastPrediction == 0)
+        if (lastPrediction == 0)
             return;
 
         result1 = roomMovement.getMovementResult(skeletonFileName, JointPoint.LEFT_FOOT);
         result2 = roomMovement.getMovementResult(skeletonFileName, JointPoint.RIGHT_FOOT);
 
 
-        if((lastPosition1!= null && !lastPosition1.equals(result1.getSecond()))
-                || (lastPosition2 != null && !lastPosition2.equals(result2.getSecond()))){
+        if ((lastPosition1 != null && !lastPosition1.equals(result1.getSecond()))
+                || (lastPosition2 != null && !lastPosition2.equals(result2.getSecond()))) {
 
-            prediction.setProbability(probability*1.8);
+            prediction.setProbability(probability * 1.8);
         }
 
         lastPosition1 = result1.getSecond();

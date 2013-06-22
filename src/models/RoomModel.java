@@ -39,6 +39,11 @@ public class RoomModel {
         return gridMap[line][column];
     }
 
+    public void setPointOnMap(int line, int column, int objectIndex) {
+        if (ObjectClass.checkIndex(objectIndex))
+            gridMap[line][column] = objectIndex;
+    }
+
     public double getFloorWidth() {
         return roomInfo.getWidth();
     }
@@ -80,6 +85,7 @@ public class RoomModel {
         int width = roomInfo.getWidthParts(), height = roomInfo.getHeightParts();
 
         try {
+
 
             out = new BufferedWriter(new FileWriter(fileName));
 
