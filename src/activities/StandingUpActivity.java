@@ -6,46 +6,30 @@ import utils.Pair;
 import static app.ActivityRecognition.roomMovement;
 
 
-public class LyingDownActivity extends HumanActivity {
+public class StandingUpActivity extends HumanActivity {
 
-    public LyingDownActivity() {
+    public StandingUpActivity() {
 
-        activityType = Activity.LyingDown;
+        this.activityType = Activity.StandingUp;
     }
 
 
-    /**
-     * Get the index of the observation class corresponding
-     * to the posture information.
-     * <p/>
-     * Index 0 - class horizontal
-     * Index 1 - class toward horizontal
-     * Index 2 - class not horizontal
-     *
-     * @param posture posture information
-     * @return index of the observation class
-     */
     @Override
     public int getObservationClass(Posture posture) {
 
-        if (posture.getGeneralPosture() == 2)
-            return 0;
-        if (posture.getGeneralPosture() == 3
-                || posture.getLeftLegSecond() == 2
-                || posture.getRightLegSecond() == 2)
-            return 1;
-        return 2;
-
+        // the classes are the same
+        return posture.computeObservationIndex(activityPosturesMap.get(activityType));
     }
 
     @Override
     public int getObservationDomainSize() {
-        return 3;
+
+        // the classes are the same
+        return Posture.computeNumObservableVariables(activityPosturesMap.get(activityType));
     }
 
     @Override
     public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName) {
-
         Pair<ObjectClass, Pair<Integer, Integer>> result;
         int lastIndex = prediction.getPredictions().length - 1;
         int lastPrediction = prediction.getPredictions()[lastIndex];
@@ -56,7 +40,7 @@ public class LyingDownActivity extends HumanActivity {
 
         result = roomMovement.getMovementResult(skeletonFileName, JointPoint.TORSO);
 
-        if (result.getFirst().equals(ObjectClass.BED)) {
+        if (result.getFirst().equals(ObjectClass.BED) || result.getFirst().equals(ObjectClass.CHAIR)) {
 
             prediction.setProbability(probability * 1.5);
         }
@@ -67,8 +51,5 @@ public class LyingDownActivity extends HumanActivity {
         }
 
         lastPosition1 = result.getSecond();
-
     }
-
-
 }

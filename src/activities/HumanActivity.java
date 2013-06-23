@@ -15,7 +15,7 @@ public abstract class HumanActivity {
 
     protected Activity activityType;
     /* tha last position of the user on the grid*/
-    protected Pair<Integer, Integer> lastPosition1 = null, lastPosition2 = null;
+    protected Pair<Integer, Integer> lastPosition1 = null, lastPosition2 = null, lastPosition3 = null;
 
 
     public static final Map<Activity, List<String>> activityPosturesMap = initActivitiesMap();
@@ -45,6 +45,18 @@ public abstract class HumanActivity {
             case LyingDown:
                 return new LyingDownActivity();
 
+            case StandingUp:
+                return new StandingUpActivity();
+
+            case SittingDown:
+                return new SittingDownActivity();
+
+            case Bending:
+                return new BendingActivity();
+
+            case Falling:
+                return new FallingActivity();
+
             default:
                 throw new IllegalArgumentException("No such activity " + activity.getName());
         }
@@ -70,6 +82,42 @@ public abstract class HumanActivity {
         interestingPostures = new LinkedList<String>();
         interestingPostures.add("generalPosture");
         map.put(Activity.LyingDown, interestingPostures);
+
+        interestingPostures = new LinkedList<String>();
+        interestingPostures.add("generalPosture");
+        interestingPostures.add("leftLegFirst");
+        interestingPostures.add("rightLegFirst");
+        interestingPostures.add("leftLegSecond");
+        interestingPostures.add("rightLegSecond");
+        interestingPostures.add("torsoSecond");
+        map.put(Activity.StandingUp, interestingPostures);
+
+        interestingPostures = new LinkedList<String>();
+        interestingPostures.add("generalPosture");
+        interestingPostures.add("leftLegFirst");
+        interestingPostures.add("rightLegFirst");
+        interestingPostures.add("leftLegSecond");
+        interestingPostures.add("rightLegSecond");
+        interestingPostures.add("torsoSecond");
+        map.put(Activity.SittingDown, interestingPostures);
+
+        interestingPostures = new LinkedList<String>();
+        interestingPostures.add("generalPosture");
+        interestingPostures.add("leftLegFirst");
+        interestingPostures.add("rightLegFirst");
+        interestingPostures.add("leftLegSecond");
+        interestingPostures.add("rightLegSecond");
+        interestingPostures.add("torsoSecond");
+        map.put(Activity.Bending, interestingPostures);
+
+        interestingPostures = new LinkedList<String>();
+        interestingPostures.add("generalPosture");
+        interestingPostures.add("leftHandFirst");
+        interestingPostures.add("rightHandFirst");
+        interestingPostures.add("leftHandSecond");
+        interestingPostures.add("rightHandSecond");
+        interestingPostures.add("torsoSecond");
+        map.put(Activity.Falling, interestingPostures);
 
         return map;
 

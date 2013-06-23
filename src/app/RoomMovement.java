@@ -6,6 +6,7 @@ import models.ObjectClass;
 import models.RoomModel;
 import tracking.Snapshot;
 import utils.Pair;
+import utils.Utils;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -44,8 +45,15 @@ public class RoomMovement {
 
         /* first check if skeleton file exists*/
         if (!f.exists()) {
-            System.err.println("File " + skeletonFileName + "doesn't exist.");
-            return OBJECT_CLASS_PAIR_DEFAULT;
+
+            skeletonFileName = Utils.addSkeletonDeviceIndex(skeletonFileName);
+            f = new File(skeletonFileName);
+
+            if (!f.exists()) {
+                System.err.println("File " + skeletonFileName + " doesn't exist.");
+                return OBJECT_CLASS_PAIR_DEFAULT;
+            }
+
         }
 
         /* use the skeleton file to create a Snapshot object*/

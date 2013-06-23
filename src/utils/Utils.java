@@ -172,4 +172,11 @@ public class Utils {
 
         vector[length - 1] = remaining;
     }
+
+    public static String addSkeletonDeviceIndex(String skeletonFileName) {
+
+        String s = new String(skeletonFileName);
+
+        return s.replace(SKELETON_PREFIX, SKELETON_PREFIX + "0_");
+    }
 }
