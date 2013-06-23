@@ -24,16 +24,25 @@ public class Utils {
     public static final String LEVEL_1_SUFFIX = "_level_1";
     public static final String LEVEL_2_SUFFIX = "_level_2";
     public static final String TMP = "~";
-    public static final int MAX_OBSERVATION_SIZE = 10;
+
+    public static final String OBJECT_DETECTION_FOLDER = "object_detection/";
+    public static final String SCRIPT_NAME = OBJECT_DETECTION_FOLDER + "detect.py";
+    public static final String SPACE = " ";
+    public static final String OFFICE_CHAIR_CASCADE = OBJECT_DETECTION_FOLDER + "office_chair_cascade.xml";
+    public static final String WINDSOM_CHAIR_CASCADE = OBJECT_DETECTION_FOLDER + "windsom_chair_cascade.xml";
+
+
+    public static final int MAX_OBSERVATION_SIZE = 15;
 
 
     public static final int MAX_LEARN_ITERATIONS = 50;
     public static final int LEARN_NUM_RAND_INITS = 100;
 
     public static final boolean USE_SIMPLE_HMM = true;
-    public static final boolean USE_CUSTOM_ACTIVITY_CLASSES = true;
+    public static final boolean USE_CUSTOM_ACTIVITY_CLASSES = false;
 
-    public static boolean USE_ROOM_MODEL = true;
+    public static final boolean USE_ROOM_MODEL = true;
+    public static final boolean REAL_TIME_DETECTION = false;
 
 
     /**

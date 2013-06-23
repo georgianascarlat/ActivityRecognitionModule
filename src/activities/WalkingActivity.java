@@ -18,6 +18,7 @@ public class WalkingActivity extends HumanActivity {
      * Get the index of the observation class corresponding
      * to the posture information.
      * <p/>
+     * Index -1 - invalid
      * Index 0 - class left-right feet
      * Index 1 - class right-left feet
      * Index 2 - class tight feet
@@ -31,12 +32,17 @@ public class WalkingActivity extends HumanActivity {
     public int getObservationClass(Posture posture) {
         int left, right;
 
+        left = posture.getLeftLegFirst();
+        right = posture.getRightLegFirst();
+
+        if (isInvalid(left, right))
+            return -1;
+
+
         // not standing straight
         if (posture.getGeneralPosture() != 1)
             return 4;
 
-        left = posture.getLeftLegFirst();
-        right = posture.getRightLegFirst();
 
         // left-right feet
         if (left == 3 && (right == 1 || right == 4))
@@ -57,6 +63,10 @@ public class WalkingActivity extends HumanActivity {
         // just stand
         return 3;
 
+    }
+
+    private boolean isInvalid(int left, int right) {
+        return (left == 4 && right == 4);
     }
 
     @Override
@@ -82,7 +92,7 @@ public class WalkingActivity extends HumanActivity {
         if ((lastPosition1 != null && !lastPosition1.equals(result1.getSecond()))
                 || (lastPosition2 != null && !lastPosition2.equals(result2.getSecond()))) {
 
-            prediction.setProbability(probability * 1.8);
+            prediction.setProbability(probability * 1.5);
         }
 
         lastPosition1 = result1.getSecond();

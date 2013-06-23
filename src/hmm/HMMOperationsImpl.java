@@ -268,6 +268,8 @@ public class HMMOperationsImpl implements HMMOperations {
     @Override
     public Prediction predict(HMM hmm, int[] observations) {
         int T = observations.length;
+
+        double fwd[][], bwd[][], norms[] = new double[T];
         Viterbi viterbi = hmm.viterbi(observations);
         int predictions[] = new int[T];
         double probability, max_p = 0;
@@ -288,7 +290,13 @@ public class HMMOperationsImpl implements HMMOperations {
         }
 
         predictions[T - 1] = max_i;
-        probability = max_p;
+        //probability = max_p;
+
+        fwd = hmm.forwardNormalized(observations, norms);
+        bwd = hmm.backwardNormalized(observations, norms);
+
+        // compute the probability of state i at moment T-1 given the observation sequence
+        probability = hmm.gamma(max_i, T - 1, observations, fwd, bwd);
 
         for (int t = T - 2; t >= 0; t--) {
 

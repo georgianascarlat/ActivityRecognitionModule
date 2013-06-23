@@ -56,8 +56,24 @@ public class ActivityRecognition {
 
     public static void main(String args[]) throws IOException, URISyntaxException {
 
-        new ActivityRecognition().waitForNewFiles();
+        if (REAL_TIME_DETECTION)
+            new ActivityRecognition().waitForNewFiles();
+        else
+            new ActivityRecognition().processFilesInDirectory("from_ema/data");
 
+    }
+
+    private void processFilesInDirectory(String directoryName) throws IOException {
+
+        File directory = new File(directoryName);
+
+
+        List<String> postureFileNames = Utils.getFileNamesFromDirectory(directory.listFiles());
+
+
+        for (String fileName : postureFileNames) {
+            processNewFile(fileName);
+        }
     }
 
     /**
@@ -72,6 +88,7 @@ public class ActivityRecognition {
 
         WatchService watcher = FileSystems.getDefault().newWatchService();
         Path dir = Paths.get(DATA_DIRECTORY);
+        String readyFileName;
 
         dir.register(watcher, ENTRY_CREATE);
 
@@ -112,15 +129,16 @@ public class ActivityRecognition {
                     continue;
                 }
 
-                //TODO: modify for ready
+
                 /* Verify file name */
-                if (!filename.toString().startsWith(POSTURE_PREFIX) || !filename.toString().endsWith(".txt")) {
+                if (!filename.toString().startsWith(READY_PREFIX) || !filename.toString().endsWith(".txt")) {
                     continue;
                 }
 
 
                 try {
-                    processNewFile(DATA_DIRECTORY + filename.toString());
+                    readyFileName = DATA_DIRECTORY + filename.toString();
+                    processNewFile(Utils.getPostureFile(readyFileName));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -144,13 +162,12 @@ public class ActivityRecognition {
      * For each activity, the sequence is fed to it's corresponding HMM and the
      * predictions are aggregated. The best prediction is then chosen.
      *
-     * @param readyFilename name of newly created file
+     * @param postureFile name of newly created file
      * @throws IOException
      */
-    private void processNewFile(String readyFilename) throws IOException {
+    private void processNewFile(String postureFile) throws IOException {
 
-        //TODO: modify for ready
-        String postureFile = readyFilename;
+
         /*read posture information from file*/
         Posture posture = new Posture(postureFile);
         /* keep the predictions made by each activity HMM to later choose the best one*/
@@ -194,16 +211,19 @@ public class ActivityRecognition {
         System.out.println("Activity from frame " + frameNumber + ": " + predictedActivity);
 
         /* log activity prediction to file */
-        appendActivityToFile(frameNumber, predictedActivityIndex, bestPrediction.getValue().getProbability());
+        appendActivityToFile(frameNumber, predictedActivityIndex, bestPrediction.getValue().getProbability(), posture);
 
 
     }
 
-    private void appendActivityToFile(int frameNumber, int predictedActivityIndex, double probability) throws IOException {
+    private void appendActivityToFile(int frameNumber, int predictedActivityIndex, double probability, Posture posture) throws IOException {
 
         PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Utils.ACTIVITY_FILE, true)));
 
-        out.println(frameNumber + "," + predictedActivityIndex + "," + probability + ",");
+        if (!REAL_TIME_DETECTION && posture.getActivity() >= 0)
+            out.println(frameNumber + "," + predictedActivityIndex + "," + probability + "," + posture.getActivity() + ",");
+        else
+            out.println(frameNumber + "," + predictedActivityIndex + "," + probability + ",");
         out.close();
     }
 
@@ -281,13 +301,28 @@ public class ActivityRecognition {
             observation = posture.computeObservationIndex(posturesOfInterest);
         }
 
-        /* if the posture is misclassified then no activity is detected*/
+        /* if the posture is misclassified then the previous activity is detected*/
         if (observation < 0) {
 
-            int size = observations.size() + 1;
-            int obs[] = new int[size], pred[] = new int[size];
 
-            return new Prediction(obs, pred, 0.0);
+            int size = observations.size();
+            int size2 = size == MAX_OBSERVATION_SIZE ? size : (size + 1);
+            int obs[] = new int[size2], pred[] = new int[size2];
+
+            prediction = getPredictionFromSimpleHMM(activity, hmmOperations, observations);
+
+            for (int i = 0; i < size; i++) {
+                obs[i] = prediction.getObservations()[i];
+            }
+
+            for (int i = 0; i < size; i++) {
+                pred[i] = prediction.getPredictions()[i];
+            }
+            if (size2 > size)
+                pred[size] = pred[size - 1];
+
+
+            return new Prediction(obs, pred, 0.01);
         }
 
 

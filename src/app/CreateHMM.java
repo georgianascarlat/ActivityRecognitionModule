@@ -217,8 +217,11 @@ public class CreateHMM {
             }
 
         }
-        observations.add(aux_o);
-        hiddenStates.add(aux_s);
+
+        if (aux_o.size() > 0 && aux_s.size() > 0) {
+            observations.add(aux_o);
+            hiddenStates.add(aux_s);
+        }
     }
 
     private static void adjustStateProbabilitiesToEven(int numStates, HMM hmm) {
