@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertArrayEquals;
 
 public class HMMOperationsTest {
@@ -50,7 +49,7 @@ public class HMMOperationsTest {
                 {1, 0, 0, 0, 0, 0},
                 {1, 0, 1, 0, 0, 0}};
 
-        int numSequences = observations.length, sequenceLength = observations[0].length;
+        int numSequences = observations.length;
         List<List<Integer>> obs = new ArrayList<List<Integer>>(), hS = new ArrayList<List<Integer>>();
         List<Integer> aux;
 
@@ -82,13 +81,10 @@ public class HMMOperationsTest {
 
         int observations[] = {2, 2, 1, 0, 1, 3, 2, 0, 0};
         int expectedPrediction[] = {0, 0, 0, 1, 1, 1, 1, 1, 1};
-        double expectedProbability = 4.25E-8;
 
         Prediction prediction = hmmOperations.predict(hmm1, observations);
 
         assertArrayEquals(expectedPrediction, prediction.getPredictions());
-
-        assertTrue(Math.abs(expectedProbability - prediction.getProbability()) < EPSILON);
 
 
     }
@@ -142,14 +138,12 @@ public class HMMOperationsTest {
 
         int observations[] = {0, 2, 3};
         int expectedPrediction[] = {0, 2, 2};
-        double expectedProbability = 6.2E-3;
 
 
         Prediction prediction = hmmOperations.predict(hmm3, observations);
 
-
         assertArrayEquals(expectedPrediction, prediction.getPredictions());
-        assertTrue(Math.abs(expectedProbability - prediction.getProbability()) < EPSILON);
+
 
     }
 
@@ -159,13 +153,12 @@ public class HMMOperationsTest {
 
         int observations[] = {3, 1, 1, 2, 0};
         int expectedPrediction[] = {2, 1, 0, 0, 0};
-        double expectedProbability = 2.847E-5;
 
 
         Prediction prediction = hmmOperations.predict(hmm3, observations);
 
         assertArrayEquals(expectedPrediction, prediction.getPredictions());
-        assertTrue(Math.abs(expectedProbability - prediction.getProbability()) < EPSILON);
+
 
     }
 
@@ -175,13 +168,12 @@ public class HMMOperationsTest {
 
         int observations[] = {2, 3, 3, 0};
         int expectedPrediction[] = {2, 2, 1, 0};
-        double expectedProbability = 4.983E-4;
 
 
         Prediction prediction = hmmOperations.predict(hmm3, observations);
 
         assertArrayEquals(expectedPrediction, prediction.getPredictions());
-        assertTrue(Math.abs(expectedProbability - prediction.getProbability()) < EPSILON);
+
 
     }
 }
