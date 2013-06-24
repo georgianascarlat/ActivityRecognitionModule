@@ -41,23 +41,36 @@ public enum Activity {
                 '}';
     }
 
+    public static int getActivitiesNumber() {
+
+        return 6;
+    }
+
     public static String getActivityNameByIndex(int index) {
 
+        if (index == 0)
+            return "no activity";
+        else
+            return getActivityByIndex(index).getName();
+
+    }
+
+    public static Activity getActivityByIndex(int index) {
+
         switch (index) {
-            case 0:
-                return "no activity";
+
             case 1:
-                return Walking.getName();
+                return Walking;
             case 2:
-                return LyingDown.getName();
+                return LyingDown;
             case 3:
-                return StandingUp.getName();
+                return StandingUp;
             case 4:
-                return SittingDown.getName();
+                return SittingDown;
             case 5:
-                return Bending.getName();
+                return Bending;
             case 6:
-                return Falling.getName();
+                return Falling;
             default:
                 throw new IllegalArgumentException("No activity with index " + index);
         }

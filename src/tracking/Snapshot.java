@@ -42,34 +42,48 @@ public class Snapshot {
 
         String strLine;
         List<String> strings;
-        FileInputStream fstream = new FileInputStream(fileName);
+        FileInputStream fstream;
+        DataInputStream in;
+        BufferedReader br = null;
         int error;
 
-        DataInputStream in = new DataInputStream(fstream);
-        BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        try {
 
-        strings = new LinkedList<String>();
+            fstream = new FileInputStream(fileName);
+            in = new DataInputStream(fstream);
+            br = new BufferedReader(new InputStreamReader(in));
+
+            strings = new LinkedList<String>();
 
         /* read error */
-        strLine = readSingleLine(br);
-        error = new Integer(strLine.substring(0, strLine.length() - 1));
+            strLine = readSingleLine(br);
+            error = new Integer(strLine.substring(0, strLine.length() - 1));
 
-        if (error == 1) {
-            throw new IllegalArgumentException("Error in skeleton file");
-        }
+            if (error == 1) {
+                throw new IllegalArgumentException("Error in skeleton file");
+            }
 
 
         /* throw away timestamp line and floor line*/
-        for (int i = 0; i < 2; i++)
-            readSingleLine(br);
+            for (int i = 0; i < 2; i++)
+                readSingleLine(br);
 
         /* read each joint point line*/
-        for (int i = 0; i < NUM_JOINTS; i++) {
-            strLine = readSingleLine(br);
-            strings.add(strLine);
+            for (int i = 0; i < NUM_JOINTS; i++) {
+                strLine = readSingleLine(br);
+                strings.add(strLine);
+            }
+
+            return new User(strings);
+
+        } finally {
+
+            if (null != br) {
+                br.close();
+            }
         }
 
-        return new User(strings);
+
     }
 
     private String readSingleLine(BufferedReader br) throws IOException {

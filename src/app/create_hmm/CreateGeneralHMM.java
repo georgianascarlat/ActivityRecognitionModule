@@ -4,6 +4,7 @@ import activities.HumanActivity;
 import hmm.HMM;
 import hmm.HMMOperations;
 import hmm.HMMOperationsImpl;
+import models.Activity;
 import models.Posture;
 
 import java.io.IOException;
@@ -25,7 +26,7 @@ public class CreateGeneralHMM extends CreateHMM {
     @Override
     public void createHMM(List<List<Posture>> postures) throws IOException {
 
-        int numStates = 7;
+        int numStates = Activity.getActivitiesNumber() + 1;
         List<String> posturesOfInterest = HumanActivity.allPosturesOfInterest;
         int numObservableVariables;
 

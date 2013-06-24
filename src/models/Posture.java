@@ -15,34 +15,44 @@ public class Posture {
 
     public Posture(String fileName) throws FileNotFoundException {
 
-        Scanner scanner = new Scanner(new File(fileName));
-        scanner.useDelimiter(",|\\n");
+        Scanner scanner = null;
 
-        generalPosture = scanner.nextInt();
-        scanner.next();
-        torsoFirst = scanner.nextInt();
-        torsoSecond = scanner.nextInt();
-        scanner.next();
-        head = scanner.nextInt();
-        scanner.next();
-        leftHandFirst = scanner.nextInt();
-        rightHandFirst = scanner.nextInt();
-        leftHandSecond = scanner.nextInt();
-        rightHandSecond = scanner.nextInt();
-        scanner.next();
-        leftLegFirst = scanner.nextInt();
-        rightLegFirst = scanner.nextInt();
-        leftLegSecond = scanner.nextInt();
-        rightLegSecond = scanner.nextInt();
-        scanner.next();
+        try {
 
-        if (scanner.hasNextInt())
-            activity = scanner.nextInt();
-        else
-            activity = -1;
+            scanner = new Scanner(new File(fileName));
+            scanner.useDelimiter(",|\\n");
 
-        if (!checkDomains())
-            throw new IllegalArgumentException("Invalid file format");
+            generalPosture = scanner.nextInt();
+            scanner.next();
+            torsoFirst = scanner.nextInt();
+            torsoSecond = scanner.nextInt();
+            scanner.next();
+            head = scanner.nextInt();
+            scanner.next();
+            leftHandFirst = scanner.nextInt();
+            rightHandFirst = scanner.nextInt();
+            leftHandSecond = scanner.nextInt();
+            rightHandSecond = scanner.nextInt();
+            scanner.next();
+            leftLegFirst = scanner.nextInt();
+            rightLegFirst = scanner.nextInt();
+            leftLegSecond = scanner.nextInt();
+            rightLegSecond = scanner.nextInt();
+            scanner.next();
+
+            if (scanner.hasNextInt())
+                activity = scanner.nextInt();
+            else
+                activity = -1;
+
+            if (!checkDomains())
+                throw new IllegalArgumentException("Invalid file format");
+        } finally {
+            if (null != scanner) {
+                scanner.close();
+            }
+        }
+
 
     }
 

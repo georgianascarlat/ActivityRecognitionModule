@@ -15,7 +15,10 @@ import utils.FileNameComparator;
 import utils.Utils;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
+import static activities.HumanActivity.humanActivityMap;
 import static utils.Utils.*;
 
 public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
@@ -64,8 +67,7 @@ public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
             int size2 = size == MAX_OBSERVATION_SIZE ? size : (size + 1);
             int obs[] = new int[size2], pred[] = new int[size2];
 
-            prediction = hmmOperations.predict(generalHMM,
-                    ArrayUtils.toPrimitive((Integer[]) observations.toArray(new Integer[0])));
+            prediction = getPrediction(observations, hmmOperations, postureFileName);
 
             for (int i = 0; i < size; i++) {
                 obs[i] = prediction.getObservations()[i];
@@ -84,8 +86,7 @@ public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
 
             observations.add(observation);
 
-            prediction = hmmOperations.predict(generalHMM,
-                    ArrayUtils.toPrimitive((Integer[]) observations.toArray(new Integer[0])));
+            prediction = getPrediction(observations, hmmOperations, postureFileName);
         }
 
         lastIndex = prediction.getPredictions().length - 1;
@@ -96,6 +97,66 @@ public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
 
         /* log activity prediction to file */
         appendActivityToFile(frameNumber, predictedActivityIndex, prediction.getProbability(), posture);
+
+
+    }
+
+    private Prediction getPrediction(CircularFifoBuffer observations, HMMOperations hmmOperations, String postureFileName) {
+        Prediction prediction;
+         /* keep the predictions made by each activity HMM to later choose the best one*/
+        List<Prediction> activityPredictions = new LinkedList<Prediction>();
+        int T = observations.size(), numActivities = Activity.getActivitiesNumber();
+        double fwd[][], bwd[][], norms[] = new double[T], probability;
+        int obs[] = ArrayUtils.toPrimitive((Integer[]) observations.toArray(new Integer[0]));
+        int predictions[] = new int[T];
+
+        if (Utils.USE_ROOM_MODEL) {
+
+            fwd = generalHMM.forwardNormalized(obs, norms);
+            bwd = generalHMM.backwardNormalized(obs, norms);
+
+            for (int i = 0; i <= numActivities; i++) {
+                // compute the probability of the activity with index i at moment T-1 given the observation sequence
+                probability = generalHMM.gamma(i, T - 1, obs, fwd, bwd);
+                predictions[T - 1] = i;
+
+                prediction = new Prediction(obs, predictions, probability);
+
+
+                /* may increase the probability of an activity according to the
+                * information obtained from the room model: new position and object interaction*/
+                if (i > 0) {
+                    humanActivityMap.get(Activity.getActivityByIndex(i)).
+                            adjustPredictionUsingRoomModel(prediction, getSkeletonFile(postureFileName));
+                }
+
+                activityPredictions.add(prediction);
+
+            }
+
+            prediction = chooseBestPrediction(activityPredictions);
+
+
+        } else {
+            prediction = hmmOperations.predict(generalHMM, obs);
+        }
+
+        return prediction;
+    }
+
+    private Prediction chooseBestPrediction(List<Prediction> activityPredictions) {
+
+        Prediction bestPrediction = activityPredictions.get(0);
+        double max = bestPrediction.getProbability();
+
+        for (Prediction prediction : activityPredictions) {
+            if (prediction.getProbability() > max) {
+                max = prediction.getProbability();
+                bestPrediction = prediction;
+            }
+        }
+
+        return bestPrediction;
 
 
     }
