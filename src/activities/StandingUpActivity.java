@@ -1,9 +1,12 @@
 package activities;
 
-import models.*;
+import models.Activity;
+import models.JointPoint;
+import models.ObjectClass;
+import models.Prediction;
 import utils.Pair;
 
-import static app.ActivityRecognition.roomMovement;
+import static app.activity_recognition.ActivityRecognition.roomMovement;
 
 
 public class StandingUpActivity extends HumanActivity {
@@ -11,21 +14,6 @@ public class StandingUpActivity extends HumanActivity {
     public StandingUpActivity() {
 
         this.activityType = Activity.StandingUp;
-    }
-
-
-    @Override
-    public int getObservationClass(Posture posture) {
-
-        // the classes are the same
-        return posture.computeObservationIndex(activityPosturesMap.get(activityType));
-    }
-
-    @Override
-    public int getObservationDomainSize() {
-
-        // the classes are the same
-        return Posture.computeNumObservableVariables(activityPosturesMap.get(activityType));
     }
 
     @Override

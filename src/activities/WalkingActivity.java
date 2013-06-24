@@ -1,9 +1,12 @@
 package activities;
 
-import models.*;
+import models.Activity;
+import models.JointPoint;
+import models.ObjectClass;
+import models.Prediction;
 import utils.Pair;
 
-import static app.ActivityRecognition.roomMovement;
+import static app.activity_recognition.ActivityRecognition.roomMovement;
 
 
 public class WalkingActivity extends HumanActivity {
@@ -14,65 +17,6 @@ public class WalkingActivity extends HumanActivity {
         activityType = Activity.Walking;
     }
 
-    /**
-     * Get the index of the observation class corresponding
-     * to the posture information.
-     * <p/>
-     * Index -1 - invalid
-     * Index 0 - class left-right feet
-     * Index 1 - class right-left feet
-     * Index 2 - class tight feet
-     * Index 3 - class just stand
-     * Index 4 - class anything else
-     *
-     * @param posture posture information
-     * @return index of the observation class
-     */
-    @Override
-    public int getObservationClass(Posture posture) {
-        int left, right;
-
-        left = posture.getLeftLegFirst();
-        right = posture.getRightLegFirst();
-
-        if (isInvalid(left, right))
-            return -1;
-
-
-        // not standing straight
-        if (posture.getGeneralPosture() != 1)
-            return 4;
-
-
-        // left-right feet
-        if (left == 3 && (right == 1 || right == 4))
-            return 0;
-        if (left == 1 && right == 4)
-            return 0;
-
-        // right-left feet
-        if (right == 3 && (left == 1 || left == 4))
-            return 1;
-        if (right == 1 && left == 4)
-            return 1;
-
-        // tight feet
-        if (left == 1 && right == 1)
-            return 2;
-
-        // just stand
-        return 3;
-
-    }
-
-    private boolean isInvalid(int left, int right) {
-        return (left == 4 && right == 4);
-    }
-
-    @Override
-    public int getObservationDomainSize() {
-        return 5;
-    }
 
     @Override
     public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName) {

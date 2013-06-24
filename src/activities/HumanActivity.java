@@ -2,7 +2,6 @@ package activities;
 
 
 import models.Activity;
-import models.Posture;
 import models.Prediction;
 import utils.Pair;
 
@@ -29,16 +28,8 @@ public abstract class HumanActivity {
     public static final Map<Activity, HumanActivity> humanActivityMap = HumanActivity.InitHumanActivityMap();
 
 
-    public abstract int getObservationClass(Posture posture);
-
-    public abstract int getObservationDomainSize();
-
     public abstract void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName);
 
-
-    public Activity getActivityType() {
-        return activityType;
-    }
 
     public static HumanActivity activityFactory(Activity activity) {
 

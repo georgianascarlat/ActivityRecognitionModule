@@ -29,7 +29,7 @@
     </target>
 
     <target name="createHMM" depends="compile">
-        <java classname="app.CreateHMM" fork="true">
+        <java classname="app.create_hmm.CreateHMM" fork="true">
             <classpath refid="classpath">
 
             </classpath>
@@ -38,7 +38,7 @@
     </target>
 
     <target name="activityRecognition" depends="compile">
-        <java classname="app.ActivityRecognition" fork="true">
+        <java classname="app.activity_recognition.ActivityRecognition" fork="true">
             <classpath refid="classpath">
 
             </classpath>

@@ -1,9 +1,12 @@
 package activities;
 
-import models.*;
+import models.Activity;
+import models.JointPoint;
+import models.ObjectClass;
+import models.Prediction;
 import utils.Pair;
 
-import static app.ActivityRecognition.roomMovement;
+import static app.activity_recognition.ActivityRecognition.roomMovement;
 
 
 public class SittingDownActivity extends HumanActivity {
@@ -13,20 +16,6 @@ public class SittingDownActivity extends HumanActivity {
         this.activityType = Activity.SittingDown;
     }
 
-
-    @Override
-    public int getObservationClass(Posture posture) {
-
-        // the classes are the same
-        return posture.computeObservationIndex(activityPosturesMap.get(activityType));
-    }
-
-    @Override
-    public int getObservationDomainSize() {
-
-        // the classes are the same
-        return Posture.computeNumObservableVariables(activityPosturesMap.get(activityType));
-    }
 
     @Override
     public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName) {

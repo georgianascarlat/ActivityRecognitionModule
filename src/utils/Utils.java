@@ -1,6 +1,8 @@
 package utils;
 
 
+import models.ActivityRecognitionType;
+import models.HMMTypes;
 import models.Posture;
 
 import java.io.File;
@@ -40,13 +42,10 @@ public class Utils {
     public static final int MAX_LEARN_ITERATIONS = 50;
     public static final int LEARN_NUM_RAND_INITS = 100;
 
-    public static final boolean USE_SIMPLE_HMM = true;
-    public static final boolean USE_CUSTOM_ACTIVITY_CLASSES = false;
-
     public static final boolean USE_ROOM_MODEL = true;
-    public static final boolean REAL_TIME_DETECTION = false;
 
-    public static final boolean USE_GENERAL_HMM = true;
+    public static final HMMTypes HMM_TYPE = HMMTypes.GeneralHMM;
+    public static final ActivityRecognitionType ACTIVITY_RECOGNITION_TYPE = ActivityRecognitionType.OFFLINE_RECOGNITION;
 
 
     /**
