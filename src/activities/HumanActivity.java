@@ -18,7 +18,13 @@ public abstract class HumanActivity {
     protected Pair<Integer, Integer> lastPosition1 = null, lastPosition2 = null, lastPosition3 = null;
 
 
+    /* maps each activity with it's list of postures of interest */
     public static final Map<Activity, List<String>> activityPosturesMap = initActivitiesMap();
+
+    /* union of all postures of interest for all activities */
+    public static final List<String> allPosturesOfInterest = initAllPosturesOfInterest();
+
+
     /* map activity type to activity objects*/
     public static final Map<Activity, HumanActivity> humanActivityMap = HumanActivity.InitHumanActivityMap();
 
@@ -121,6 +127,28 @@ public abstract class HumanActivity {
 
         return map;
 
+
+    }
+
+    private static List<String> initAllPosturesOfInterest() {
+
+        List<String> interestingPostures;
+
+        interestingPostures = new LinkedList<String>();
+        interestingPostures.add("generalPosture");
+        interestingPostures.add("leftLegFirst");
+        interestingPostures.add("rightLegFirst");
+        interestingPostures.add("leftLegSecond");
+        interestingPostures.add("rightLegSecond");
+
+        interestingPostures.add("leftHandFirst");
+        interestingPostures.add("rightHandFirst");
+        interestingPostures.add("leftHandSecond");
+        interestingPostures.add("rightHandSecond");
+
+        interestingPostures.add("torsoSecond");
+
+        return interestingPostures;
 
     }
 

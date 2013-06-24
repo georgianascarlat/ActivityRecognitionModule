@@ -32,10 +32,12 @@ public class ActivityRecognition {
 
 
     /* every activity has a list of observations */
-    public Map<Activity, CircularFifoBuffer> activityObservationsMap = initActivityObservationsMap();
+    public Map<Activity, CircularFifoBuffer> activityObservationsMap;
+    public CircularFifoBuffer generalHMMObservation;
 
     /* the activity simple HMMs */
     public Map<Activity, HMM> activitySimpleHMMMap;
+    public HMM generalHMM;
 
     /* the activity complex HMMs, formed out of two levels of HMMs */
     public Map<Activity, Pair<HMM, HMM>> activityComplexHMMMap;
@@ -52,6 +54,9 @@ public class ActivityRecognition {
         activityComplexHMMMap = new EnumMap<Activity, Pair<HMM, HMM>>(Activity.class);
 
         roomMovement = new RoomMovement(Utils.ROOM_MODEL_FILE);
+
+        activityObservationsMap = initActivityObservationsMap();
+        generalHMMObservation = new CircularFifoBuffer(Utils.MAX_OBSERVATION_SIZE);
     }
 
     public static void main(String args[]) throws IOException, URISyntaxException {
@@ -59,7 +64,7 @@ public class ActivityRecognition {
         if (REAL_TIME_DETECTION)
             new ActivityRecognition().waitForNewFiles();
         else
-            new ActivityRecognition().processFilesInDirectory("from_ema/data");
+            new ActivityRecognition().processFilesInDirectory("from_ema/training/set_2");
 
     }
 
@@ -70,11 +75,18 @@ public class ActivityRecognition {
 
         List<String> postureFileNames = Utils.getFileNamesFromDirectory(directory.listFiles());
 
-
-        for (String fileName : postureFileNames) {
-            processNewFile(fileName);
+        if (Utils.USE_GENERAL_HMM) {
+            for (String fileName : postureFileNames) {
+                processNewFileWithGeneralHMM(fileName);
+            }
+        } else {
+            for (String fileName : postureFileNames) {
+                processNewFileWithSpecificActivityHMMs(fileName);
+            }
         }
+
     }
+
 
     /**
      * Waits for new posture files to be added in the directory DATA_DIRECTORY.
@@ -138,7 +150,7 @@ public class ActivityRecognition {
 
                 try {
                     readyFileName = DATA_DIRECTORY + filename.toString();
-                    processNewFile(Utils.getPostureFile(readyFileName));
+                    processNewFileWithSpecificActivityHMMs(Utils.getPostureFile(readyFileName));
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -165,7 +177,7 @@ public class ActivityRecognition {
      * @param postureFile name of newly created file
      * @throws IOException
      */
-    private void processNewFile(String postureFile) throws IOException {
+    private void processNewFileWithSpecificActivityHMMs(String postureFile) throws IOException {
 
 
         /*read posture information from file*/
@@ -181,7 +193,7 @@ public class ActivityRecognition {
         for (Activity activity : Activity.values()) {
 
             /* make a prediction using an activity's HMM*/
-            prediction = predictActivity(activity, posture, postureFile);
+            prediction = predictFromActivityHMM(activity, posture, postureFile);
 
             /* may increase the probability of an activity according to the
             * information obtained from the room model: new position and object interaction*/
@@ -212,6 +224,71 @@ public class ActivityRecognition {
 
         /* log activity prediction to file */
         appendActivityToFile(frameNumber, predictedActivityIndex, bestPrediction.getValue().getProbability(), posture);
+
+
+    }
+
+    private void processNewFileWithGeneralHMM(String postureFile) throws IOException {
+
+        /*read posture information from file*/
+        Posture posture = new Posture(postureFile);
+        int observation, lastIndex, predictedActivityIndex;
+        CircularFifoBuffer observations;
+        Prediction prediction;
+        HMMOperations hmmOperations = new HMMOperationsImpl();
+        int frameNumber = FileNameComparator.getFileNumber(postureFile);
+        String predictedActivity;
+
+        if (generalHMM == null) {
+            /* load HMM from file if it wasn't loaded before */
+            generalHMM = new HMMCalculus(HMM_DIRECTORY + GENERAL_HMM_NAME + TXT_SUFFIX);
+
+        }
+
+        observations = generalHMMObservation;
+
+        /* compute observation index from posture information*/
+        observation = posture.computeObservationIndex(HumanActivity.allPosturesOfInterest);
+
+        if (observation < 0) {
+
+
+            int size = observations.size();
+            int size2 = size == MAX_OBSERVATION_SIZE ? size : (size + 1);
+            int obs[] = new int[size2], pred[] = new int[size2];
+
+            prediction = hmmOperations.predict(generalHMM,
+                    ArrayUtils.toPrimitive((Integer[]) observations.toArray(new Integer[0])));
+
+            for (int i = 0; i < size; i++) {
+                obs[i] = prediction.getObservations()[i];
+            }
+
+            for (int i = 0; i < size; i++) {
+                pred[i] = prediction.getPredictions()[i];
+            }
+            if (size2 > size)
+                pred[size] = pred[size - 1];
+
+
+            prediction = new Prediction(obs, pred, 0.001);
+
+        } else {
+
+            observations.add(observation);
+
+            prediction = hmmOperations.predict(generalHMM,
+                    ArrayUtils.toPrimitive((Integer[]) observations.toArray(new Integer[0])));
+        }
+
+        lastIndex = prediction.getPredictions().length - 1;
+        predictedActivityIndex = prediction.getPredictions()[lastIndex];
+        predictedActivity = Activity.getActivityNameByIndex(predictedActivityIndex);
+
+        System.out.println("Activity from frame " + frameNumber + ": " + predictedActivity);
+
+        /* log activity prediction to file */
+        appendActivityToFile(frameNumber, predictedActivityIndex, prediction.getProbability(), posture);
 
 
     }
@@ -285,7 +362,7 @@ public class ActivityRecognition {
      * @return prediction
      * @throws FileNotFoundException
      */
-    private Prediction predictActivity(Activity activity, Posture posture, String postureFileName) throws FileNotFoundException {
+    private Prediction predictFromActivityHMM(Activity activity, Posture posture, String postureFileName) throws FileNotFoundException {
         Prediction prediction;
         HMMOperations hmmOperations = new HMMOperationsImpl();
         List<String> posturesOfInterest = HumanActivity.activityPosturesMap.get(activity);

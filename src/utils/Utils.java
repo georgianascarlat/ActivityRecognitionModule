@@ -25,6 +25,8 @@ public class Utils {
     public static final String LEVEL_2_SUFFIX = "_level_2";
     public static final String TMP = "~";
 
+    public static final String GENERAL_HMM_NAME = "general_hmm";
+
     public static final String OBJECT_DETECTION_FOLDER = "object_detection/";
     public static final String SCRIPT_NAME = OBJECT_DETECTION_FOLDER + "detect.py";
     public static final String SPACE = " ";
@@ -43,6 +45,8 @@ public class Utils {
 
     public static final boolean USE_ROOM_MODEL = true;
     public static final boolean REAL_TIME_DETECTION = false;
+
+    public static final boolean USE_GENERAL_HMM = true;
 
 
     /**

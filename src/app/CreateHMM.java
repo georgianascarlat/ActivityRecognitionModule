@@ -28,15 +28,23 @@ public class CreateHMM {
         List<List<Posture>> postures = getTrainPostures();
 
 
-        /* create a HMM for each activity*/
-        for (Activity activity : Activity.values()) {
-            if (Utils.USE_SIMPLE_HMM)
+        if (Utils.USE_SIMPLE_HMM) {
+
+            for (Activity activity : Activity.values()) {
                 createActivitySingleHMM(activity, postures);
-            else
+            }
+        } else {
+
+            for (Activity activity : Activity.values()) {
                 createActivityMultipleHMMs(activity, postures);
+            }
         }
 
+        if (Utils.USE_GENERAL_HMM)
+            createHMMForAllActivities(postures);
+
     }
+
 
     /**
      * Creates two HMMs for an activity based on an the posture information.
@@ -126,7 +134,7 @@ public class CreateHMM {
 
         secondLevelHMM = operations.trainSupervised(numStates, numObservableVariables, newObservations, hiddenStates);
 
-        adjustStateProbabilitiesToEven(numStates, secondLevelHMM);
+        //adjustStateProbabilitiesToEven(numStates, secondLevelHMM);
 
         System.out.println();
         secondLevelHMM.print();
@@ -179,12 +187,83 @@ public class CreateHMM {
         hmm = hmmOperations.trainSupervised(numStates, numObservableVariables, observations, hiddenStates);
 
 
-        adjustStateProbabilitiesToEven(numStates, hmm);
+        //adjustStateProbabilitiesToEven(numStates, hmm);
 
         hmm.print();
         /*save the model into it's corresponding file*/
         hmm.saveModel(HMM_DIRECTORY + activity.getName() + SINGLE_SUFFIX + TXT_SUFFIX);
 
+    }
+
+    private static void createHMMForAllActivities(List<List<Posture>> postures) throws IOException {
+
+        int numStates = 7;
+        List<String> posturesOfInterest = HumanActivity.allPosturesOfInterest;
+        int numObservableVariables;
+
+        numObservableVariables = Posture.computeNumObservableVariables(posturesOfInterest);
+
+
+        HMMOperations hmmOperations = new HMMOperationsImpl();
+        List<List<Integer>> observations = new ArrayList<List<Integer>>();
+        List<List<Integer>> hiddenStates = new ArrayList<List<Integer>>();
+        HMM hmm;
+
+        System.out.println();
+        System.out.println("General HMM");
+        System.out.println();
+
+        /* transform posture information into observable variables and hidden states*/
+        for (List<Posture> sequence : postures) {
+
+            processSequence(posturesOfInterest, observations, hiddenStates, sequence);
+        }
+
+
+        /* train the model using the observations and hidden states*/
+        hmm = hmmOperations.trainSupervised(numStates, numObservableVariables, observations, hiddenStates);
+
+
+        adjustStateProbabilitiesToEven(numStates, hmm);
+
+        hmm.print();
+        /*save the model into it's corresponding file*/
+        hmm.saveModel(HMM_DIRECTORY + GENERAL_HMM_NAME + TXT_SUFFIX);
+
+
+    }
+
+    private static void processSequence(List<String> posturesOfInterest,
+                                        List<List<Integer>> observations, List<List<Integer>> hiddenStates,
+                                        List<Posture> sequence) {
+
+        List<Integer> aux_o = new ArrayList<Integer>();
+        List<Integer> aux_s = new ArrayList<Integer>();
+        int observation;
+
+        for (Posture posture : sequence) {
+
+
+            /* transform posture information into observation index*/
+
+            observation = posture.computeObservationIndex(posturesOfInterest);
+
+
+            /* check for correct classification (incorrect classification is ignored)*/
+            if (observation >= 0) {
+
+                aux_o.add(observation);
+
+                /* get the tagged activity, state 1 means the activity is detected, 0 otherwise*/
+                aux_s.add(posture.getActivity());
+            }
+
+        }
+
+        if (aux_o.size() > 0 && aux_s.size() > 0) {
+            observations.add(aux_o);
+            hiddenStates.add(aux_s);
+        }
     }
 
 
@@ -228,10 +307,17 @@ public class CreateHMM {
         double trans[][] = hmm.getTransitionMatrix();
         double initial[] = hmm.getInitialStateProbabilities();
 
+        int div = numStates + 3;
+        double otherProbability = 1.0 / div, selfProbability = (1.0 - otherProbability * (numStates - 1));
+        double initialProb = 1.0 / numStates;
+
         for (int i = 0; i < numStates; i++) {
-            initial[i] = 1.0 / numStates;
+            initial[i] = initialProb;
             for (int j = 0; j < numStates; j++) {
-                trans[i][j] = 1.0 / numStates;
+                if (i == j)
+                    trans[i][j] = selfProbability;
+                else
+                    trans[i][j] = otherProbability;
             }
         }
     }
