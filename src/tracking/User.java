@@ -3,7 +3,9 @@ package tracking;
 import models.JointPoint;
 
 import javax.vecmath.Point3d;
+import java.io.*;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -11,12 +13,70 @@ import java.util.Map;
 public class User {
 
     private Map<Integer, Point3d> skeleton;
+    public static final int NUM_JOINTS = 15;
 
     @Override
     public String toString() {
         return "User{" +
                 "skeleton=" + skeleton +
                 '}';
+    }
+
+
+    public static User readUser(String fileName) throws IOException {
+
+        String strLine;
+        List<String> strings;
+        FileInputStream fstream;
+        DataInputStream in;
+        BufferedReader br = null;
+        int error;
+
+        try {
+
+            fstream = new FileInputStream(fileName);
+            in = new DataInputStream(fstream);
+            br = new BufferedReader(new InputStreamReader(in));
+
+            strings = new LinkedList<String>();
+
+        /* read error */
+            strLine = readSingleLine(br);
+            error = new Integer(strLine.substring(0, strLine.length() - 1));
+
+            if (error == 1) {
+                throw new IllegalArgumentException("Error in skeleton file");
+            }
+
+
+        /* throw away timestamp line and floor line*/
+            for (int i = 0; i < 2; i++)
+                readSingleLine(br);
+
+        /* read each joint point line*/
+            for (int i = 0; i < NUM_JOINTS; i++) {
+                strLine = readSingleLine(br);
+                strings.add(strLine);
+            }
+
+            return new User(strings);
+
+        } finally {
+
+            if (null != br) {
+                br.close();
+            }
+        }
+
+
+    }
+
+    public static String readSingleLine(BufferedReader br) throws IOException {
+        String strLine;
+        if (((strLine = br.readLine()) == null)) {
+            throw new IllegalArgumentException("Invalid skeleton file format");
+        }
+        return strLine;
     }
 
     public User(List<String> points) {

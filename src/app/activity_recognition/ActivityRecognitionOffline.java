@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ActivityRecognitionOffline extends ActivityRecognition {
 
-    public static final String DIRECTORY_NAME = "from_ema/training/set_2";
+    public static final String DIRECTORY_NAME = "from_ema/data";
 
 
     public ActivityRecognitionOffline() throws FileNotFoundException {

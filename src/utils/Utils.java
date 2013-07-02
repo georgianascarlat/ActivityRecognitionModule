@@ -15,7 +15,9 @@ public class Utils {
     public static final String HMM_DIRECTORY = "learned_HMMs/";
     public static final String DATA_DIRECTORY = "data/";
     public static final String ACTIVITY_FILE = "activity/activity_recognition.txt";
-    public static final String ROOM_MODEL_FILE = "room_model/room_model.txt";
+    public static final String ROOM_MODEL_DIR = "room_model/";
+    public static final String ROOM_MODEL_FILE = ROOM_MODEL_DIR + "room_model.txt";
+    public static final String ROOM_CONFIG_FILE = ROOM_MODEL_DIR + "room_config_info.txt";
 
 
     public static final String POSTURE_PREFIX = "posture_";
@@ -37,6 +39,7 @@ public class Utils {
 
 
     public static final int MAX_OBSERVATION_SIZE = 15;
+    public static final int MAX_KINECT_NO = 4;
 
 
     public static final int MAX_LEARN_ITERATIONS = 50;
@@ -44,7 +47,7 @@ public class Utils {
 
     public static final boolean USE_ROOM_MODEL = true;
 
-    public static final HMMTypes HMM_TYPE = HMMTypes.GeneralHMM;
+    public static final HMMTypes HMM_TYPE = HMMTypes.SingleLayerHMM;
     public static final ActivityRecognitionType ACTIVITY_RECOGNITION_TYPE = ActivityRecognitionType.OFFLINE_RECOGNITION;
 
 
@@ -181,5 +184,13 @@ public class Utils {
         String s = new String(skeletonFileName);
 
         return s.replace(SKELETON_PREFIX, SKELETON_PREFIX + "0_");
+    }
+
+    public static String getDepthFileName(int i) {
+        return ROOM_MODEL_DIR + "depth_" + i + "_0.txt";
+    }
+
+    public static String getImageFileName(int i) {
+        return ROOM_MODEL_DIR + "image_" + i + "_0.bmp";
     }
 }

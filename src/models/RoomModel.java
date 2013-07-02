@@ -29,12 +29,6 @@ public class RoomModel {
         loadModel(fileName);
     }
 
-    public void createModel(String fileName) throws IOException {
-        //TODO: create room model
-
-        saveModel(fileName);
-    }
-
     public int getPointOnMap(int line, int column) {
         return gridMap[line][column];
     }

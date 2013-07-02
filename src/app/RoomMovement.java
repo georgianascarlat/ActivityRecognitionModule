@@ -4,7 +4,7 @@ package app;
 import models.JointPoint;
 import models.ObjectClass;
 import models.RoomModel;
-import tracking.Snapshot;
+import tracking.FloorProjection;
 import utils.Pair;
 import utils.Utils;
 
@@ -36,7 +36,7 @@ public class RoomMovement {
     public Pair<ObjectClass, Pair<Integer, Integer>> getMovementResult(String skeletonFileName, JointPoint jointPoint) {
 
 
-        Snapshot snapshot;
+        FloorProjection floorProjection;
         Pair<Integer, Integer> position;
         int line, column, objectIndex;
         ObjectClass objectClass;
@@ -58,23 +58,25 @@ public class RoomMovement {
 
         /* use the skeleton file to create a Snapshot object*/
         try {
-            snapshot = new Snapshot(skeletonFileName, roomModel.getWidthParts(),
+            floorProjection = new FloorProjection(roomModel.getWidthParts(),
                     roomModel.getHeightParts(), roomModel.getFloorWidth(), roomModel.getFloorHeight());
+
+            /* obtain the user's position inside the grid*/
+            position = floorProjection.getFloorProjection(jointPoint, skeletonFileName);
+            line = position.getFirst();
+            column = position.getSecond();
+
+        /* find the object that is mapped on that position*/
+            objectIndex = roomModel.getPointOnMap(line, column);
+            objectClass = ObjectClass.getObjectByIndex(objectIndex);
+
+
+            return new Pair<ObjectClass, Pair<Integer, Integer>>(objectClass, position);
         } catch (IOException e) {
             e.printStackTrace();
             return OBJECT_CLASS_PAIR_DEFAULT;
         }
 
-        /* obtain the user's position inside the grid*/
-        position = snapshot.getUserOnFloorPosition(jointPoint);
-        line = position.getFirst();
-        column = position.getSecond();
 
-        /* find the object that is mapped on that position*/
-        objectIndex = roomModel.getPointOnMap(line, column);
-        objectClass = ObjectClass.getObjectByIndex(objectIndex);
-
-
-        return new Pair<ObjectClass, Pair<Integer, Integer>>(objectClass, position);
     }
 }
