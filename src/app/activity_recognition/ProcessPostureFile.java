@@ -2,30 +2,16 @@ package app.activity_recognition;
 
 
 import models.HMMTypes;
-import models.Posture;
-import utils.Utils;
+import utils.Pair;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 
 
 public abstract class ProcessPostureFile {
 
 
-    public abstract void processPostureFile(String postureFileName) throws IOException;
+    public abstract Pair<Integer, Double> processPostureFile(String postureFileName) throws IOException;
 
-    protected void appendActivityToFile(int frameNumber, int predictedActivityIndex, double probability, Posture posture) throws IOException {
-
-        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Utils.ACTIVITY_FILE, true)));
-
-        if (posture.getActivity() >= 0)
-            out.println(frameNumber + "," + predictedActivityIndex + "," + probability + "," + posture.getActivity() + ",");
-        else
-            out.println(frameNumber + "," + predictedActivityIndex + "," + probability + ",");
-        out.close();
-    }
 
     public static ProcessPostureFile factory(HMMTypes hmmType) {
         switch (hmmType) {
@@ -38,6 +24,10 @@ public abstract class ProcessPostureFile {
             case GeneralHMM:
 
                 return new ProcessPostureFileGeneralHMM();
+
+            case BothHMMTypes:
+
+                return new ProcessPostureFileBothHMMTypes();
 
             default:
 

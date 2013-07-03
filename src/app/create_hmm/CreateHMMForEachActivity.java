@@ -63,7 +63,7 @@ public class CreateHMMForEachActivity extends CreateHMM {
         hmm = hmmOperations.trainSupervised(numStates, numObservableVariables, observations, hiddenStates);
 
 
-        //adjustStateProbabilitiesToEven(numStates, hmm);
+        adjustInitialProbabilitiesToEven(numStates, hmm);
 
         hmm.print();
         /*save the model into it's corresponding file*/

@@ -6,8 +6,6 @@ import java.io.*;
 import java.text.DecimalFormat;
 import java.util.Scanner;
 
-import static utils.Utils.initRandomMarkovVector;
-
 /**
  * Hidden Markov Model
  */

@@ -11,7 +11,7 @@ import models.Posture;
 import models.Prediction;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang3.ArrayUtils;
-import utils.FileNameComparator;
+import utils.Pair;
 import utils.Utils;
 
 import java.io.IOException;
@@ -38,7 +38,7 @@ public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
      * @throws IOException
      */
     @Override
-    public void processPostureFile(String postureFileName) throws IOException {
+    public Pair<Integer, Double> processPostureFile(String postureFileName) throws IOException {
 
         /*read posture information from file*/
         Posture posture = new Posture(postureFileName);
@@ -46,8 +46,6 @@ public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
         CircularFifoBuffer observations;
         Prediction prediction;
         HMMOperations hmmOperations = new HMMOperationsImpl();
-        int frameNumber = FileNameComparator.getFileNumber(postureFileName);
-        String predictedActivity;
 
         if (generalHMM == null) {
             /* load HMM from file if it wasn't loaded before */
@@ -91,13 +89,8 @@ public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
 
         lastIndex = prediction.getPredictions().length - 1;
         predictedActivityIndex = prediction.getPredictions()[lastIndex];
-        predictedActivity = Activity.getActivityNameByIndex(predictedActivityIndex);
 
-        System.out.println("Activity from frame " + frameNumber + ": " + predictedActivity);
-
-        /* log activity prediction to file */
-        appendActivityToFile(frameNumber, predictedActivityIndex, prediction.getProbability(), posture);
-
+        return new Pair<Integer, Double>(predictedActivityIndex, prediction.getProbability());
 
     }
 

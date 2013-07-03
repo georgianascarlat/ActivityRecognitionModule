@@ -30,6 +30,13 @@ public abstract class CreateHMM {
 
                 new CreateGeneralHMM().createHMM(postures);
                 break;
+
+            case BothHMMTypes:
+
+                new CreateGeneralHMM().createHMM(postures);
+                new CreateHMMForEachActivity().createHMM(postures);
+                break;
+
         }
     }
 
@@ -83,6 +90,17 @@ public abstract class CreateHMM {
                 else
                     trans[i][j] = otherProbability;
             }
+        }
+    }
+
+    protected static void adjustInitialProbabilitiesToEven(int numStates, HMM hmm) {
+
+        double initial[] = hmm.getInitialStateProbabilities();
+        double initialProb = 1.0 / numStates;
+
+        for (int i = 0; i < numStates; i++) {
+            initial[i] = initialProb;
+
         }
     }
 }

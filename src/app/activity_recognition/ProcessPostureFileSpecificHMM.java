@@ -10,7 +10,7 @@ import models.Posture;
 import models.Prediction;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang3.ArrayUtils;
-import utils.FileNameComparator;
+import utils.Pair;
 import utils.Utils;
 
 import java.io.FileNotFoundException;
@@ -51,16 +51,14 @@ public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
      * @throws IOException
      */
     @Override
-    public void processPostureFile(String postureFileName) throws IOException {
+    public Pair<Integer, Double> processPostureFile(String postureFileName) throws IOException {
          /*read posture information from file*/
         Posture posture = new Posture(postureFileName);
         /* keep the predictions made by each activity HMM to later choose the best one*/
         Map<Activity, Prediction> predictions = new EnumMap<Activity, Prediction>(Activity.class);
         Prediction prediction;
         Map.Entry<Activity, Prediction> bestPrediction;
-        String predictedActivity;
         int preds[], predictedActivityIndex;
-        int frameNumber = FileNameComparator.getFileNumber(postureFileName);
 
         for (Activity activity : Activity.values()) {
 
@@ -84,18 +82,13 @@ public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
 
         /* check to see if an activity has been detected */
         if (preds[preds.length - 1] == 1) {
-            predictedActivity = bestPrediction.getKey().getName();
             predictedActivityIndex = bestPrediction.getKey().getIndex();
         } else {
-            predictedActivity = "no activity";
             predictedActivityIndex = 0;
         }
 
+        return new Pair<Integer, Double>(predictedActivityIndex, bestPrediction.getValue().getProbability());
 
-        System.out.println("Activity from frame " + frameNumber + ": " + predictedActivity);
-
-        /* log activity prediction to file */
-        appendActivityToFile(frameNumber, predictedActivityIndex, bestPrediction.getValue().getProbability(), posture);
     }
 
     /**
@@ -104,9 +97,8 @@ public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
      * The prediction takes into account not only the last observation,
      * but also the sequence of observations made before that.
      *
-     *
-     * @param activity        activity
-     * @param posture         posture information
+     * @param activity activity
+     * @param posture  posture information
      * @return prediction
      * @throws java.io.FileNotFoundException
      */

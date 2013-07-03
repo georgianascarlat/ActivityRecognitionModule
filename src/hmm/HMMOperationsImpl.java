@@ -2,7 +2,6 @@ package hmm;
 
 import models.Prediction;
 import models.Viterbi;
-import utils.Pair;
 
 import java.util.List;
 

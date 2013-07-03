@@ -2,10 +2,14 @@ package app.activity_recognition;
 
 
 import app.RoomMovement;
+import models.Activity;
 import models.ActivityRecognitionType;
+import models.Posture;
+import utils.FileNameComparator;
+import utils.Pair;
+import utils.Utils;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 
 import static utils.Utils.*;
 
@@ -32,7 +36,17 @@ public abstract class ActivityRecognition {
 
 
     protected void processNewFile(String postureFile) throws IOException {
-        processPostureFile.processPostureFile(postureFile);
+
+        Pair<Integer, Double> prediction = processPostureFile.processPostureFile(postureFile);
+
+        int frameNumber = FileNameComparator.getFileNumber(postureFile);
+
+
+        System.out.println("Activity from frame " + frameNumber + ": " + Activity.getActivityNameByIndex(prediction.getFirst()));
+
+        /* log activity prediction to file */
+        appendActivityToFile(frameNumber, prediction.getFirst(), prediction.getSecond(), new Posture(postureFile));
+
     }
 
     public static ActivityRecognition factory(ActivityRecognitionType type) throws FileNotFoundException {
@@ -49,6 +63,17 @@ public abstract class ActivityRecognition {
             default:
                 throw new IllegalArgumentException("No such Activity Recognition type " + type);
         }
+    }
+
+    protected void appendActivityToFile(int frameNumber, int predictedActivityIndex, double probability, Posture posture) throws IOException {
+
+        PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(Utils.ACTIVITY_FILE, true)));
+
+        if (posture.getActivity() >= 0)
+            out.println(frameNumber + "," + predictedActivityIndex + "," + probability + "," + posture.getActivity() + ",");
+        else
+            out.println(frameNumber + "," + predictedActivityIndex + "," + probability + ",");
+        out.close();
     }
 
 

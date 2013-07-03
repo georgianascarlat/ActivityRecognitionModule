@@ -25,29 +25,19 @@ public class Utils {
     public static final String READY_PREFIX = "ready_d_";
     public static final String TXT_SUFFIX = ".txt";
     public static final String SINGLE_SUFFIX = "_single";
-    public static final String LEVEL_1_SUFFIX = "_level_1";
-    public static final String LEVEL_2_SUFFIX = "_level_2";
     public static final String TMP = "~";
 
     public static final String GENERAL_HMM_NAME = "general_hmm";
 
     public static final String OBJECT_DETECTION_FOLDER = "object_detection/";
-    public static final String SCRIPT_NAME = OBJECT_DETECTION_FOLDER + "detect.py";
-    public static final String SPACE = " ";
-    public static final String OFFICE_CHAIR_CASCADE = OBJECT_DETECTION_FOLDER + "office_chair_cascade.xml";
-    public static final String WINDSOM_CHAIR_CASCADE = OBJECT_DETECTION_FOLDER + "windsom_chair_cascade.xml";
 
 
     public static final int MAX_OBSERVATION_SIZE = 15;
     public static final int MAX_KINECT_NO = 4;
 
-
-    public static final int MAX_LEARN_ITERATIONS = 50;
-    public static final int LEARN_NUM_RAND_INITS = 100;
-
     public static final boolean USE_ROOM_MODEL = true;
 
-    public static final HMMTypes HMM_TYPE = HMMTypes.GeneralHMM;
+    public static final HMMTypes HMM_TYPE = HMMTypes.BothHMMTypes;
     public static final ActivityRecognitionType ACTIVITY_RECOGNITION_TYPE = ActivityRecognitionType.OFFLINE_RECOGNITION;
 
 
@@ -155,28 +145,6 @@ public class Utils {
         String s = new String(readyFilename);
 
         return s.replace(READY_PREFIX, POSTURE_PREFIX);
-    }
-
-    /**
-     * Initialises the values of a vector with random
-     * values between 0.0 an 1.0 such that the sum of
-     * the vector elements is 1.
-     *
-     * @param vector vector to be initialised
-     */
-    public static void initRandomMarkovVector(double vector[]) {
-
-        Random random = new Random();
-        int length = vector.length;
-        double remaining = 1;
-
-        for (int i = 0; i < length - 1; i++) {
-
-            vector[i] = random.nextDouble() * remaining;
-            remaining -= vector[i];
-        }
-
-        vector[length - 1] = remaining;
     }
 
     public static String addSkeletonDeviceIndex(String skeletonFileName) {
