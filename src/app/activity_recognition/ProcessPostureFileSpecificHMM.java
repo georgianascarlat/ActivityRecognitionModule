@@ -1,10 +1,15 @@
 package app.activity_recognition;
 
 import activities.HumanActivity;
+import hmm.HMM;
+import hmm.HMMCalculus;
+import hmm.HMMOperations;
+import hmm.HMMOperationsImpl;
 import models.Activity;
 import models.Posture;
 import models.Prediction;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
+import org.apache.commons.lang3.ArrayUtils;
 import utils.FileNameComparator;
 import utils.Utils;
 
@@ -15,22 +20,23 @@ import java.util.List;
 import java.util.Map;
 
 import static activities.HumanActivity.humanActivityMap;
-import static utils.Utils.MAX_OBSERVATION_SIZE;
-import static utils.Utils.getSkeletonFile;
+import static utils.Utils.*;
 
 
-public abstract class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
+public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
 
     /* every activity has a list of observations */
     public Map<Activity, CircularFifoBuffer> activityObservationsMap;
+    /* the activity simple HMMs */
+    public Map<Activity, HMM> activitySimpleHMMMap;
 
     public ProcessPostureFileSpecificHMM() {
 
         super();
         activityObservationsMap = initActivityObservationsMap();
+        activitySimpleHMMMap = new EnumMap<Activity, HMM>(Activity.class);
     }
 
-    protected abstract Prediction getPrediction(Activity activity, CircularFifoBuffer observations) throws FileNotFoundException;
 
     /**
      * Processes a newly created file to obtain the predicted activity, which is
@@ -59,7 +65,7 @@ public abstract class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
         for (Activity activity : Activity.values()) {
 
             /* make a prediction using an activity's HMM*/
-            prediction = predictActivity(activity, posture, postureFileName);
+            prediction = predictActivity(activity, posture);
 
             /* may increase the probability of an activity according to the
             * information obtained from the room model: new position and object interaction*/
@@ -98,13 +104,13 @@ public abstract class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
      * The prediction takes into account not only the last observation,
      * but also the sequence of observations made before that.
      *
+     *
      * @param activity        activity
      * @param posture         posture information
-     * @param postureFileName posture file name
      * @return prediction
      * @throws java.io.FileNotFoundException
      */
-    private Prediction predictActivity(Activity activity, Posture posture, String postureFileName) throws FileNotFoundException {
+    private Prediction predictActivity(Activity activity, Posture posture) throws FileNotFoundException {
         Prediction prediction;
         List<String> posturesOfInterest = HumanActivity.activityPosturesMap.get(activity);
         int observation;
@@ -148,6 +154,29 @@ public abstract class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
 
         return getPrediction(activity, observations);
 
+    }
+
+    private Prediction getPrediction(Activity activity, CircularFifoBuffer observations) throws FileNotFoundException {
+        HMM hmm;
+        Prediction prediction;
+        HMMOperations hmmOperations = new HMMOperationsImpl();
+
+        /* obtain the HMM for the current activity*/
+        hmm = activitySimpleHMMMap.get(activity);
+
+        if (hmm == null) {
+
+            /* load HMM from file if it wasn't loaded before */
+            hmm = new HMMCalculus(HMM_DIRECTORY + activity.getName() + SINGLE_SUFFIX + TXT_SUFFIX);
+            /* keep the HMM in the map for later use */
+            activitySimpleHMMMap.put(activity, hmm);
+        }
+
+
+            /* predict */
+        prediction = hmmOperations.predict(hmm,
+                ArrayUtils.toPrimitive((Integer[]) observations.toArray(new Integer[0])));
+        return prediction;
     }
 
 

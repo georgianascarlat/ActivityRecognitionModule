@@ -32,7 +32,7 @@ public abstract class ProcessPostureFile {
 
             case SpecialisedHMM:
 
-                return new ProcessPostureFileSpecialisedHMM();
+                return new ProcessPostureFileSpecificHMM();
 
 
             case GeneralHMM:

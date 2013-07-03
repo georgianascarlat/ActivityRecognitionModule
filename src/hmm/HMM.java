@@ -4,7 +4,6 @@ import models.Viterbi;
 
 import java.io.*;
 import java.text.DecimalFormat;
-import java.util.List;
 import java.util.Scanner;
 
 import static utils.Utils.initRandomMarkovVector;
@@ -57,25 +56,11 @@ public abstract class HMM {
 
     }
 
-    public abstract double[][] forward(int[] observations);
-
     public abstract double[][] forwardNormalized(int[] observations, double norms[]);
-
-    public abstract double[][] backward(int[] observations);
 
     public abstract double[][] backwardNormalized(int[] observations, double[] norms);
 
-    public abstract double epsilon(int t, int i, int j, int[] observations, double[][] forward, double[][] backward);
-
-    public abstract double epsilonNormalized(int t, int i, int j,
-                                             int[] observations, double gamma, double[][] backward, double[] norms);
-
     public abstract double gamma(int i, int t, int[] observations, double[][] forward, double[][] backward);
-
-
-    public abstract double logObservationsProbability(int[] observations);
-
-    public abstract double logObservationsProbability(List<List<Integer>> observations);
 
 
     public abstract Viterbi viterbi(int[] observations);
@@ -86,21 +71,6 @@ public abstract class HMM {
             return 0;
         } else
             return n / d;
-    }
-
-    /**
-     * Randomly initialises the probabilities for the HMM.
-     */
-    public void randomInit() {
-
-        initRandomMarkovVector(initialStateProbabilities);
-
-        for (int j = 0; j < numStates; j++) {
-            initRandomMarkovVector(transitionMatrix[j]);
-            initRandomMarkovVector(emissionMatrix[j]);
-        }
-
-
     }
 
 
@@ -250,22 +220,5 @@ public abstract class HMM {
         return emissionMatrix;
     }
 
-    protected void setInitialStateProbabilities(double[] initialStateProbabilities) {
-        this.initialStateProbabilities = initialStateProbabilities;
-    }
 
-    protected void setTransitionMatrix(double[][] transitionMatrix) {
-        this.transitionMatrix = transitionMatrix;
-    }
-
-    protected void setEmissionMatrix(double[][] emissionMatrix) {
-        this.emissionMatrix = emissionMatrix;
-    }
-
-
-    public static Double safeLog(double v) {
-        if (v == 0)
-            return 0.0;
-        return Math.log(v);
-    }
 }
