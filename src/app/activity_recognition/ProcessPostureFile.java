@@ -30,13 +30,10 @@ public abstract class ProcessPostureFile {
     public static ProcessPostureFile factory(HMMTypes hmmType) {
         switch (hmmType) {
 
-            case SingleLayerHMM:
+            case SpecialisedHMM:
 
-                return new ProcessPostureFileSingleLayerHMM();
+                return new ProcessPostureFileSpecialisedHMM();
 
-            case TwoLayerHMM:
-
-                return new ProcessPostureFileTwoLayerHMM();
 
             case GeneralHMM:
 

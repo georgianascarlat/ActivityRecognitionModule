@@ -21,13 +21,13 @@ public abstract class CreateHMM {
 
         switch (HMM_TYPE) {
 
-            case SingleLayerHMM:
-                new CreateSingleLayerHMM().createHMM(postures);
+            case SpecialisedHMM:
+
+                new CreateHMMForEachActivity().createHMM(postures);
                 break;
-            case TwoLayerHMM:
-                new CreateTwoLayerHMM().createHMM(postures);
-                break;
+
             case GeneralHMM:
+
                 new CreateGeneralHMM().createHMM(postures);
                 break;
         }

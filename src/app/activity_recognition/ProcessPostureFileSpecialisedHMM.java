@@ -16,12 +16,12 @@ import java.util.Map;
 import static utils.Utils.*;
 
 
-public class ProcessPostureFileSingleLayerHMM extends ProcessPostureFileSpecificHMM {
+public class ProcessPostureFileSpecialisedHMM extends ProcessPostureFileSpecificHMM {
 
     /* the activity simple HMMs */
     public Map<Activity, HMM> activitySimpleHMMMap;
 
-    public ProcessPostureFileSingleLayerHMM() {
+    public ProcessPostureFileSpecialisedHMM() {
         super();
         activitySimpleHMMMap = new EnumMap<Activity, HMM>(Activity.class);
     }

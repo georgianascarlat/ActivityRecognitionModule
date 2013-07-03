@@ -14,7 +14,7 @@ import java.util.List;
 
 import static utils.Utils.*;
 
-public class CreateSingleLayerHMM extends CreateHMM {
+public class CreateHMMForEachActivity extends CreateHMM {
     @Override
     public void createHMM(List<List<Posture>> postures) throws IOException {
 

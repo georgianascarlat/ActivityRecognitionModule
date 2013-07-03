@@ -3,7 +3,6 @@ package models;
 
 public enum HMMTypes {
 
-    SingleLayerHMM,
-    TwoLayerHMM,
+    SpecialisedHMM,
     GeneralHMM
 }
