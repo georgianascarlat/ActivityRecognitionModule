@@ -15,6 +15,11 @@ import static com.googlecode.javacv.cpp.opencv_highgui.*;
 
 public class ObjectDetection {
 
+    public static void main(String atgs[]){
+
+        ObjectDetection.computeObjectPoints(ObjectClassifier.OFFICE_CHAIR,"object_detection/0.bmp");
+    }
+
 
     public static List<Pair<Integer, Integer>> computeObjectPoints(ObjectClassifier classifierType, String fileName) {
 
@@ -23,6 +28,7 @@ public class ObjectDetection {
         List<opencv_core.IplImage> subImages;
         List<Pair<Integer, Integer>> result = new LinkedList<Pair<Integer, Integer>>();
 
+        rect = ImageOperations.mergeRectangles(rect);
 
         gray = ImageOperations.convertToGray(img);
 

@@ -18,21 +18,7 @@ public class ImageOperations {
     private static final int DOWN_FACTOR = 64;
 
 
-    private static opencv_core.CvRect makeRectSmaller(opencv_core.CvRect rect) {
 
-        opencv_core.CvRect smallerRect = new opencv_core.CvRect(rect);
-        double dx = (double) smallerRect.width() / REDUCE_FACTOR, dy = (double) smallerRect.height() / REDUCE_FACTOR;
-        int idx = (int) Math.round(dx), idy = (int) Math.round(dy);
-
-        for (int i = 0; i < smallerRect.limit(); i++) {
-            opencv_core.CvRect r = smallerRect.position(i);
-
-            r.x(r.x() + idx).y(r.y() + idy).width(r.width() - 2 * idx).height(r.height() - 2 * idy);
-
-        }
-
-        return smallerRect;
-    }
 
 
     public static List<opencv_core.IplImage> getSubImages(opencv_core.IplImage image, opencv_core.CvRect rect) {
@@ -166,5 +152,105 @@ public class ImageOperations {
         }
 
         return result;
+    }
+
+    private static opencv_core.CvRect makeRectSmaller(opencv_core.CvRect rect) {
+
+        opencv_core.CvRect smallerRect = new opencv_core.CvRect(rect);
+        double dx = (double) smallerRect.width() / REDUCE_FACTOR, dy = (double) smallerRect.height() / REDUCE_FACTOR;
+        int idx = (int) Math.round(dx), idy = (int) Math.round(dy);
+
+        for (int i = 0; i < smallerRect.limit(); i++) {
+            opencv_core.CvRect r = smallerRect.position(i);
+
+            r.x(r.x() + idx).y(r.y() + idy).width(r.width() - 2 * idx).height(r.height() - 2 * idy);
+
+        }
+
+        return smallerRect;
+    }
+
+    public static CvRect mergeRectangles(CvRect rect) {
+
+        CvRect finalRects = new CvRect(rect.limit()), r1, r2, rr = new CvRect(rect);
+
+        int index = 0;
+        List<Integer> added = new LinkedList<Integer>();
+
+
+
+        for(int i=0;i<rect.limit();i++){
+
+            if(added.contains(i))
+                continue;
+
+            r1 = rect.position(i);
+
+
+            for(int j=i+1; j <rr.limit();j++){
+
+                if(added.contains(j))
+                    continue;
+
+                r2 = rr.position(j);
+
+                if(intersectRects(r1,r2)){
+
+                    r1 = mergeRects(r1,r2);
+                    added.add(j);
+
+                }
+            }
+
+            addRect(finalRects,r1,index);
+            index++;
+
+        }
+
+        finalRects.limit(index);
+
+        return finalRects;
+
+
+    }
+
+    private static void addRect(CvRect finalRects, CvRect r1, int index) {
+
+        finalRects.position(index).put(new CvRect().x(r1.x()).y(r1.y()).width(r1.width()).height(r1.height()));
+
+    }
+
+    private static CvRect mergeRects(CvRect r1, CvRect r2) {
+
+        int x = Math.min(r1.x(), r2.x());
+        int y = Math.min(r1.y(), r2.y());
+        int width = Math.max(r1.x()+r1.width(), r2.x()+r2.width()) - x;
+        int height =  Math.max(r1.y()+r1.height(), r2.y()+r2.height()) - y;
+        return new CvRect(x, y,width,height);
+    }
+
+    private static boolean intersectRects(CvRect r1, CvRect r2) {
+
+        int intersect = 0;
+
+
+
+        if(r1.x() < r2.x()){
+            if(r2.x() <= (r1.x()+r1.width()))
+                intersect++;
+        } else {
+            if(r1.x() <= (r2.x()+r2.width()))
+                intersect++;
+        }
+
+        if(r1.y() < r2.y()){
+            if(r2.y() <= (r1.y()+r1.height()))
+                intersect++;
+        } else {
+            if(r1.y() <= (r2.y()+r2.height()))
+                intersect++;
+        }
+
+        return intersect == 2;
     }
 }
