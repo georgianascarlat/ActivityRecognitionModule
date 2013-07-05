@@ -45,6 +45,26 @@ public class FloorProjection {
         return new Pair<Integer, Integer>(line, column);
     }
 
+    public double  getHeightFromFloor(Point3d point3d){
+        double height = 0;
+        Point3d p1, p2, p3;
+        Point3d floorNormal;
+        Point3d projectionPoint;
+
+
+        p1 = floor.getPoint1();
+        p2 = floor.getPoint2();
+        p3 = floor.getPoint3();
+
+
+        floorNormal = Geometry.planNormal(p1, p2, p3);
+        projectionPoint = Geometry.projectPointOnPlan(floorNormal, p1, point3d);
+
+        height = point3d.distance(projectionPoint);
+
+        return height;
+    }
+
     public class Position {
         private int line;
         private int column;

@@ -39,8 +39,6 @@ public class ImageOperations {
             cvResetImageROI(image);
 
 
-            //cvSaveImage(i+"_.jpg",aux);
-
             list.add(aux);
 
         }
@@ -175,29 +173,21 @@ public class ImageOperations {
         CvRect finalRects = new CvRect(rect.limit()), r1, r2, rr = new CvRect(rect);
 
         int index = 0;
-        List<Integer> added = new LinkedList<Integer>();
-
 
 
         for(int i=0;i<rect.limit();i++){
-
-            if(added.contains(i))
-                continue;
 
             r1 = rect.position(i);
 
 
             for(int j=i+1; j <rr.limit();j++){
 
-                if(added.contains(j))
-                    continue;
 
                 r2 = rr.position(j);
 
                 if(intersectRects(r1,r2)){
 
-                    r1 = mergeRects(r1,r2);
-                    added.add(j);
+                    r1 = getBiggest(r1,r2);
 
                 }
             }
@@ -214,19 +204,17 @@ public class ImageOperations {
 
     }
 
+    private static CvRect getBiggest(CvRect r1, CvRect r2) {
+        int a1 = r1.height()*r1.width(), a2= r2.height()*r2.width();
+        if(a1 > a2)
+            return new CvRect(r1.x(),r1.y(),r1.width(),r1.height());
+        return new CvRect(r2.x(),r2.y(),r2.width(),r2.height());
+    }
+
     private static void addRect(CvRect finalRects, CvRect r1, int index) {
 
         finalRects.position(index).put(new CvRect().x(r1.x()).y(r1.y()).width(r1.width()).height(r1.height()));
 
-    }
-
-    private static CvRect mergeRects(CvRect r1, CvRect r2) {
-
-        int x = Math.min(r1.x(), r2.x());
-        int y = Math.min(r1.y(), r2.y());
-        int width = Math.max(r1.x()+r1.width(), r2.x()+r2.width()) - x;
-        int height =  Math.max(r1.y()+r1.height(), r2.y()+r2.height()) - y;
-        return new CvRect(x, y,width,height);
     }
 
     private static boolean intersectRects(CvRect r1, CvRect r2) {
