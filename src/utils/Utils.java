@@ -32,7 +32,7 @@ public class Utils {
     public static final String OBJECT_DETECTION_FOLDER = "object_detection/";
 
 
-    public static final int MAX_OBSERVATION_SIZE = 15;
+    public static final int MAX_OBSERVATION_SIZE = 10;
     public static final int MAX_KINECT_NO = 4;
 
     public static final boolean USE_ROOM_MODEL = true;

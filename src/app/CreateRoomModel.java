@@ -20,7 +20,9 @@ public class CreateRoomModel {
 
     private int widthParts = 100, heightParts = 200;
     private double width = 1000, height = 5000;
-    private RoomModel roomModel;
+    public RoomModel roomModel;
+    public static final ObjectClassifier classifiers[] = {ObjectClassifier.OFFICE_CHAIR};
+    public static final double minHeight = 100, maxHeight = 1000;
 
 
     public CreateRoomModel() throws FileNotFoundException {
@@ -74,6 +76,7 @@ public class CreateRoomModel {
         Point3d point;
         Pair<Integer, Integer> roomCell;
         Map<ObjectClass, List<Pair<Integer, Integer>>> objectPoints = new EnumMap<ObjectClass, List<Pair<Integer, Integer>>>(ObjectClass.class);
+        double height;
 
 
         for (ObjectClass objectClass : ObjectClass.values()) {
@@ -81,7 +84,7 @@ public class CreateRoomModel {
         }
 
 
-        for (ObjectClassifier classifier : ObjectClassifier.values()) {
+        for (ObjectClassifier classifier : classifiers) {
 
             auxList = ObjectDetection.computeObjectPoints(classifier, imageFileName);
 
@@ -99,9 +102,18 @@ public class CreateRoomModel {
             for (Pair<Integer, Integer> objectPoint : pointSoFar) {
 
                 point = mapping[objectPoint.getSecond()][objectPoint.getFirst()];
-                roomCell = floorProjection.getFloorProjection(point);
+                height = floorProjection.getHeightFromFloor(point);
 
-                roomModel.setPointOnMap(roomCell.getFirst(), roomCell.getSecond(), objectClass.getIndex());
+                if(height > minHeight && height < maxHeight){
+
+                    roomCell = floorProjection.getFloorProjection(point);
+
+                    System.out.println("H:"+floorProjection.getHeightFromFloor(point));
+
+                    roomModel.setPointOnMap(roomCell.getFirst(), roomCell.getSecond(), objectClass.getIndex());
+
+                }
+
 
             }
         }
@@ -111,7 +123,7 @@ public class CreateRoomModel {
 
     public Point3d[][] readRealWorldMapping(String fileName) throws FileNotFoundException {
 
-        Point3d[][] realWorldMapping = null;
+        Point3d[][] realWorldMapping;
 
         Scanner scanner = null;
 

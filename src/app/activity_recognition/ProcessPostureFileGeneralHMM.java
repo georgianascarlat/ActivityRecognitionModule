@@ -11,6 +11,7 @@ import models.Posture;
 import models.Prediction;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang3.ArrayUtils;
+import utils.FileNameComparator;
 import utils.Pair;
 import utils.Utils;
 
@@ -46,6 +47,12 @@ public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
         CircularFifoBuffer observations;
         Prediction prediction;
         HMMOperations hmmOperations = new HMMOperationsImpl();
+
+        int frameNumber = FileNameComparator.getFileNumber(postureFileName);
+
+
+        if(frameNumber < (Utils.MAX_OBSERVATION_SIZE - 1))
+            return null;
 
         if (generalHMM == null) {
             /* load HMM from file if it wasn't loaded before */

@@ -10,6 +10,7 @@ import models.Posture;
 import models.Prediction;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang3.ArrayUtils;
+import utils.FileNameComparator;
 import utils.Pair;
 import utils.Utils;
 
@@ -59,6 +60,11 @@ public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
         Prediction prediction;
         Map.Entry<Activity, Prediction> bestPrediction;
         int preds[], predictedActivityIndex;
+        int frameNumber = FileNameComparator.getFileNumber(postureFileName);
+
+
+        if(frameNumber < (Utils.MAX_OBSERVATION_SIZE - 1))
+            return null;
 
         for (Activity activity : Activity.values()) {
 

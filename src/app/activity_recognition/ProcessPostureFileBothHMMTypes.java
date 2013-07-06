@@ -2,7 +2,9 @@ package app.activity_recognition;
 
 import models.Activity;
 import models.HMMTypes;
+import utils.FileNameComparator;
 import utils.Pair;
+import utils.Utils;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -22,6 +24,11 @@ public class ProcessPostureFileBothHMMTypes extends ProcessPostureFile {
         Pair<Integer, Double> prediction1, prediction2, bestPrediction;
         final ExecutorService service;
         final Future<Pair<Integer, Double>> task1, task2;
+        int frameNumber = FileNameComparator.getFileNumber(postureFileName);
+
+
+        if(frameNumber < (Utils.MAX_OBSERVATION_SIZE - 1))
+            return null;
 
         service = Executors.newFixedThreadPool(2);
         task1 = service.submit(new ProcessFileOnSeparateThread(HMMTypes.GeneralHMM, postureFileName));
