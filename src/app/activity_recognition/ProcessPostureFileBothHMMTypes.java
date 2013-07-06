@@ -21,6 +21,7 @@ public class ProcessPostureFileBothHMMTypes extends ProcessPostureFile {
     public Pair<Integer, Double> processPostureFile(String postureFileName) throws IOException {
 
 
+
         Pair<Integer, Double> prediction1, prediction2, bestPrediction;
         final ExecutorService service;
         final Future<Pair<Integer, Double>> task1, task2;
@@ -30,15 +31,23 @@ public class ProcessPostureFileBothHMMTypes extends ProcessPostureFile {
         if(frameNumber < (Utils.MAX_OBSERVATION_SIZE - 1))
             return null;
 
-        service = Executors.newFixedThreadPool(2);
+
+
+        service = Executors.newFixedThreadPool(5);
         task1 = service.submit(new ProcessFileOnSeparateThread(HMMTypes.GeneralHMM, postureFileName));
+
+
         task2 = service.submit(new ProcessFileOnSeparateThread(HMMTypes.SpecialisedHMM, postureFileName));
+
 
         try {
 
-            // waits the 10 seconds for the Callable.call to finish.
-            prediction1 = task1.get();
+
             prediction2 = task2.get();
+
+            prediction1 = task1.get();
+
+
 
             service.shutdownNow();
 
@@ -50,6 +59,7 @@ public class ProcessPostureFileBothHMMTypes extends ProcessPostureFile {
             }
 
             lastPrediction = bestPrediction;
+
 
             return bestPrediction;
 

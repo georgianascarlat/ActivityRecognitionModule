@@ -29,13 +29,13 @@ public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
     /* every activity has a list of observations */
     public Map<Activity, CircularFifoBuffer> activityObservationsMap;
     /* the activity simple HMMs */
-    public Map<Activity, HMM> activitySimpleHMMMap;
+    public static Map<Activity, HMM> activitySimpleHMMMap = new EnumMap<Activity, HMM>(Activity.class);
 
     public ProcessPostureFileSpecificHMM() {
 
         super();
         activityObservationsMap = initActivityObservationsMap();
-        activitySimpleHMMMap = new EnumMap<Activity, HMM>(Activity.class);
+
     }
 
 

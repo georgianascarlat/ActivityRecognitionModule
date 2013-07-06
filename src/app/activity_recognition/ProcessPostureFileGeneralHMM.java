@@ -25,10 +25,11 @@ import static utils.Utils.*;
 public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
 
     public CircularFifoBuffer generalHMMObservation;
-    public HMM generalHMM;
+    public static HMM generalHMM = null;
 
     public ProcessPostureFileGeneralHMM() {
         generalHMMObservation = new CircularFifoBuffer(Utils.MAX_OBSERVATION_SIZE);
+
     }
 
     /**
@@ -93,6 +94,7 @@ public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
 
             prediction = getPrediction(observations, hmmOperations, postureFileName);
         }
+
 
         lastIndex = prediction.getPredictions().length - 1;
         predictedActivityIndex = prediction.getPredictions()[lastIndex];
