@@ -61,13 +61,8 @@ public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
         Prediction prediction;
         Map.Entry<Activity, Prediction> bestPrediction;
         int preds[], predictedActivityIndex;
-        int frameNumber = FileNameComparator.getFileNumber(postureFileName);
 
         setHumanHeight(Utils.getSkeletonFile(postureFileName));
-
-
-        if (frameNumber < (Utils.MAX_OBSERVATION_SIZE - 1))
-            return null;
 
         for (Activity activity : Activity.values()) {
 

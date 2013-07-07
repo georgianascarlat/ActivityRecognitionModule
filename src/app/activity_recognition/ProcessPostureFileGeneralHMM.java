@@ -49,12 +49,10 @@ public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
         CircularFifoBuffer observations;
         Prediction prediction;
         HMMOperations hmmOperations = new HMMOperationsImpl();
-        int frameNumber = FileNameComparator.getFileNumber(postureFileName);
+
 
         setHumanHeight(Utils.getSkeletonFile(postureFileName));
 
-        if (frameNumber < (Utils.MAX_OBSERVATION_SIZE - 1))
-            return null;
 
         if (generalHMM == null) {
             /* load HMM from file if it wasn't loaded before */

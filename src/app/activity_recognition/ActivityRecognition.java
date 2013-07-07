@@ -10,18 +10,22 @@ import utils.Pair;
 import utils.Utils;
 
 import java.io.*;
+import java.util.LinkedList;
+import java.util.List;
 
 import static utils.Utils.*;
 
 public abstract class ActivityRecognition {
 
     public static RoomMovement roomMovement;
+    private List<Pair<Integer, Double>> lastPredictionsWindow;
 
     protected ProcessPostureFile processPostureFile;
     private int waitingFrames;
 
     public ActivityRecognition() throws FileNotFoundException {
 
+        lastPredictionsWindow = new LinkedList<Pair<Integer, Double>>();
         roomMovement = new RoomMovement(ROOM_MODEL_FILE);
 
         processPostureFile = ProcessPostureFile.factory(HMM_TYPE);
@@ -42,23 +46,69 @@ public abstract class ActivityRecognition {
     protected void processNewFile(String postureFile) throws IOException {
 
         Pair<Integer, Double> prediction = processPostureFile.processPostureFile(postureFile);
-        int frameNumber = FileNameComparator.getFileNumber(postureFile);
+        int currentFrameNumber = FileNameComparator.getFileNumber(postureFile);
+        int frameNumber;
 
-        if (prediction == null) {
-            waitingFrames++;
-            return;
-        }
+        waitingFrames++;
+        lastPredictionsWindow.add(prediction);
 
-        if (waitingFrames > 0) {
+        if(waitingFrames == Utils.MAX_OBSERVATION_SIZE){
 
-            for (int i = 0; i < waitingFrames; i++) {
-                outputResult(postureFile, prediction, frameNumber - waitingFrames + i);
+
+            fixSequence(lastPredictionsWindow);
+            for(int i=0;i<waitingFrames;i++){
+                frameNumber = currentFrameNumber - waitingFrames + i + 1;
+
+                if(frameNumber < MAX_OBSERVATION_SIZE/2){
+                    outputResult(getPostureFile(frameNumber,postureFile), new Pair<Integer, Double>(0,0.8), frameNumber);
+                } else
+                    outputResult(getPostureFile(frameNumber,postureFile), lastPredictionsWindow.get(i), frameNumber);
             }
 
             waitingFrames = 0;
+            lastPredictionsWindow = new LinkedList<Pair<Integer, Double>>();
         }
 
-        outputResult(postureFile, prediction, frameNumber);
+        if(currentFrameNumber == 131){
+
+            for(int i=0;i<waitingFrames;i++){
+                frameNumber = currentFrameNumber - waitingFrames + i + 1;
+                outputResult(getPostureFile(frameNumber,postureFile), lastPredictionsWindow.get(i), frameNumber);
+            }
+
+            waitingFrames = 0;
+            lastPredictionsWindow = new LinkedList<Pair<Integer, Double>>();
+        }
+
+
+
+    }
+
+    private String getPostureFile(int frameNumber, String postureFile) {
+        int index = postureFile.indexOf(POSTURE_PREFIX);
+        return postureFile.substring(0,index)+POSTURE_PREFIX +frameNumber+TXT_SUFFIX;
+    }
+
+    private void fixSequence(List<Pair<Integer, Double>> lastPredictionsWindow) {
+
+        int length = lastPredictionsWindow.size(), index, prevIndex, nextIndex;
+        boolean modify = true;
+
+        while (modify){
+            modify = false;
+            for(int i=1;i<length-1;i++){
+                index = lastPredictionsWindow.get(i).getFirst();
+                prevIndex = lastPredictionsWindow.get(i-1).getFirst();
+                nextIndex = lastPredictionsWindow.get(i+1).getFirst();
+
+                if(index!= prevIndex && index!= nextIndex){
+
+                    lastPredictionsWindow.set(i,new Pair<Integer, Double>(prevIndex,0.3));
+                    modify = true;
+                }
+            }
+        }
+
 
     }
 

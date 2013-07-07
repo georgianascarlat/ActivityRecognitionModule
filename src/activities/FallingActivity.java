@@ -43,14 +43,12 @@ public class FallingActivity extends HumanActivity {
             if(jointPoint != LEFT_FOOT && jointPoint != RIGHT_FOOT){
                 if(!decreasingOrder(prediction,hmmType,user,jointPoint))
                     falling = false;
-//                else
-//                    System.out.println("decreasing "+jointPoint);
+
             }
         }
 
         if(falling){
-//            System.out.println("Increse..");
-            increaseProbability(hmmType,prediction,0.8);
+            //increaseProbability(hmmType,prediction,0.8);
         }
 
         updateLastUsers(user);
