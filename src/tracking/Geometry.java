@@ -1,6 +1,9 @@
 package tracking;
 
 import javax.vecmath.Point3d;
+import java.util.Arrays;
+
+import static java.util.Collections.reverseOrder;
 
 
 public class Geometry {
@@ -80,7 +83,6 @@ public class Geometry {
     }
 
 
-
     public static boolean arePointsInOrder(Point3d p0, Point3d p1, Point3d p2, Point3d p3) {
 
         double d1, d2, d3;
@@ -90,5 +92,14 @@ public class Geometry {
         d3 = p3.distance(p0);
 
         return d1 <= d2 && d2 <= d3;
+    }
+
+    public static boolean descendingOrder(Double[] heights) {
+
+        Double sortedHeights[] = Arrays.copyOf(heights, heights.length);
+
+        Arrays.sort(sortedHeights, reverseOrder());
+
+        return Arrays.equals(heights, sortedHeights);
     }
 }

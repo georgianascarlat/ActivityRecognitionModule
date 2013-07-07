@@ -1,10 +1,7 @@
 package activities;
 
 import app.activity_recognition.ProcessPostureFile;
-import models.Activity;
-import models.JointPoint;
-import models.ObjectClass;
-import models.Prediction;
+import models.*;
 import tracking.Geometry;
 import tracking.User;
 import utils.Pair;
@@ -24,40 +21,31 @@ public class LyingDownActivity extends HumanActivity {
 
 
     @Override
-    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName) {
+    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
+        adjustPredictionBasedOnFloorDistance(prediction, skeletonFileName, hmmType);
+
+        adjustPredictionBasedOnRoomModel(prediction, skeletonFileName, hmmType);
+    }
+
+    private void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+
+        double probability = prediction.getProbability();
         Pair<ObjectClass, Pair<Integer, Integer>> result;
-
-        adjustPredictionBasedOnFloorDistance(prediction, skeletonFileName);
 
         result = roomMovement.getMovementResult(skeletonFileName, JointPoint.TORSO);
 
-        adjustPredictionBasedOnMovement(prediction, result);
+        if (result.getFirst().equals(ObjectClass.BED))
+            increaseProbability(hmmType, prediction, 0.5);
+
+        if (lastPosition1 != null && lastPosition1.equals(result.getSecond()))
+            prediction.setProbability(probability * 1.2);
 
         lastPosition1 = result.getSecond();
-
     }
 
-    private void adjustPredictionBasedOnMovement(Prediction prediction, Pair<ObjectClass, Pair<Integer, Integer>> result) {
+    private void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
-        double probability = prediction.getProbability();
-
-        if (result.getFirst().equals(ObjectClass.BED)) {
-
-            prediction.setProbability(probability * 1.5);
-        }
-
-        if (lastPosition1 != null && lastPosition1.equals(result.getSecond())) {
-
-            prediction.setProbability(probability * 1.2);
-        }
-    }
-
-    private void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName) {
-
-        int lastIndex = prediction.getPredictions().length - 1;
-        int lastPrediction = prediction.getPredictions()[lastIndex];
-        double probability = prediction.getProbability();
         Point3d userPoint;
         User user;
         Double meanDistance = 0.0, height;
@@ -80,17 +68,11 @@ public class LyingDownActivity extends HumanActivity {
 
             meanDistance = meanDistance / JointPoint.jointPointNumber();
 
+            if (meanDistance < height)
+                increaseProbability(hmmType, prediction, 0.8);
 
-            if (meanDistance < height) {
-
-                if (lastPrediction == 0) {
-                    prediction.setProbability(0.8);
-                    prediction.getPredictions()[lastIndex] = 1;
-                } else {
-                    prediction.setProbability(probability * 1.8);
-                }
-
-            }
+            if (meanDistance > height * 1.5)
+                zeroProbability(hmmType, prediction);
 
         } catch (IOException e) {
             System.err.println("No skeleton file found" + skeletonFileName);

@@ -20,6 +20,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static activities.HumanActivity.humanActivityMap;
+import static models.HMMTypes.GeneralHMM;
 import static utils.Utils.*;
 
 public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
@@ -127,10 +128,8 @@ public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
 
                 /* may increase the probability of an activity according to the
                 * information obtained from the room model: new position and object interaction*/
-                if (i > 0) {
-                    humanActivityMap.get(Activity.getActivityByIndex(i)).
-                            adjustPredictionUsingRoomModel(prediction, getSkeletonFile(postureFileName));
-                }
+                if (i > 0) humanActivityMap.get(Activity.getActivityByIndex(i)).
+                        adjustPredictionUsingRoomModel(prediction, getSkeletonFile(postureFileName), GeneralHMM);
 
                 activityPredictions.add(prediction);
 

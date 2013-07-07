@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 
 import static activities.HumanActivity.humanActivityMap;
+import static models.HMMTypes.SpecialisedHMM;
 import static utils.Utils.*;
 
 
@@ -75,10 +76,8 @@ public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
 
             /* may increase the probability of an activity according to the
             * information obtained from the room model: new position and object interaction*/
-            if (Utils.USE_ROOM_MODEL) {
-                humanActivityMap.get(activity).
-                        adjustPredictionUsingRoomModel(prediction, getSkeletonFile(postureFileName));
-            }
+            if (Utils.USE_ROOM_MODEL) humanActivityMap.get(activity).
+                    adjustPredictionUsingRoomModel(prediction, getSkeletonFile(postureFileName), SpecialisedHMM);
 
             predictions.put(activity, prediction);
         }

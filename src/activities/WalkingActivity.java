@@ -1,9 +1,6 @@
 package activities;
 
-import models.Activity;
-import models.JointPoint;
-import models.ObjectClass;
-import models.Prediction;
+import models.*;
 import utils.Pair;
 
 import static app.activity_recognition.ActivityRecognition.roomMovement;
@@ -19,7 +16,7 @@ public class WalkingActivity extends HumanActivity {
 
 
     @Override
-    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName) {
+    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
         Pair<ObjectClass, Pair<Integer, Integer>> result1, result2;
         int lastIndex = prediction.getPredictions().length - 1;

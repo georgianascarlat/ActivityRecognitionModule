@@ -2,7 +2,9 @@ package activities;
 
 
 import models.Activity;
+import models.HMMTypes;
 import models.Prediction;
+import tracking.User;
 import utils.Pair;
 
 import java.util.EnumMap;
@@ -12,9 +14,11 @@ import java.util.Map;
 
 public abstract class HumanActivity {
 
+    public static final int NUM_SKELETONS = 3;
     protected Activity activityType;
     /* tha last position of the user on the grid*/
     protected Pair<Integer, Integer> lastPosition1 = null, lastPosition2 = null, lastPosition3 = null;
+    protected User lastUserSkeletons[] = new User[NUM_SKELETONS];
 
 
     /* maps each activity with it's list of postures of interest */
@@ -28,7 +32,59 @@ public abstract class HumanActivity {
     public static final Map<Activity, HumanActivity> humanActivityMap = HumanActivity.InitHumanActivityMap();
 
 
-    public abstract void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName);
+    public abstract void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType);
+
+    protected boolean allSkeletonsAreInitialised() {
+
+        for (int i = 0; i < NUM_SKELETONS; i++) {
+            if (lastUserSkeletons[i] == null)
+                return false;
+        }
+
+        return true;
+    }
+
+    protected void increaseProbability(HMMTypes hmmType, Prediction prediction, double added) {
+
+        int lastIndex = prediction.getPredictions().length - 1;
+        int lastPrediction = prediction.getPredictions()[lastIndex];
+        double probability = prediction.getProbability();
+
+
+        switch (hmmType) {
+
+            case SpecialisedHMM:
+                if (lastPrediction == 0) {
+                    prediction.setProbability(added);
+                    prediction.getPredictions()[lastIndex] = 1;
+                } else {
+                    prediction.setProbability(probability * (1 + added));
+                }
+                break;
+            case GeneralHMM:
+                prediction.setProbability(probability * (1 + added));
+                break;
+            default:
+                break;
+        }
+    }
+
+    protected void zeroProbability(HMMTypes hmmType, Prediction prediction) {
+
+        int lastIndex = prediction.getPredictions().length - 1;
+
+        switch (hmmType) {
+
+            case SpecialisedHMM:
+                prediction.getPredictions()[lastIndex] = 0;
+                break;
+            case GeneralHMM:
+                prediction.setProbability(0.0);
+                break;
+            default:
+                break;
+        }
+    }
 
 
     public static HumanActivity activityFactory(Activity activity) {
@@ -150,9 +206,8 @@ public abstract class HumanActivity {
 
         HumanActivity that = (HumanActivity) o;
 
-        if (activityType != that.activityType) return false;
+        return activityType == that.activityType;
 
-        return true;
     }
 
     @Override

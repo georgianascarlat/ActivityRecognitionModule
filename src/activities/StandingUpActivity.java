@@ -1,12 +1,15 @@
 package activities;
 
-import models.Activity;
-import models.JointPoint;
-import models.ObjectClass;
-import models.Prediction;
+import models.*;
+import tracking.Geometry;
+import tracking.User;
 import utils.Pair;
 
+import javax.vecmath.Point3d;
+import java.io.IOException;
+
 import static app.activity_recognition.ActivityRecognition.roomMovement;
+import static models.JointPoint.HEAD;
 
 
 public class StandingUpActivity extends HumanActivity {
@@ -17,27 +20,56 @@ public class StandingUpActivity extends HumanActivity {
     }
 
     @Override
-    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName) {
+    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+
+        adjustPredictionBasedOnFloorDistance(prediction, skeletonFileName, hmmType);
+
+        adjustPredictionBasedOnRoomModel(prediction, skeletonFileName, hmmType);
+
+
+    }
+
+    private void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
         Pair<ObjectClass, Pair<Integer, Integer>> result;
-        int lastIndex = prediction.getPredictions().length - 1;
-        int lastPrediction = prediction.getPredictions()[lastIndex];
-        double probability = prediction.getProbability();
-
-        if (lastPrediction == 0)
-            return;
-
         result = roomMovement.getMovementResult(skeletonFileName, JointPoint.TORSO);
 
-        if (result.getFirst().equals(ObjectClass.BED) || result.getFirst().equals(ObjectClass.CHAIR)) {
+        if (result.getFirst().equals(ObjectClass.BED) || result.getFirst().equals(ObjectClass.CHAIR))
+            increaseProbability(hmmType, prediction, 0.5);
+    }
 
-            prediction.setProbability(probability * 1.5);
+    private void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+
+        User user;
+        Double lastHeights[] = new Double[NUM_SKELETONS + 1];
+        Point3d point;
+
+        try {
+            user = User.readUser(skeletonFileName);
+
+            if (allSkeletonsAreInitialised()) {
+
+                point = user.getSkeletonElement(HEAD);
+                lastHeights[0] = point.distance(Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), point));
+
+                for (int i = 0; i < 3; i++) {
+                    point = lastUserSkeletons[i].getSkeletonElement(HEAD);
+                    lastHeights[i + 1] = point.distance(Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), point));
+                }
+
+                if (Geometry.descendingOrder(lastHeights))
+                    increaseProbability(hmmType, prediction, 0.8);
+                else
+                    zeroProbability(hmmType, prediction);
+            }
+
+            for (int i = (NUM_SKELETONS - 1); i > 0; i--)
+                lastUserSkeletons[i] = lastUserSkeletons[i - 1];
+
+            lastUserSkeletons[0] = user;
+
+
+        } catch (IOException e) {
+            System.out.println("No skeleton file " + skeletonFileName);
         }
-
-        if (lastPosition1 != null && lastPosition1.equals(result.getSecond())) {
-
-            prediction.setProbability(probability * 1.2);
-        }
-
-        lastPosition1 = result.getSecond();
     }
 }
