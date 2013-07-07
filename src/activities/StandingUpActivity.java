@@ -51,7 +51,7 @@ public class StandingUpActivity extends HumanActivity {
                 point = user.getSkeletonElement(HEAD);
                 lastHeights[0] = point.distance(Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), point));
 
-                for (int i = 0; i < 3; i++) {
+                for (int i = 0; i < NUM_SKELETONS; i++) {
                     point = lastUserSkeletons[i].getSkeletonElement(HEAD);
                     lastHeights[i + 1] = point.distance(Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), point));
                 }

@@ -48,7 +48,7 @@ public class LyingDownActivity extends HumanActivity {
 
         Point3d userPoint;
         User user;
-        Double meanDistance = 0.0, height;
+        Double meanDistance = 0.0, height, headHeight;
 
         if (ProcessPostureFile.HUMAN_HEIGHT == null) {
             return;
@@ -68,16 +68,23 @@ public class LyingDownActivity extends HumanActivity {
 
             meanDistance = meanDistance / JointPoint.jointPointNumber();
 
-            if (meanDistance < height)
+            userPoint = user.getSkeletonElement(JointPoint.HEAD);
+            headHeight = userPoint.distance(Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), userPoint));
+
+
+            if (meanDistance < height && (headHeight/meanDistance) < 2)
                 increaseProbability(hmmType, prediction, 0.8);
 
             if (meanDistance > height * 1.5)
                 zeroProbability(hmmType, prediction);
 
+            if((headHeight/meanDistance) >= 2){
+                decreaseProbability(hmmType,prediction,0.4);
+            }
+
         } catch (IOException e) {
             System.err.println("No skeleton file found" + skeletonFileName);
         }
     }
-
 
 }

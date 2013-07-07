@@ -86,6 +86,27 @@ public abstract class HumanActivity {
         }
     }
 
+    protected void decreaseProbability(HMMTypes hmmType, Prediction prediction, double subbed) {
+
+        int lastIndex = prediction.getPredictions().length - 1;
+        int lastPrediction = prediction.getPredictions()[lastIndex];
+        double probability = prediction.getProbability();
+
+
+        switch (hmmType) {
+
+            case SpecialisedHMM:
+                if (lastPrediction == 1)
+                    prediction.setProbability(probability * (1 - subbed));
+                break;
+            case GeneralHMM:
+                prediction.setProbability(probability * (1 - subbed));
+                break;
+            default:
+                break;
+        }
+    }
+
 
     public static HumanActivity activityFactory(Activity activity) {
 
