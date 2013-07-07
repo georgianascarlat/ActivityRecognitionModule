@@ -14,8 +14,15 @@ public class SittingDownActivity extends HumanActivity {
     }
 
 
+
+
     @Override
-    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+    protected void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    protected void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
         Pair<ObjectClass, Pair<Integer, Integer>> result;
         int lastIndex = prediction.getPredictions().length - 1;
         int lastPrediction = prediction.getPredictions()[lastIndex];

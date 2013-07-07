@@ -32,7 +32,16 @@ public abstract class HumanActivity {
     public static final Map<Activity, HumanActivity> humanActivityMap = HumanActivity.InitHumanActivityMap();
 
 
-    public abstract void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType);
+    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType){
+
+        adjustPredictionBasedOnFloorDistance(prediction, skeletonFileName, hmmType);
+
+        adjustPredictionBasedOnRoomModel(prediction, skeletonFileName, hmmType);
+
+    }
+
+    protected abstract void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType);
+    protected abstract void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType);
 
     protected boolean allSkeletonsAreInitialised() {
 

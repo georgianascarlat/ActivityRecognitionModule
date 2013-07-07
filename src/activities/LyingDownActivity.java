@@ -20,15 +20,9 @@ public class LyingDownActivity extends HumanActivity {
     }
 
 
+
     @Override
-    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
-
-        adjustPredictionBasedOnFloorDistance(prediction, skeletonFileName, hmmType);
-
-        adjustPredictionBasedOnRoomModel(prediction, skeletonFileName, hmmType);
-    }
-
-    private void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+    protected void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
         double probability = prediction.getProbability();
         Pair<ObjectClass, Pair<Integer, Integer>> result;
@@ -44,7 +38,8 @@ public class LyingDownActivity extends HumanActivity {
         lastPosition1 = result.getSecond();
     }
 
-    private void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+    @Override
+    protected void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
         Point3d userPoint;
         User user;

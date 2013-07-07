@@ -23,15 +23,8 @@ public class WalkingActivity extends HumanActivity {
         activityType = Activity.Walking;
     }
 
-
     @Override
-    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
-
-        adjustPredictionBasedOnFloorDistance(prediction, skeletonFileName, hmmType);
-
-    }
-
-    private void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+    protected void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
         boolean adjust = true;
         Point3d points[] = new Point3d[NUM_SKELETONS + 1], point;
@@ -70,6 +63,11 @@ public class WalkingActivity extends HumanActivity {
 
         updateLastUsers(user);
 
+
+    }
+
+    @Override
+    protected void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
     }
 

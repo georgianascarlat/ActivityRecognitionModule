@@ -14,8 +14,15 @@ public class BendingActivity extends HumanActivity {
     }
 
 
+
+
     @Override
-    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+    protected void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+
+    }
+
+    @Override
+    protected void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
         Pair<ObjectClass, Pair<Integer, Integer>> result1, result2, result3;
         int lastIndex = prediction.getPredictions().length - 1;
         int lastPrediction = prediction.getPredictions()[lastIndex];

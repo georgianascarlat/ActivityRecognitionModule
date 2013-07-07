@@ -20,16 +20,7 @@ public class StandingUpActivity extends HumanActivity {
     }
 
     @Override
-    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
-
-        adjustPredictionBasedOnFloorDistance(prediction, skeletonFileName, hmmType);
-
-        adjustPredictionBasedOnRoomModel(prediction, skeletonFileName, hmmType);
-
-
-    }
-
-    private void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+    protected void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
         Pair<ObjectClass, Pair<Integer, Integer>> result;
         result = roomMovement.getMovementResult(skeletonFileName, JointPoint.TORSO);
 
@@ -37,7 +28,8 @@ public class StandingUpActivity extends HumanActivity {
             increaseProbability(hmmType, prediction, 0.5);
     }
 
-    private void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+    @Override
+    protected void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
         User user;
         Double lastHeights[] = new Double[NUM_SKELETONS + 1];
