@@ -10,6 +10,7 @@ import javax.vecmath.Point3d;
 import java.io.IOException;
 
 import static app.activity_recognition.ActivityRecognition.roomMovement;
+import static tracking.Geometry.distanceToFloor;
 
 
 public class LyingDownActivity extends HumanActivity {
@@ -57,14 +58,14 @@ public class LyingDownActivity extends HumanActivity {
             for (JointPoint jointPoint : JointPoint.values()) {
 
                 userPoint = user.getSkeletonElement(jointPoint);
-                meanDistance += userPoint.distance(Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), userPoint));
+                meanDistance += distanceToFloor(userPoint, user);
 
             }
 
             meanDistance = meanDistance / JointPoint.jointPointNumber();
 
             userPoint = user.getSkeletonElement(JointPoint.HEAD);
-            headHeight = userPoint.distance(Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), userPoint));
+            headHeight = distanceToFloor(userPoint, user);
 
 
             if (meanDistance < height && (headHeight / meanDistance) < 2)
@@ -80,5 +81,6 @@ public class LyingDownActivity extends HumanActivity {
             System.err.println("No skeleton file found" + skeletonFileName);
         }
     }
+
 
 }

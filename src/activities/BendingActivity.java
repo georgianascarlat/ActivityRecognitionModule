@@ -1,9 +1,17 @@
 package activities;
 
 import models.*;
+import tracking.Geometry;
+import tracking.User;
 import utils.Pair;
 
+import javax.vecmath.Point3d;
+
+import java.io.IOException;
+
 import static app.activity_recognition.ActivityRecognition.roomMovement;
+import static models.JointPoint.*;
+import static tracking.Geometry.distanceToFloor;
 
 
 public class BendingActivity extends HumanActivity {
@@ -19,7 +27,75 @@ public class BendingActivity extends HumanActivity {
     @Override
     protected void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
+        User user;
+
+        try {
+            user = User.readUser(skeletonFileName);
+        } catch (IOException e) {
+            System.out.println("No such skeleton file "+skeletonFileName);
+            return;
+        }
+
+        compareHipsHeights(prediction, hmmType, user,HEAD);
+        compareHipsHeights(prediction, hmmType, user,NECK);
+
+        compareHeadHipsMovements(prediction, hmmType, user);
     }
+
+    private void compareHeadHipsMovements(Prediction prediction, HMMTypes hmmType, User user) {
+
+        Double lastHeadHeights[] = new Double[NUM_SKELETONS + 1];
+        Double lastLeftHipHeights[] = new Double[NUM_SKELETONS + 1];
+        Double lastRightHipHeights[] = new Double[NUM_SKELETONS + 1];
+        Double lastHipsHeights[] = new Double[NUM_SKELETONS + 1];
+        double distanceHeadMovement;
+        double distanceHipsMovement;
+        double report;
+        if (allSkeletonsAreInitialised()) {
+
+
+            computeLastHeights(user, lastHeadHeights,HEAD);
+            computeLastHeights(user, lastLeftHipHeights,LEFT_HIP);
+            computeLastHeights(user, lastRightHipHeights,RIGHT_HIP);
+
+            Geometry.mean(lastLeftHipHeights, lastRightHipHeights, lastHipsHeights);
+
+            distanceHeadMovement = Math.abs(lastHeadHeights[0] - lastHeadHeights[NUM_SKELETONS]);
+            distanceHipsMovement = Math.abs(lastHipsHeights[0] - lastHipsHeights[NUM_SKELETONS]);
+            report = distanceHeadMovement/distanceHipsMovement;
+
+            if (report > 3 && Geometry.ascendingOrder(lastHeadHeights) ){
+
+                increaseProbability(hmmType, prediction, 0.5);
+
+            }
+
+        }
+
+        updateLastUsers(user);
+    }
+
+    private void compareHipsHeights(Prediction prediction, HMMTypes hmmType, User user, JointPoint jointPoint) {
+        Point3d head;
+        Point3d hipLeft;
+        Point3d hipRight;
+        double headHeight;
+        double leftHipHeight;
+        double rightHipHeight;
+        head = user.getSkeletonElement(jointPoint);
+        hipLeft = user.getSkeletonElement(JointPoint.LEFT_HIP);
+        hipRight = user.getSkeletonElement(JointPoint.RIGHT_HIP);
+
+        headHeight = distanceToFloor(head, user);
+        leftHipHeight = distanceToFloor(hipLeft, user);
+        rightHipHeight = distanceToFloor(hipRight, user);
+
+        if(headHeight < leftHipHeight && headHeight <rightHipHeight){
+
+            increaseProbability(hmmType,prediction,0.8);
+        }
+    }
+
 
     @Override
     protected void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {

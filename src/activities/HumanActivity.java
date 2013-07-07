@@ -3,14 +3,19 @@ package activities;
 
 import models.Activity;
 import models.HMMTypes;
+import models.JointPoint;
 import models.Prediction;
+import tracking.Geometry;
 import tracking.User;
 import utils.Pair;
 
+import javax.vecmath.Point3d;
 import java.util.EnumMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
+import static tracking.Geometry.distanceToFloor;
 
 public abstract class HumanActivity {
 
@@ -121,6 +126,17 @@ public abstract class HumanActivity {
                 break;
             default:
                 break;
+        }
+    }
+
+    protected void computeLastHeights(User user, Double[] lastHeights, JointPoint jointPoint) {
+        Point3d point;
+        point = user.getSkeletonElement(jointPoint);
+        lastHeights[0] = distanceToFloor(point, user);
+
+        for (int i = 0; i < NUM_SKELETONS; i++) {
+            point = lastUserSkeletons[i].getSkeletonElement(jointPoint);
+            lastHeights[i + 1] = distanceToFloor(point, lastUserSkeletons[i]);
         }
     }
 

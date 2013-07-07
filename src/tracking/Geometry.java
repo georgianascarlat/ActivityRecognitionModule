@@ -106,4 +106,25 @@ public class Geometry {
 
         return true;
     }
+
+    public static boolean ascendingOrder(Double[] heights) {
+
+        Double sortedHeights[] = Arrays.copyOf(heights, heights.length);
+
+        Arrays.sort(sortedHeights);
+
+        return Arrays.equals(heights, sortedHeights);
+    }
+
+    public static double distanceToFloor(Point3d point, User user) {
+        return point.distance(projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), point));
+    }
+
+    public static void mean(Double[] lastLeftHipHeights, Double[] lastRightHipHeights, Double[] lastHipsHeights) {
+        int length = lastHipsHeights.length;
+
+        for(int i=0;i<length;i++){
+            lastHipsHeights[i] = (lastLeftHipHeights[i] + lastRightHipHeights[i])/2;
+        }
+    }
 }

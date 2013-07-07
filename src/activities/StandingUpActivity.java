@@ -33,20 +33,14 @@ public class StandingUpActivity extends HumanActivity {
 
         User user;
         Double lastHeights[] = new Double[NUM_SKELETONS + 1];
-        Point3d point;
+
 
         try {
             user = User.readUser(skeletonFileName);
 
             if (allSkeletonsAreInitialised()) {
 
-                point = user.getSkeletonElement(HEAD);
-                lastHeights[0] = point.distance(Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), point));
-
-                for (int i = 0; i < NUM_SKELETONS; i++) {
-                    point = lastUserSkeletons[i].getSkeletonElement(HEAD);
-                    lastHeights[i + 1] = point.distance(Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), point));
-                }
+                computeLastHeights(user, lastHeights,HEAD);
 
                 if (Geometry.descendingOrder(lastHeights))
                     increaseProbability(hmmType, prediction, 0.5);
