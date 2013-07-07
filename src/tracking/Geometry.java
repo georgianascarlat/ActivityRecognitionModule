@@ -5,10 +5,6 @@ import javax.vecmath.Point3d;
 
 public class Geometry {
 
-    public static double distance(Point3d p1, Point3d p2) {
-        return Math.sqrt(Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2) + Math.pow(p1.z - p2.z, 2));
-    }
-
     public static double dotProduct(Point3d p1, Point3d p2) {
         return p1.x * p2.x + p1.y * p2.y + p1.z * p2.z;
     }
@@ -56,16 +52,6 @@ public class Geometry {
 
     }
 
-    public static double determinant(Point3d line1, Point3d line2, Point3d line3) {
-        double prod1, prod2;
-
-        prod1 = line1.x * line2.y * line3.z + line1.z * line2.x * line3.y + line1.y * line2.z * line3.x;
-
-        prod2 = line1.z * line2.y * line3.x + line1.x * line2.z * line3.y + line1.y * line2.x * line3.z;
-
-        return prod1 - prod2;
-    }
-
     public static Point3d planNormal(Point3d p1, Point3d p2, Point3d p3) {
         return crossProduct(sub(p2, p1), sub(p3, p1));
 
@@ -94,26 +80,15 @@ public class Geometry {
     }
 
 
-    public static void main(String[] args) {
 
-        Point3d normal = planNormal(new Point3d(0, 0, 0), new Point3d(0, 0, 1), new Point3d(1, 0, 0));
-        System.out.println(normal);
-        System.out.println(projectPointOnPlan(normal, new Point3d(0, 0, 0), new Point3d(1, 1, 1)));
-        System.out.println(projectPointOnLine(new Point3d(1, 1, 0), new Point3d(0, 0, 0), new Point3d(2, 0, 0)));
-        //System.out.println(projectPointOnLine(new Point3d(1,0,1),new Point3d(10,10,10),new Point3d(13,13,13)));
+    public static boolean arePointsInOrder(Point3d p0, Point3d p1, Point3d p2, Point3d p3) {
 
-        //System.out.println(onLine(new Point3d(11,11,1),new Point3d(1,1,1),new Point3d(2,2,2)));
+        double d1, d2, d3;
 
+        d1 = p1.distance(p0);
+        d2 = p2.distance(p0);
+        d3 = p3.distance(p0);
+
+        return d1 <= d2 && d2 <= d3;
     }
-
-    public static Point3d getPointOnLine(Point3d p1, Point3d p2, double raport) {
-        Point3d point = new Point3d();
-        point.x = raport * (p2.x - p1.x) + p1.x;
-        point.y = raport * (p2.y - p1.y) + p1.y;
-        point.z = raport * (p2.z - p1.z) + p1.z;
-
-        return point;
-    }
-
-
 }

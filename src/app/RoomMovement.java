@@ -56,7 +56,7 @@ public class RoomMovement {
 
         }
 
-        /* use the skeleton file to create a Snapshot object*/
+
         try {
             floorProjection = new FloorProjection(roomModel.getWidthParts(),
                     roomModel.getHeightParts(), roomModel.getFloorWidth(), roomModel.getFloorHeight());

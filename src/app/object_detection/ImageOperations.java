@@ -18,9 +18,6 @@ public class ImageOperations {
     private static final int DOWN_FACTOR = 64;
 
 
-
-
-
     public static List<opencv_core.IplImage> getSubImages(opencv_core.IplImage image, opencv_core.CvRect rect) {
 
         List<opencv_core.IplImage> list = new LinkedList<opencv_core.IplImage>();
@@ -175,24 +172,24 @@ public class ImageOperations {
         int index = 0;
 
 
-        for(int i=0;i<rect.limit();i++){
+        for (int i = 0; i < rect.limit(); i++) {
 
             r1 = rect.position(i);
 
 
-            for(int j=i+1; j <rr.limit();j++){
+            for (int j = i + 1; j < rr.limit(); j++) {
 
 
                 r2 = rr.position(j);
 
-                if(intersectRects(r1,r2)){
+                if (intersectRects(r1, r2)) {
 
-                    r1 = getBiggest(r1,r2);
+                    r1 = getBiggest(r1, r2);
 
                 }
             }
 
-            addRect(finalRects,r1,index);
+            addRect(finalRects, r1, index);
             index++;
 
         }
@@ -205,10 +202,10 @@ public class ImageOperations {
     }
 
     private static CvRect getBiggest(CvRect r1, CvRect r2) {
-        int a1 = r1.height()*r1.width(), a2= r2.height()*r2.width();
-        if(a1 > a2)
-            return new CvRect(r1.x(),r1.y(),r1.width(),r1.height());
-        return new CvRect(r2.x(),r2.y(),r2.width(),r2.height());
+        int a1 = r1.height() * r1.width(), a2 = r2.height() * r2.width();
+        if (a1 > a2)
+            return new CvRect(r1.x(), r1.y(), r1.width(), r1.height());
+        return new CvRect(r2.x(), r2.y(), r2.width(), r2.height());
     }
 
     private static void addRect(CvRect finalRects, CvRect r1, int index) {
@@ -222,20 +219,19 @@ public class ImageOperations {
         int intersect = 0;
 
 
-
-        if(r1.x() < r2.x()){
-            if(r2.x() <= (r1.x()+r1.width()))
+        if (r1.x() < r2.x()) {
+            if (r2.x() <= (r1.x() + r1.width()))
                 intersect++;
         } else {
-            if(r1.x() <= (r2.x()+r2.width()))
+            if (r1.x() <= (r2.x() + r2.width()))
                 intersect++;
         }
 
-        if(r1.y() < r2.y()){
-            if(r2.y() <= (r1.y()+r1.height()))
+        if (r1.y() < r2.y()) {
+            if (r2.y() <= (r1.y() + r1.height()))
                 intersect++;
         } else {
-            if(r1.y() <= (r2.y()+r2.height()))
+            if (r1.y() <= (r2.y() + r2.height()))
                 intersect++;
         }
 

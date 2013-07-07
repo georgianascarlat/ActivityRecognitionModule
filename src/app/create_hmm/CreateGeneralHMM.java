@@ -52,12 +52,84 @@ public class CreateGeneralHMM extends CreateHMM {
         /* train the model using the observations and hidden states*/
         hmm = hmmOperations.trainSupervised(numStates, numObservableVariables, observations, hiddenStates);
 
-
         adjustStateProbabilitiesToEven(numStates, hmm);
 
         hmm.print();
         /*save the model into it's corresponding file*/
         hmm.saveModel(HMM_DIRECTORY + GENERAL_HMM_NAME + TXT_SUFFIX);
+
+    }
+
+    private void adjustTransitions(int numStates, HMM hmm) {
+
+        double transition[][] = hmm.getTransitionMatrix();
+        int NO_ACTIVITY = 0;
+        int WALKING = Activity.Walking.getIndex();
+        int LYING = Activity.LyingDown.getIndex();
+        int STANDING = Activity.StandingUp.getIndex();
+        int SITTING = Activity.SittingDown.getIndex();
+        int BENDING = Activity.Bending.getIndex();
+        int FALLING = Activity.Falling.getIndex();
+
+        if (numStates != (Activity.getActivitiesNumber() + 1))
+            return;
+
+        transition[NO_ACTIVITY][NO_ACTIVITY] = 0.16;
+
+        transition[NO_ACTIVITY][WALKING] = transition[NO_ACTIVITY][LYING]
+                = transition[NO_ACTIVITY][STANDING]
+                = transition[NO_ACTIVITY][SITTING]
+                = transition[NO_ACTIVITY][BENDING]
+                = transition[NO_ACTIVITY][FALLING] = 0.14;
+
+        transition[WALKING][WALKING] = 0.5;
+        transition[WALKING][LYING] = 0;
+        transition[WALKING][STANDING] = 0;
+        transition[WALKING][SITTING] = 0.1;
+        transition[WALKING][BENDING] = 0.1;
+        transition[WALKING][FALLING] = 0.1;
+        transition[WALKING][NO_ACTIVITY] = 0.2;
+
+        transition[LYING][WALKING] = 0;
+        transition[LYING][LYING] = 0.6;
+        transition[LYING][STANDING] = 0.15;
+        transition[LYING][SITTING] = 0.15;
+        transition[LYING][BENDING] = 0;
+        transition[LYING][FALLING] = 0;
+        transition[LYING][NO_ACTIVITY] = 0.1;
+
+        transition[STANDING][WALKING] = 0.1;
+        transition[STANDING][LYING] = 0;
+        transition[STANDING][STANDING] = 0.5;
+        transition[STANDING][SITTING] = 0.1;
+        transition[STANDING][BENDING] = 0.1;
+        transition[STANDING][FALLING] = 0.1;
+        transition[STANDING][NO_ACTIVITY] = 0.1;
+
+        transition[SITTING][WALKING] = 0;
+        transition[SITTING][LYING] = 0.2;
+        transition[SITTING][STANDING] = 0.2;
+        transition[SITTING][SITTING] = 0.5;
+        transition[SITTING][BENDING] = 0.02;
+        transition[SITTING][FALLING] = 0.04;
+        transition[SITTING][NO_ACTIVITY] = 0.04;
+
+        transition[BENDING][WALKING] = 0;
+        transition[BENDING][LYING] = 0;
+        transition[BENDING][STANDING] = 0.15;
+        transition[BENDING][SITTING] = 0.05;
+        transition[BENDING][BENDING] = 0.6;
+        transition[BENDING][FALLING] = 0.05;
+        transition[BENDING][NO_ACTIVITY] = 0.15;
+
+        transition[FALLING][WALKING] = 0;
+        transition[FALLING][LYING] = 0.3;
+        transition[FALLING][STANDING] = 0.03;
+        transition[FALLING][SITTING] = 0.15;
+        transition[FALLING][BENDING] = 0;
+        transition[FALLING][FALLING] = 0.5;
+        transition[FALLING][NO_ACTIVITY] = 0.02;
+
 
     }
 

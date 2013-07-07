@@ -44,14 +44,14 @@ public abstract class ActivityRecognition {
         Pair<Integer, Double> prediction = processPostureFile.processPostureFile(postureFile);
         int frameNumber = FileNameComparator.getFileNumber(postureFile);
 
-        if(prediction == null){
+        if (prediction == null) {
             waitingFrames++;
             return;
         }
 
-        if(waitingFrames > 0){
+        if (waitingFrames > 0) {
 
-            for(int i=0;i<waitingFrames;i++){
+            for (int i = 0; i < waitingFrames; i++) {
                 outputResult(postureFile, prediction, frameNumber - waitingFrames + i);
             }
 

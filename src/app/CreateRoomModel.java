@@ -104,11 +104,11 @@ public class CreateRoomModel {
                 point = mapping[objectPoint.getSecond()][objectPoint.getFirst()];
                 height = floorProjection.getHeightFromFloor(point);
 
-                if(height > minHeight && height < maxHeight){
+                if (height > minHeight && height < maxHeight) {
 
                     roomCell = floorProjection.getFloorProjection(point);
 
-                    System.out.println("H:"+floorProjection.getHeightFromFloor(point));
+                    System.out.println("H:" + floorProjection.getHeightFromFloor(point));
 
                     roomModel.setPointOnMap(roomCell.getFirst(), roomCell.getSecond(), objectClass.getIndex());
 

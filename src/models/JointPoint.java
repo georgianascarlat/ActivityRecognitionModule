@@ -28,6 +28,10 @@ public enum JointPoint {
         return index;
     }
 
+    public static int jointPointNumber() {
+        return 15;
+    }
+
     @Override
     public String toString() {
         return "JointPoint{" +

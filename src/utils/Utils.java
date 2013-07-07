@@ -7,7 +7,10 @@ import models.Posture;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Utils {
 
@@ -37,7 +40,7 @@ public class Utils {
 
     public static final boolean USE_ROOM_MODEL = true;
 
-    public static final HMMTypes HMM_TYPE = HMMTypes.BothHMMTypes;
+    public static final HMMTypes HMM_TYPE = HMMTypes.SpecialisedHMM;
     public static final ActivityRecognitionType ACTIVITY_RECOGNITION_TYPE = ActivityRecognitionType.OFFLINE_RECOGNITION;
 
 

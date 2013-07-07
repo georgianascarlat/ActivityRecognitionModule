@@ -15,9 +15,9 @@ import static com.googlecode.javacv.cpp.opencv_highgui.*;
 
 public class ObjectDetection {
 
-    public static void main(String atgs[]){
+    public static void main(String atgs[]) {
 
-        ObjectDetection.computeObjectPoints(ObjectClassifier.OFFICE_CHAIR,"object_detection/0.bmp");
+        ObjectDetection.computeObjectPoints(ObjectClassifier.OFFICE_CHAIR, "object_detection/0.bmp");
     }
 
 

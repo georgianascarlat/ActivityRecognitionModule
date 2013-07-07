@@ -14,18 +14,13 @@ public class User {
 
     private Map<Integer, Point3d> skeleton;
     public static final int NUM_JOINTS = 15;
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "skeleton=" + skeleton +
-                '}';
-    }
+    private Point3d floorPoint, floorNormal;
+    private long timestamp;
 
 
     public static User readUser(String fileName) throws IOException {
 
-        String strLine;
+        String strLine, floorLine, timestampLine;
         List<String> strings;
         FileInputStream fstream;
         DataInputStream in;
@@ -49,9 +44,10 @@ public class User {
             }
 
 
-        /* throw away timestamp line and floor line*/
-            for (int i = 0; i < 2; i++)
-                readSingleLine(br);
+            floorLine = readSingleLine(br);
+            timestampLine = readSingleLine(br);
+
+
 
         /* read each joint point line*/
             for (int i = 0; i < NUM_JOINTS; i++) {
@@ -59,7 +55,7 @@ public class User {
                 strings.add(strLine);
             }
 
-            return new User(strings);
+            return new User(strings, floorLine, timestampLine);
 
         } finally {
 
@@ -79,12 +75,44 @@ public class User {
         return strLine;
     }
 
-    public User(List<String> points) {
+    public User(List<String> points, String floorLine, String timestampLine) {
 
         skeleton = new HashMap<Integer, Point3d>();
         int n = points.size();
         String tokens[], line;
         double x, y, z;
+
+        floorLine = floorLine.substring(0, floorLine.length() - 1);
+        timestampLine = timestampLine.substring(0, timestampLine.length() - 1);
+
+        tokens = floorLine.split(",");
+        if (tokens.length != 7) {
+
+            throw new IllegalArgumentException("Invalid parameters to create user from joints");
+        }
+
+        x = Double.parseDouble(tokens[0]);
+        y = Double.parseDouble(tokens[1]);
+        z = Double.parseDouble(tokens[2]);
+
+        floorPoint = new Point3d(x, y, z);
+
+        x = Double.parseDouble(tokens[3]);
+        y = Double.parseDouble(tokens[4]);
+        z = Double.parseDouble(tokens[5]);
+
+        floorNormal = new Point3d(x, y, z);
+
+        tokens = timestampLine.split(",");
+
+        if (tokens.length != 2) {
+
+            throw new IllegalArgumentException("Invalid parameters to create user from joints");
+        }
+
+
+        timestamp = Long.parseLong(tokens[1]);
+
 
         for (int i = 0; i < n; i++) {
 
@@ -109,9 +137,16 @@ public class User {
         return skeleton.get(jointPoint.getIndex());
     }
 
-    public Point3d getSkeletonElement(String name) {
 
-        JointPoint jointPoint = JointPoint.valueOf(name);
-        return skeleton.get(jointPoint.getIndex());
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public Point3d getFloorNormal() {
+        return floorNormal;
+    }
+
+    public Point3d getFloorPoint() {
+        return floorPoint;
     }
 }

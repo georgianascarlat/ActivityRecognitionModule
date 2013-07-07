@@ -4,19 +4,16 @@ import models.JointPoint;
 import utils.Pair;
 
 import javax.vecmath.Point3d;
-import java.io.*;
-import java.util.LinkedList;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.IOException;
 
 
 public class Snapshot {
 
 
-    public static final int NUM_JOINTS = 15;
     private User user;
     private Floor floor;
     private int widthParts, heigthParts;
-    private double EPSILON = 0.1;
 
 
     public Snapshot(String fileName, int widthParts, int heightParts, double floorWidth, double floorHeight) throws IOException {
@@ -25,73 +22,10 @@ public class Snapshot {
 
     public Snapshot(String fileName, int widthParts, int heightParts, Floor floor) throws IOException {
 
-        this.user = readUser(fileName);
+        this.user = User.readUser(fileName);
         this.widthParts = widthParts;
         this.heigthParts = heightParts;
         this.floor = floor;
-    }
-
-    /**
-     * Read skeleton joint points from file and store them in a User object.
-     *
-     * @param fileName file name
-     * @return User object containing skeleton joint points
-     * @throws IOException
-     */
-    private User readUser(String fileName) throws IOException {
-
-        String strLine;
-        List<String> strings;
-        FileInputStream fstream;
-        DataInputStream in;
-        BufferedReader br = null;
-        int error;
-
-        try {
-
-            fstream = new FileInputStream(fileName);
-            in = new DataInputStream(fstream);
-            br = new BufferedReader(new InputStreamReader(in));
-
-            strings = new LinkedList<String>();
-
-        /* read error */
-            strLine = readSingleLine(br);
-            error = new Integer(strLine.substring(0, strLine.length() - 1));
-
-            if (error == 1) {
-                throw new IllegalArgumentException("Error in skeleton file");
-            }
-
-
-        /* throw away timestamp line and floor line*/
-            for (int i = 0; i < 2; i++)
-                readSingleLine(br);
-
-        /* read each joint point line*/
-            for (int i = 0; i < NUM_JOINTS; i++) {
-                strLine = readSingleLine(br);
-                strings.add(strLine);
-            }
-
-            return new User(strings);
-
-        } finally {
-
-            if (null != br) {
-                br.close();
-            }
-        }
-
-
-    }
-
-    private String readSingleLine(BufferedReader br) throws IOException {
-        String strLine;
-        if (((strLine = br.readLine()) == null)) {
-            throw new IllegalArgumentException("Invalid skeleton file format");
-        }
-        return strLine;
     }
 
 
@@ -116,21 +50,6 @@ public class Snapshot {
 
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public Floor getFloor() {
-        return floor;
-    }
-
-    public int getWidthParts() {
-        return widthParts;
-    }
-
-    public int getHeigthParts() {
-        return heigthParts;
-    }
 
     @Override
     public String toString() {
@@ -144,10 +63,6 @@ public class Snapshot {
         private int line;
         private int column;
         private double distance;
-
-        public double getDist() {
-            return distance;
-        }
 
 
         public int getLine() {

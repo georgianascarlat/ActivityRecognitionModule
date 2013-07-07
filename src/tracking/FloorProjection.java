@@ -45,7 +45,7 @@ public class FloorProjection {
         return new Pair<Integer, Integer>(line, column);
     }
 
-    public double  getHeightFromFloor(Point3d point3d){
+    public double getHeightFromFloor(Point3d point3d) {
         double height = 0;
         Point3d p1, p2, p3;
         Point3d floorNormal;

@@ -62,8 +62,10 @@ public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
         int preds[], predictedActivityIndex;
         int frameNumber = FileNameComparator.getFileNumber(postureFileName);
 
+        setHumanHeight(Utils.getSkeletonFile(postureFileName));
 
-        if(frameNumber < (Utils.MAX_OBSERVATION_SIZE - 1))
+
+        if (frameNumber < (Utils.MAX_OBSERVATION_SIZE - 1))
             return null;
 
         for (Activity activity : Activity.values()) {
@@ -96,6 +98,7 @@ public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
         return new Pair<Integer, Double>(predictedActivityIndex, bestPrediction.getValue().getProbability());
 
     }
+
 
     /**
      * Makes a prediction using a the HMM of an activity.
@@ -194,6 +197,8 @@ public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
 
         for (Map.Entry<Activity, Prediction> entry : predictions.entrySet()) {
 
+            //System.out.println(entry.getKey().getName()+" "+ Arrays.toString(entry.getValue().getPredictions())+" "+entry.getValue().getProbability());
+
             if (prediction == null) {
                 prediction = entry;
             } else {
@@ -220,6 +225,7 @@ public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
 
         }
 
+        //System.out.println("Chosen: "+prediction.getKey().getName() + " " + prediction.getValue().getProbability());
         return prediction;
 
     }
