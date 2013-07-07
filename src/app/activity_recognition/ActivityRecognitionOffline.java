@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ActivityRecognitionOffline extends ActivityRecognition {
 
-    public static final String DIRECTORY_NAME = "from_ema/RealTime/DONE/MaiMulte1";
+    public static final String DIRECTORY_NAME = "from_ema/RealTime/DONE/Cazut-IntinsTest2";
 
 
     public ActivityRecognitionOffline() throws FileNotFoundException {

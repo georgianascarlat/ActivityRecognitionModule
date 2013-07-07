@@ -76,12 +76,8 @@ public class BendingActivity extends HumanActivity {
     }
 
     private void compareHipsHeights(Prediction prediction, HMMTypes hmmType, User user, JointPoint jointPoint) {
-        Point3d head;
-        Point3d hipLeft;
-        Point3d hipRight;
-        double headHeight;
-        double leftHipHeight;
-        double rightHipHeight;
+        Point3d head, hipLeft, hipRight;
+        double headHeight, leftHipHeight, rightHipHeight;
         head = user.getSkeletonElement(jointPoint);
         hipLeft = user.getSkeletonElement(JointPoint.LEFT_HIP);
         hipRight = user.getSkeletonElement(JointPoint.RIGHT_HIP);
@@ -117,8 +113,7 @@ public class BendingActivity extends HumanActivity {
 
             if (lastPosition3 != null && !lastPosition3.equals(result3.getSecond()))
                 prediction.setProbability(probability * 1.5);
-            else
-                prediction.setProbability(probability * 1.2);
+
         }
 
         lastPosition1 = result1.getSecond();
