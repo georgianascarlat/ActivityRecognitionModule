@@ -72,15 +72,14 @@ public class LyingDownActivity extends HumanActivity {
             headHeight = userPoint.distance(Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), userPoint));
 
 
-            if (meanDistance < height && (headHeight/meanDistance) < 2)
+            if (meanDistance < height && (headHeight / meanDistance) < 2)
                 increaseProbability(hmmType, prediction, 0.8);
 
             if (meanDistance > height * 1.5)
                 zeroProbability(hmmType, prediction);
 
-            if((headHeight/meanDistance) >= 2){
-                decreaseProbability(hmmType,prediction,0.4);
-            }
+            if ((headHeight / meanDistance) >= 2)
+                decreaseProbability(hmmType, prediction, 0.3);
 
         } catch (IOException e) {
             System.err.println("No skeleton file found" + skeletonFileName);

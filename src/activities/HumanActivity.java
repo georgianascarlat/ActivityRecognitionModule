@@ -44,6 +44,14 @@ public abstract class HumanActivity {
         return true;
     }
 
+    protected void updateLastUsers(User user) {
+        for (int i = (NUM_SKELETONS - 1); i > 0; i--)
+            lastUserSkeletons[i] = lastUserSkeletons[i - 1];
+
+        lastUserSkeletons[0] = user;
+    }
+
+
     protected void increaseProbability(HMMTypes hmmType, Prediction prediction, double added) {
 
         int lastIndex = prediction.getPredictions().length - 1;

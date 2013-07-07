@@ -57,15 +57,12 @@ public class StandingUpActivity extends HumanActivity {
                 }
 
                 if (Geometry.descendingOrder(lastHeights))
-                    increaseProbability(hmmType, prediction, 0.8);
+                    increaseProbability(hmmType, prediction, 0.5);
                 else
                     zeroProbability(hmmType, prediction);
             }
 
-            for (int i = (NUM_SKELETONS - 1); i > 0; i--)
-                lastUserSkeletons[i] = lastUserSkeletons[i - 1];
-
-            lastUserSkeletons[0] = user;
+            updateLastUsers(user);
 
 
         } catch (IOException e) {

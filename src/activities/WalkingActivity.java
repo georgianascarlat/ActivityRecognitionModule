@@ -1,13 +1,22 @@
 package activities;
 
-import models.*;
-import utils.Pair;
+import models.Activity;
+import models.HMMTypes;
+import models.JointPoint;
+import models.Prediction;
+import tracking.Geometry;
+import tracking.User;
 
-import static app.activity_recognition.ActivityRecognition.roomMovement;
+import javax.vecmath.Point3d;
+import java.io.IOException;
+
+import static models.JointPoint.*;
 
 
 public class WalkingActivity extends HumanActivity {
 
+
+    public static final JointPoint[] jointPoints = {HEAD, NECK, LEFT_SHOULDER, RIGHT_SHOULDER, TORSO, LEFT_HIP, RIGHT_HIP};
 
     public WalkingActivity() {
 
@@ -18,27 +27,50 @@ public class WalkingActivity extends HumanActivity {
     @Override
     public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
-        Pair<ObjectClass, Pair<Integer, Integer>> result1, result2;
-        int lastIndex = prediction.getPredictions().length - 1;
-        int lastPrediction = prediction.getPredictions()[lastIndex];
-        double probability = prediction.getProbability();
+        adjustPredictionBasedOnFloorDistance(prediction, skeletonFileName, hmmType);
 
-        if (lastPrediction == 0)
-            return;
-
-        result1 = roomMovement.getMovementResult(skeletonFileName, JointPoint.LEFT_FOOT);
-        result2 = roomMovement.getMovementResult(skeletonFileName, JointPoint.RIGHT_FOOT);
-
-
-        if ((lastPosition1 != null && !lastPosition1.equals(result1.getSecond()))
-                || (lastPosition2 != null && !lastPosition2.equals(result2.getSecond()))) {
-
-            prediction.setProbability(probability * 1.5);
-        }
-
-        lastPosition1 = result1.getSecond();
-        lastPosition2 = result2.getSecond();
     }
 
+    private void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
+
+        boolean adjust = true;
+        Point3d points[] = new Point3d[NUM_SKELETONS + 1], point;
+        User user;
+
+        try {
+            user = User.readUser(skeletonFileName);
+        } catch (IOException e) {
+            System.err.println("No such skeleton file " + skeletonFileName);
+            return;
+        }
+
+        if (allSkeletonsAreInitialised()) {
+            for (JointPoint jointPoint : jointPoints) {
+
+                point = user.getSkeletonElement(jointPoint);
+                points[0] = Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), point);
+
+                for (int i = 0; i < NUM_SKELETONS; i++) {
+                    point = lastUserSkeletons[i].getSkeletonElement(jointPoint);
+                    points[i + 1] = Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), point);
+                }
+
+                if (!Geometry.arePointsInOrder(points)) {
+                    adjust = false;
+                    break;
+                }
+            }
+        }
+
+        if (adjust) {
+            increaseProbability(hmmType, prediction, 0.5);
+        } else {
+            decreaseProbability(hmmType, prediction, 0.3);
+        }
+
+        updateLastUsers(user);
+
+
+    }
 
 }

@@ -76,23 +76,6 @@ public class Geometry {
 
     }
 
-    public static boolean onLine(Point3d P, Point3d A, Point3d B) {
-
-        return P.equals(projectPointOnLine(P, A, B));
-
-    }
-
-
-    public static boolean arePointsInOrder(Point3d p0, Point3d p1, Point3d p2, Point3d p3) {
-
-        double d1, d2, d3;
-
-        d1 = p1.distance(p0);
-        d2 = p2.distance(p0);
-        d3 = p3.distance(p0);
-
-        return d1 <= d2 && d2 <= d3;
-    }
 
     public static boolean descendingOrder(Double[] heights) {
 
@@ -101,5 +84,26 @@ public class Geometry {
         Arrays.sort(sortedHeights, reverseOrder());
 
         return Arrays.equals(heights, sortedHeights);
+    }
+
+    public static boolean arePointsInOrder(Point3d[] points) {
+
+        int length = points.length;
+        double distance, lastDistance = 0;
+        Point3d p0;
+
+        if (length == 0)
+            return false;
+
+        p0 = points[0];
+
+        for (int i = 1; i < length; i++) {
+            distance = p0.distance(points[i]);
+            if (distance < lastDistance)
+                return false;
+            lastDistance = distance;
+        }
+
+        return true;
     }
 }
