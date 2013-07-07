@@ -1,9 +1,14 @@
 package activities;
 
 import models.*;
+import tracking.User;
 import utils.Pair;
 
+import java.io.IOException;
+
 import static app.activity_recognition.ActivityRecognition.roomMovement;
+import static models.JointPoint.*;
+import static tracking.Geometry.ascendingOrder;
 
 
 public class FallingActivity extends HumanActivity {
@@ -17,8 +22,40 @@ public class FallingActivity extends HumanActivity {
 
     @Override
     protected void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        User user;
+
+        try {
+            user = User.readUser(skeletonFileName);
+        } catch (IOException e) {
+            System.out.println("No skeleton file " + skeletonFileName);
+            return;
+        }
+
+
+        decreasingOrderAll(prediction, hmmType, user);
     }
+
+    private void decreasingOrderAll(Prediction prediction, HMMTypes hmmType, User user) {
+
+        boolean falling = true;
+
+        for(JointPoint jointPoint:JointPoint.values()){
+            if(jointPoint != LEFT_FOOT && jointPoint != RIGHT_FOOT){
+                if(!decreasingOrder(prediction,hmmType,user,jointPoint))
+                    falling = false;
+//                else
+//                    System.out.println("decreasing "+jointPoint);
+            }
+        }
+
+        if(falling){
+//            System.out.println("Increse..");
+            increaseProbability(hmmType,prediction,0.8);
+        }
+
+        updateLastUsers(user);
+    }
+
 
     @Override
     protected void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {

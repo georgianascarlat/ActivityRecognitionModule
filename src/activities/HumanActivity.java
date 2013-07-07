@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import static models.JointPoint.*;
+import static tracking.Geometry.ascendingOrder;
 import static tracking.Geometry.distanceToFloor;
 
 public abstract class HumanActivity {
@@ -140,6 +142,23 @@ public abstract class HumanActivity {
         }
     }
 
+    protected boolean decreasingOrder(Prediction prediction, HMMTypes hmmType, User user,JointPoint jointPoint){
+
+        Double heights[] = new Double[NUM_SKELETONS + 1];
+
+
+        if (allSkeletonsAreInitialised()) {
+
+            computeLastHeights(user, heights, jointPoint);
+
+            if (ascendingOrder(heights))
+                return true;
+        }
+
+        return false;
+
+
+    }
 
     public static HumanActivity activityFactory(Activity activity) {
 

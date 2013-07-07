@@ -32,10 +32,5 @@ public enum JointPoint {
         return 15;
     }
 
-    @Override
-    public String toString() {
-        return "JointPoint{" +
-                "index=" + index +
-                '}';
-    }
+
 }

@@ -68,27 +68,13 @@ public class SittingDownActivity extends HumanActivity {
     }
 
     private void decreasingHeightHeadHipsTorso(Prediction prediction, HMMTypes hmmType, User user) {
-        Double headHeights[] = new Double[NUM_SKELETONS + 1];
-        Double leftHipHeights[] = new Double[NUM_SKELETONS + 1];
-        Double rightHipHeights[] = new Double[NUM_SKELETONS + 1];
-        Double torsoHeights[] = new Double[NUM_SKELETONS + 1];
 
-        if (allSkeletonsAreInitialised()) {
+        if(decreasingOrder(prediction,hmmType,user,HEAD)
+                && decreasingOrder(prediction,hmmType,user,LEFT_HIP)
+                && decreasingOrder(prediction,hmmType,user,RIGHT_HIP)
+                && decreasingOrder(prediction,hmmType,user,TORSO))
+            increaseProbability(hmmType, prediction, 0.5);
 
-            computeLastHeights(user, headHeights, HEAD);
-            computeLastHeights(user, leftHipHeights, LEFT_HIP);
-            computeLastHeights(user, rightHipHeights, RIGHT_HIP);
-            computeLastHeights(user, torsoHeights, TORSO);
-
-            if (ascendingOrder(headHeights)
-                    && ascendingOrder(leftHipHeights)
-                    && ascendingOrder(rightHipHeights)
-                    && ascendingOrder(torsoHeights)) {
-
-                increaseProbability(hmmType, prediction, 0.5);
-            }
-
-        }
 
         updateLastUsers(user);
     }
