@@ -6,6 +6,7 @@
     <property name="src.dir" value="src"/>
     <property name="build.dir" value="build"/>
     <property name="lib.dir" value="lib"/>
+    <property name="dist.dir" value="dist"/>
 
     <path id="classpath">
         <pathelement location="${build.dir}"/>
@@ -28,6 +29,19 @@
         </java>
     </target>
 
+    <target name="jar" depends="compile"
+            description="generate jar" >
+
+        <mkdir dir="${dist.dir}"/>
+
+        <!-- Put everything in ${build} into the MyProject-${DSTAMP}.jar file -->
+        <jar jarfile="${dist.dir}/ActivityRecognition.jar" basedir="${build.dir}">
+        <manifest>
+            <attribute name="Main-Class" value="app.activity_recognition.ActivityRecognition"/>
+        </manifest>
+        </jar>
+    </target>
+
     <target name="createHMM" depends="compile">
         <java classname="app.create_hmm.CreateHMM" fork="true">
             <classpath refid="classpath">
@@ -48,6 +62,7 @@
 
     <target name="clean">
         <delete dir="${build.dir}"/>
+        <delete dir="${dist.dir}"/>
     </target>
 
 </project>

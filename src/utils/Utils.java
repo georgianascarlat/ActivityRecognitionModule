@@ -41,7 +41,7 @@ public class Utils {
     public static final boolean USE_ROOM_MODEL = true;
 
     public static final HMMTypes HMM_TYPE = HMMTypes.SpecialisedHMM;
-    public static final ActivityRecognitionType ACTIVITY_RECOGNITION_TYPE = ActivityRecognitionType.OFFLINE_RECOGNITION;
+    public static final ActivityRecognitionType ACTIVITY_RECOGNITION_TYPE = ActivityRecognitionType.ONLINE_RECOGNITION;
 
 
     /**
