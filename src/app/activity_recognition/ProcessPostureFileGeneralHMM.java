@@ -50,6 +50,9 @@ public class ProcessPostureFileGeneralHMM extends ProcessPostureFile {
         Prediction prediction;
         HMMOperations hmmOperations = new HMMOperationsImpl();
 
+        if(posture.getGeneralPosture() == 0)
+            return new Pair<Integer, Double>(0,0.0);
+
 
         setHumanHeight(Utils.getSkeletonFile(postureFileName));
 

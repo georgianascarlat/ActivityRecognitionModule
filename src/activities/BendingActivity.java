@@ -51,6 +51,8 @@ public class BendingActivity extends HumanActivity {
         double distanceHeadMovement;
         double distanceHipsMovement;
         double report;
+
+
         if (allSkeletonsAreInitialised()) {
 
 
@@ -66,7 +68,7 @@ public class BendingActivity extends HumanActivity {
 
             if (report > 3 && Geometry.ascendingOrder(lastHeadHeights) ){
 
-                increaseProbability(hmmType, prediction, 0.5);
+                increaseProbability(hmmType, prediction, 0.6);
 
             }
 
@@ -112,7 +114,7 @@ public class BendingActivity extends HumanActivity {
                 && (lastPosition2 != null && lastPosition2.equals(result2.getSecond()))) {
 
             if (lastPosition3 != null && !lastPosition3.equals(result3.getSecond()))
-                prediction.setProbability(probability * 1.5);
+                prediction.setProbability(probability * 1.3);
 
         }
 

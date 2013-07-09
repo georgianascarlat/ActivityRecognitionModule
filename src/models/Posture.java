@@ -23,6 +23,12 @@ public class Posture {
             scanner.useDelimiter(",|\\n");
 
             generalPosture = scanner.nextInt();
+
+            if(generalPosture == 0){
+                activity = -1;
+                return;
+            }
+
             scanner.next();
             torsoFirst = scanner.nextInt();
             torsoSecond = scanner.nextInt();

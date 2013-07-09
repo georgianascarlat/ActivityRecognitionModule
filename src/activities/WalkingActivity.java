@@ -1,5 +1,6 @@
 package activities;
 
+import app.activity_recognition.ProcessPostureFile;
 import models.Activity;
 import models.HMMTypes;
 import models.JointPoint;
@@ -10,6 +11,7 @@ import tracking.User;
 import javax.vecmath.Point3d;
 import java.io.IOException;
 
+import static app.activity_recognition.ProcessPostureFile.HUMAN_HEIGHT;
 import static models.JointPoint.*;
 
 
@@ -29,6 +31,10 @@ public class WalkingActivity extends HumanActivity {
         boolean adjust = true;
         Point3d points[] = new Point3d[NUM_SKELETONS + 1], point;
         User user;
+        double distance = 0;
+
+        if(HUMAN_HEIGHT == null)
+            return;
 
         try {
             user = User.readUser(skeletonFileName);
@@ -52,10 +58,14 @@ public class WalkingActivity extends HumanActivity {
                     adjust = false;
                     break;
                 }
+
+                if(jointPoint == TORSO)
+                    distance = points[0].distance(points[NUM_SKELETONS]);
+
             }
         }
 
-        if (adjust) {
+        if (adjust && distance > (HUMAN_HEIGHT/80) ) {
             increaseProbability(hmmType, prediction, 0.5);
         } else {
             decreaseProbability(hmmType, prediction, 0.3);

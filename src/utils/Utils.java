@@ -107,10 +107,13 @@ public class Utils {
 
         List<Posture> sequencePostures;
         sequencePostures = new ArrayList<Posture>();
+        Posture posture;
 
         for (String fileName : filesInSequence) {
 
-            sequencePostures.add(new Posture(fileName));
+            posture = new Posture(fileName);
+            if(posture.getGeneralPosture() > 0)
+                sequencePostures.add(posture);
         }
         return sequencePostures;
     }

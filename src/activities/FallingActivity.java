@@ -7,8 +7,8 @@ import utils.Pair;
 import java.io.IOException;
 
 import static app.activity_recognition.ActivityRecognition.roomMovement;
+import static app.activity_recognition.ProcessPostureFile.HUMAN_HEIGHT;
 import static models.JointPoint.*;
-import static tracking.Geometry.ascendingOrder;
 
 
 public class FallingActivity extends HumanActivity {
@@ -17,7 +17,6 @@ public class FallingActivity extends HumanActivity {
 
         this.activityType = Activity.Falling;
     }
-
 
 
     @Override
@@ -38,17 +37,32 @@ public class FallingActivity extends HumanActivity {
     private void decreasingOrderAll(Prediction prediction, HMMTypes hmmType, User user) {
 
         boolean falling = true;
+        double distance = 0;
+        Double heights[] = new Double[NUM_SKELETONS + 1];
+        JointPoint jointPoints[] = {HEAD, NECK, RIGHT_SHOULDER, LEFT_SHOULDER, TORSO, LEFT_HIP, RIGHT_HIP};
 
-        for(JointPoint jointPoint:JointPoint.values()){
-            if(jointPoint != LEFT_FOOT && jointPoint != RIGHT_FOOT){
-                if(!decreasingOrder(prediction,hmmType,user,jointPoint))
-                    falling = false;
 
+        if (HUMAN_HEIGHT == null)
+            return;
+
+        for (JointPoint jointPoint : jointPoints) {
+
+            if (!decreasingOrder(prediction, hmmType, user, jointPoint)) {
+                falling = false;
+                break;
             }
+
         }
 
-        if(falling){
-            //increaseProbability(hmmType,prediction,0.8);
+
+        if (falling) {
+            computeLastHeights(user, heights, NECK);
+            distance = Math.abs(heights[NUM_SKELETONS] - heights[0]);
+
+            if (distance > (HUMAN_HEIGHT / 8))  {
+                increaseProbability(hmmType, prediction, 0.6);
+
+            }
         }
 
         updateLastUsers(user);

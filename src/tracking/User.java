@@ -17,6 +17,10 @@ public class User {
     private Point3d floorPoint, floorNormal;
     private long timestamp;
 
+    public User() {
+        skeleton = new HashMap<Integer, Point3d>();
+    }
+
 
     public static User readUser(String fileName) throws IOException {
 
@@ -40,7 +44,7 @@ public class User {
             error = new Integer(strLine.substring(0, strLine.length() - 1));
 
             if (error == 1) {
-                throw new IllegalArgumentException("Error in skeleton file");
+                return new User();
             }
 
 
@@ -134,7 +138,10 @@ public class User {
     }
 
     public Point3d getSkeletonElement(JointPoint jointPoint) {
-        return skeleton.get(jointPoint.getIndex());
+        Point3d skeletonElement =  skeleton.get(jointPoint.getIndex());
+        if(skeletonElement == null)
+            return new Point3d(0,0,0);
+        return skeletonElement;
     }
 
 
