@@ -5,7 +5,6 @@ import models.JointPoint;
 import javax.vecmath.Point3d;
 import java.util.Arrays;
 
-import static java.util.Collections.disjoint;
 import static java.util.Collections.reverseOrder;
 
 
@@ -123,77 +122,76 @@ public class Geometry {
         return point.distance(projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), point));
     }
 
-    public static Point3d projectionOnFloor(User user, JointPoint jointPoint){
+    public static Point3d projectionOnFloor(User user, JointPoint jointPoint) {
         Point3d point = user.getSkeletonElement(jointPoint);
-        return Geometry.projectPointOnPlan(user.getFloorNormal(),user.getFloorPoint(),point);
+        return Geometry.projectPointOnPlan(user.getFloorNormal(), user.getFloorPoint(), point);
     }
 
     public static void mean(Double[] lastLeftHipHeights, Double[] lastRightHipHeights, Double[] lastHipsHeights) {
         int length = lastHipsHeights.length;
 
-        for(int i=0;i<length;i++){
-            lastHipsHeights[i] = (lastLeftHipHeights[i] + lastRightHipHeights[i])/2;
+        for (int i = 0; i < length; i++) {
+            lastHipsHeights[i] = (lastLeftHipHeights[i] + lastRightHipHeights[i]) / 2;
         }
     }
 
     public static Point3d median(Point3d[] points) {
-        int length = points.length,  maxCount = 10;
-        double x = 0,y = 0,z= 0;
+        int length = points.length, maxCount = 10;
+        double x = 0, y = 0, z = 0;
         double cx = 0, cy = 0, cz = 0;
         Point3d center;
         double sum;
 
-        for(int i=0;i<length;i++){
-            x+= points[i].x;
-            y+= points[i].y;
-            z+= points[i].z;
+        for (int i = 0; i < length; i++) {
+            x += points[i].x;
+            y += points[i].y;
+            z += points[i].z;
         }
 
         x /= length;
         y /= length;
         z /= length;
 
-        center =  new Point3d(x,y,z);
+        center = new Point3d(x, y, z);
 
-        for(int count=0;count<maxCount;count++){
+        for (int count = 0; count < maxCount; count++) {
 
-            sum = denomSum(points,center);
+            sum = denomSum(points, center);
 
             cx = 0;
             cy = 0;
             cz = 0;
 
-            for(int i=0;i<length;i++){
-                cx += (points[i].x * numersum(center,points[i]))/sum;
-                cy += (points[i].y * numersum(center,points[i]))/sum;
-                cz += (points[i].z * numersum(center,points[i]))/sum;
+            for (int i = 0; i < length; i++) {
+                cx += (points[i].x * numersum(center, points[i])) / sum;
+                cy += (points[i].y * numersum(center, points[i])) / sum;
+                cz += (points[i].z * numersum(center, points[i])) / sum;
             }
 
-            center = new Point3d(cx,cy,cz);
+            center = new Point3d(cx, cy, cz);
         }
 
 
-
-        return new Point3d(cx,cy,cz);
+        return new Point3d(cx, cy, cz);
 
     }
 
-    private static double numersum(Point3d center, Point3d point){
+    private static double numersum(Point3d center, Point3d point) {
         double dist = center.distance(point);
-        if(dist == 0)
+        if (dist == 0)
             return 0;
-        return 1.0/dist;
+        return 1.0 / dist;
     }
 
     private static double denomSum(Point3d[] points, Point3d center) {
         double sum = 0.0;
         int length = points.length;
 
-        for(int i=0;i<length;i++){
-            sum+= numersum(center,points[i]);
+        for (int i = 0; i < length; i++) {
+            sum += numersum(center, points[i]);
         }
 
-        if(sum == 0)
+        if (sum == 0)
             return 0.1;
 
         return sum;
@@ -203,8 +201,8 @@ public class Geometry {
         double sum = 0.0;
         int length = points.length;
 
-        for(int i=0;i<length;i++){
-            sum+= center.distance(points[i]);
+        for (int i = 0; i < length; i++) {
+            sum += center.distance(points[i]);
         }
 
         return sum;
@@ -215,10 +213,10 @@ public class Geometry {
         double maxDeviance = 0, dist;
         int length = points.length;
 
-        for(int i=0;i<length;i++){
+        for (int i = 0; i < length; i++) {
 
             dist = mean.distance(points[i]);
-            if(dist > maxDeviance)
+            if (dist > maxDeviance)
                 maxDeviance = dist;
         }
 

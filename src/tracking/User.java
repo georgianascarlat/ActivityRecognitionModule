@@ -138,16 +138,12 @@ public class User {
     }
 
     public Point3d getSkeletonElement(JointPoint jointPoint) {
-        Point3d skeletonElement =  skeleton.get(jointPoint.getIndex());
-        if(skeletonElement == null)
-            return new Point3d(0,0,0);
+        Point3d skeletonElement = skeleton.get(jointPoint.getIndex());
+        if (skeletonElement == null)
+            return new Point3d(0, 0, 0);
         return skeletonElement;
     }
 
-
-    public long getTimestamp() {
-        return timestamp;
-    }
 
     public Point3d getFloorNormal() {
         return floorNormal;

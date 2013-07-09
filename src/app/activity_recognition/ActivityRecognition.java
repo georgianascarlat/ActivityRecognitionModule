@@ -19,6 +19,7 @@ public abstract class ActivityRecognition {
 
     public static RoomMovement roomMovement;
     private List<Pair<Integer, Double>> lastPredictionsWindow;
+    private int lastPrediction = -1;
 
     protected ProcessPostureFile processPostureFile;
     private int waitingFrames;
@@ -52,63 +53,69 @@ public abstract class ActivityRecognition {
         waitingFrames++;
         lastPredictionsWindow.add(prediction);
 
-        if(waitingFrames == Utils.MAX_OBSERVATION_SIZE){
+        if (waitingFrames == Utils.MAX_OBSERVATION_SIZE) {
 
 
-            fixSequence(lastPredictionsWindow);
-            for(int i=0;i<waitingFrames;i++){
+            fixSequence(lastPrediction, lastPredictionsWindow);
+            for (int i = 0; i < waitingFrames; i++) {
                 frameNumber = currentFrameNumber - waitingFrames + i + 1;
 
-                if(frameNumber < MAX_OBSERVATION_SIZE/2){
-                    outputResult(getPostureFile(frameNumber,postureFile), new Pair<Integer, Double>(0,0.8), frameNumber);
-                } else
-                    outputResult(getPostureFile(frameNumber,postureFile), lastPredictionsWindow.get(i), frameNumber);
+                if (frameNumber < MAX_OBSERVATION_SIZE / 2)
+                    outputResult(getPostureFile(frameNumber, postureFile), new Pair<Integer, Double>(0, 0.8), frameNumber);
+                else
+                    outputResult(getPostureFile(frameNumber, postureFile), lastPredictionsWindow.get(i), frameNumber);
             }
 
             waitingFrames = 0;
+            lastPrediction = lastPredictionsWindow.get(lastPredictionsWindow.size() - 1).getFirst();
             lastPredictionsWindow = new LinkedList<Pair<Integer, Double>>();
         }
-
-        if(currentFrameNumber == 131){
-
-            for(int i=0;i<waitingFrames;i++){
-                frameNumber = currentFrameNumber - waitingFrames + i + 1;
-                outputResult(getPostureFile(frameNumber,postureFile), lastPredictionsWindow.get(i), frameNumber);
-            }
-
-            waitingFrames = 0;
-            lastPredictionsWindow = new LinkedList<Pair<Integer, Double>>();
-        }
-
-
 
     }
 
     private String getPostureFile(int frameNumber, String postureFile) {
         int index = postureFile.indexOf(POSTURE_PREFIX);
-        return postureFile.substring(0,index)+POSTURE_PREFIX +frameNumber+TXT_SUFFIX;
+        return postureFile.substring(0, index) + POSTURE_PREFIX + frameNumber + TXT_SUFFIX;
     }
 
-    private void fixSequence(List<Pair<Integer, Double>> lastPredictionsWindow) {
+    private void fixSequence(int lastPrediction, List<Pair<Integer, Double>> lastPredictionsWindow) {
 
-        int length = lastPredictionsWindow.size(), index, prevIndex, nextIndex;
-        boolean modify = true;
+        int size = lastPredictionsWindow.size();
+        int currentActivity = -1, nextActivity = -1, previousActivity = -1, length;
 
-        while (modify){
-            modify = false;
-            for(int i=1;i<length-1;i++){
-                index = lastPredictionsWindow.get(i).getFirst();
-                prevIndex = lastPredictionsWindow.get(i-1).getFirst();
-                nextIndex = lastPredictionsWindow.get(i+1).getFirst();
 
-                if(index!= prevIndex && index!= nextIndex){
+        for (int i = 0; i < size - 1; i++) {
 
-                    lastPredictionsWindow.set(i,new Pair<Integer, Double>(prevIndex,0.3));
-                    modify = true;
+            previousActivity = (i > 0) ? lastPredictionsWindow.get(i - 1).getFirst() : lastPrediction;
+            currentActivity = lastPredictionsWindow.get(i).getFirst();
+
+            if (previousActivity != currentActivity) {
+                length = 1;
+                for (int j = i + 1; j < size; j++) {
+                    nextActivity = lastPredictionsWindow.get(j).getFirst();
+                    if (nextActivity != currentActivity)
+                        break;
+                    length++;
+                }
+
+                if (length == 1) {
+                    lastPredictionsWindow.set(i, new Pair<Integer, Double>(previousActivity, 0.5));
+                    i++;
+                } else {
+
+                    if (previousActivity == nextActivity && length < 5 && previousActivity != 0) {
+
+                        for (int j = i; j < i + length; j++) {
+                            lastPredictionsWindow.set(j, new Pair<Integer, Double>(previousActivity, 0.5));
+                        }
+
+                        i += length;
+
+                    }
                 }
             }
-        }
 
+        }
 
     }
 

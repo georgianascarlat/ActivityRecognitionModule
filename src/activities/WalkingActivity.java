@@ -1,6 +1,5 @@
 package activities;
 
-import app.activity_recognition.ProcessPostureFile;
 import models.Activity;
 import models.HMMTypes;
 import models.JointPoint;
@@ -33,7 +32,7 @@ public class WalkingActivity extends HumanActivity {
         User user;
         double distance = 0;
 
-        if(HUMAN_HEIGHT == null)
+        if (HUMAN_HEIGHT == null)
             return;
 
         try {
@@ -59,13 +58,13 @@ public class WalkingActivity extends HumanActivity {
                     break;
                 }
 
-                if(jointPoint == TORSO)
+                if (jointPoint == TORSO)
                     distance = points[0].distance(points[NUM_SKELETONS]);
 
             }
         }
 
-        if (adjust && distance > (HUMAN_HEIGHT/80) ) {
+        if (adjust && distance > (HUMAN_HEIGHT / 80)) {
             increaseProbability(hmmType, prediction, 0.5);
         } else {
             decreaseProbability(hmmType, prediction, 0.3);

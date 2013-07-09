@@ -1,6 +1,5 @@
 package activities;
 
-import app.activity_recognition.ProcessPostureFile;
 import models.*;
 import tracking.Geometry;
 import tracking.User;
@@ -12,8 +11,6 @@ import java.io.IOException;
 import static app.activity_recognition.ActivityRecognition.roomMovement;
 import static app.activity_recognition.ProcessPostureFile.HUMAN_HEIGHT;
 import static models.JointPoint.*;
-import static tracking.Geometry.ascendingOrder;
-import static tracking.Geometry.distanceToFloor;
 import static tracking.Geometry.projectionOnFloor;
 
 
@@ -36,7 +33,7 @@ public class SittingDownActivity extends HumanActivity {
             return;
         }
 
-        compareHeadHipsTorsoWithKnees(prediction,hmmType,user);
+        compareHeadHipsTorsoWithKnees(prediction, hmmType, user);
         decreasingHeightHeadHipsTorso(prediction, hmmType, user);
 
 
@@ -60,19 +57,18 @@ public class SittingDownActivity extends HumanActivity {
 
         distance = point1.distance(point2);
 
-        if(HUMAN_HEIGHT != null && distance> (HUMAN_HEIGHT/10))
-            increaseProbability(hmmType,prediction,0.5);
-
+        if (HUMAN_HEIGHT != null && distance > (HUMAN_HEIGHT / 10))
+            increaseProbability(hmmType, prediction, 0.5);
 
 
     }
 
     private void decreasingHeightHeadHipsTorso(Prediction prediction, HMMTypes hmmType, User user) {
 
-        if(decreasingOrder(prediction,hmmType,user,HEAD)
-                && decreasingOrder(prediction,hmmType,user,LEFT_HIP)
-                && decreasingOrder(prediction,hmmType,user,RIGHT_HIP)
-                && decreasingOrder(prediction,hmmType,user,TORSO))
+        if (decreasingOrder(user, HEAD)
+                && decreasingOrder(user, LEFT_HIP)
+                && decreasingOrder( user, RIGHT_HIP)
+                && decreasingOrder( user, TORSO))
             increaseProbability(hmmType, prediction, 0.5);
 
 
@@ -93,12 +89,12 @@ public class SittingDownActivity extends HumanActivity {
 
         if (result.getFirst().equals(ObjectClass.BED) || result.getFirst().equals(ObjectClass.CHAIR)) {
 
-            increaseProbability(hmmType, prediction, 0.5);
+            prediction.setProbability(probability * 1.2);
         }
 
         if (lastPosition1 != null && lastPosition1.equals(result.getSecond())) {
 
-            increaseProbability(hmmType, prediction, 0.2);
+            prediction.setProbability(probability * 1.1);
         }
 
         lastPosition1 = result.getSecond();

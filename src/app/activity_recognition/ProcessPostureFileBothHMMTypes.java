@@ -2,7 +2,6 @@ package app.activity_recognition;
 
 import models.Activity;
 import models.HMMTypes;
-import utils.FileNameComparator;
 import utils.Pair;
 import utils.Utils;
 

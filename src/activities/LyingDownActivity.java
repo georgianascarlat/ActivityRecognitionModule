@@ -2,7 +2,6 @@ package activities;
 
 import app.activity_recognition.ProcessPostureFile;
 import models.*;
-import tracking.Geometry;
 import tracking.User;
 import utils.Pair;
 
@@ -21,7 +20,6 @@ public class LyingDownActivity extends HumanActivity {
     }
 
 
-
     @Override
     protected void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
@@ -31,10 +29,10 @@ public class LyingDownActivity extends HumanActivity {
         result = roomMovement.getMovementResult(skeletonFileName, JointPoint.TORSO);
 
         if (result.getFirst().equals(ObjectClass.BED))
-            increaseProbability(hmmType, prediction, 0.5);
+            prediction.setProbability(probability * 1.2);
 
         if (lastPosition1 != null && lastPosition1.equals(result.getSecond()))
-            prediction.setProbability(probability * 1.2);
+            prediction.setProbability(probability * 1.1);
 
         lastPosition1 = result.getSecond();
     }

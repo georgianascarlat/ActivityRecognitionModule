@@ -24,7 +24,7 @@ public class Posture {
 
             generalPosture = scanner.nextInt();
 
-            if(generalPosture == 0){
+            if (generalPosture == 0) {
                 activity = -1;
                 return;
             }

@@ -112,7 +112,7 @@ public class Utils {
         for (String fileName : filesInSequence) {
 
             posture = new Posture(fileName);
-            if(posture.getGeneralPosture() > 0)
+            if (posture.getGeneralPosture() > 0)
                 sequencePostures.add(posture);
         }
         return sequencePostures;

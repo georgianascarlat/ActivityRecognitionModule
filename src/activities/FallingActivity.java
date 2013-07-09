@@ -37,7 +37,7 @@ public class FallingActivity extends HumanActivity {
     private void decreasingOrderAll(Prediction prediction, HMMTypes hmmType, User user) {
 
         boolean falling = true;
-        double distance = 0;
+        double distance;
         Double heights[] = new Double[NUM_SKELETONS + 1];
         JointPoint jointPoints[] = {HEAD, NECK, RIGHT_SHOULDER, LEFT_SHOULDER, TORSO, LEFT_HIP, RIGHT_HIP};
 
@@ -47,7 +47,7 @@ public class FallingActivity extends HumanActivity {
 
         for (JointPoint jointPoint : jointPoints) {
 
-            if (!decreasingOrder(prediction, hmmType, user, jointPoint)) {
+            if (!decreasingOrder(user, jointPoint)) {
                 falling = false;
                 break;
             }
@@ -59,7 +59,7 @@ public class FallingActivity extends HumanActivity {
             computeLastHeights(user, heights, NECK);
             distance = Math.abs(heights[NUM_SKELETONS] - heights[0]);
 
-            if (distance > (HUMAN_HEIGHT / 8))  {
+            if (distance > (HUMAN_HEIGHT / 8)) {
                 increaseProbability(hmmType, prediction, 0.6);
 
             }
@@ -88,7 +88,7 @@ public class FallingActivity extends HumanActivity {
                 && (lastPosition2 != null && lastPosition2.equals(result2.getSecond()))) {
 
             if (lastPosition3 != null && !lastPosition3.equals(result3.getSecond()))
-                prediction.setProbability(probability * 1.5);
+                prediction.setProbability(probability * 1.2);
             else
                 prediction.setProbability(probability * 1.1);
         }

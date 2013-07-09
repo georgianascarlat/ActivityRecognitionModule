@@ -17,14 +17,6 @@ public class Pair<F, S> {
         return second;
     }
 
-    public void setFirst(F first) {
-        this.first = first;
-    }
-
-    public void setSecond(S second) {
-        this.second = second;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -47,9 +39,6 @@ public class Pair<F, S> {
 
     @Override
     public String toString() {
-        return "Pair{" +
-                "first=" + first +
-                ", second=" + second +
-                '}';
+        return "" + first;
     }
 }

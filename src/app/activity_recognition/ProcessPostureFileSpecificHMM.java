@@ -10,7 +10,6 @@ import models.Posture;
 import models.Prediction;
 import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.apache.commons.lang3.ArrayUtils;
-import utils.FileNameComparator;
 import utils.Pair;
 import utils.Utils;
 
@@ -62,8 +61,8 @@ public class ProcessPostureFileSpecificHMM extends ProcessPostureFile {
         Map.Entry<Activity, Prediction> bestPrediction;
         int preds[], predictedActivityIndex;
 
-        if(posture.getGeneralPosture() == 0)
-            return new Pair<Integer, Double>(0,0.0);
+        if (posture.getGeneralPosture() == 0)
+            return new Pair<Integer, Double>(0, 0.0);
 
         setHumanHeight(Utils.getSkeletonFile(postureFileName));
 

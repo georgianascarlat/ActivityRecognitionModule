@@ -70,7 +70,6 @@ public class RoomMovement {
             objectIndex = roomModel.getPointOnMap(line, column);
             objectClass = ObjectClass.getObjectByIndex(objectIndex);
 
-
             return new Pair<ObjectClass, Pair<Integer, Integer>>(objectClass, position);
         } catch (IOException e) {
             e.printStackTrace();

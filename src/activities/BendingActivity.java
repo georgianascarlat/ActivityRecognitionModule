@@ -6,7 +6,6 @@ import tracking.User;
 import utils.Pair;
 
 import javax.vecmath.Point3d;
-
 import java.io.IOException;
 
 import static app.activity_recognition.ActivityRecognition.roomMovement;
@@ -22,8 +21,6 @@ public class BendingActivity extends HumanActivity {
     }
 
 
-
-
     @Override
     protected void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
@@ -32,12 +29,12 @@ public class BendingActivity extends HumanActivity {
         try {
             user = User.readUser(skeletonFileName);
         } catch (IOException e) {
-            System.out.println("No such skeleton file "+skeletonFileName);
+            System.out.println("No such skeleton file " + skeletonFileName);
             return;
         }
 
-        compareHipsHeights(prediction, hmmType, user,HEAD);
-        compareHipsHeights(prediction, hmmType, user,NECK);
+        compareHipsHeights(prediction, hmmType, user, HEAD);
+        compareHipsHeights(prediction, hmmType, user, NECK);
 
         compareHeadHipsMovements(prediction, hmmType, user);
     }
@@ -56,17 +53,17 @@ public class BendingActivity extends HumanActivity {
         if (allSkeletonsAreInitialised()) {
 
 
-            computeLastHeights(user, lastHeadHeights,HEAD);
-            computeLastHeights(user, lastLeftHipHeights,LEFT_HIP);
-            computeLastHeights(user, lastRightHipHeights,RIGHT_HIP);
+            computeLastHeights(user, lastHeadHeights, HEAD);
+            computeLastHeights(user, lastLeftHipHeights, LEFT_HIP);
+            computeLastHeights(user, lastRightHipHeights, RIGHT_HIP);
 
             Geometry.mean(lastLeftHipHeights, lastRightHipHeights, lastHipsHeights);
 
             distanceHeadMovement = Math.abs(lastHeadHeights[0] - lastHeadHeights[NUM_SKELETONS]);
             distanceHipsMovement = Math.abs(lastHipsHeights[0] - lastHipsHeights[NUM_SKELETONS]);
-            report = distanceHeadMovement/distanceHipsMovement;
+            report = distanceHeadMovement / distanceHipsMovement;
 
-            if (report > 3 && Geometry.ascendingOrder(lastHeadHeights) ){
+            if (report > 3 && Geometry.ascendingOrder(lastHeadHeights)) {
 
                 increaseProbability(hmmType, prediction, 0.6);
 
@@ -88,9 +85,9 @@ public class BendingActivity extends HumanActivity {
         leftHipHeight = distanceToFloor(hipLeft, user);
         rightHipHeight = distanceToFloor(hipRight, user);
 
-        if(headHeight < leftHipHeight && headHeight <rightHipHeight){
+        if (headHeight < leftHipHeight && headHeight < rightHipHeight) {
 
-            increaseProbability(hmmType,prediction,0.8);
+            increaseProbability(hmmType, prediction, 0.8);
         }
     }
 
@@ -114,7 +111,7 @@ public class BendingActivity extends HumanActivity {
                 && (lastPosition2 != null && lastPosition2.equals(result2.getSecond()))) {
 
             if (lastPosition3 != null && !lastPosition3.equals(result3.getSecond()))
-                prediction.setProbability(probability * 1.3);
+                prediction.setProbability(probability * 1.2);
 
         }
 

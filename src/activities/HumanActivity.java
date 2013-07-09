@@ -5,7 +5,6 @@ import models.Activity;
 import models.HMMTypes;
 import models.JointPoint;
 import models.Prediction;
-import tracking.Geometry;
 import tracking.User;
 import utils.Pair;
 
@@ -15,7 +14,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import static models.JointPoint.*;
 import static tracking.Geometry.ascendingOrder;
 import static tracking.Geometry.distanceToFloor;
 
@@ -39,7 +37,7 @@ public abstract class HumanActivity {
     public static final Map<Activity, HumanActivity> humanActivityMap = HumanActivity.InitHumanActivityMap();
 
 
-    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType){
+    public void adjustPredictionUsingRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType) {
 
         adjustPredictionBasedOnFloorDistance(prediction, skeletonFileName, hmmType);
 
@@ -48,6 +46,7 @@ public abstract class HumanActivity {
     }
 
     protected abstract void adjustPredictionBasedOnFloorDistance(Prediction prediction, String skeletonFileName, HMMTypes hmmType);
+
     protected abstract void adjustPredictionBasedOnRoomModel(Prediction prediction, String skeletonFileName, HMMTypes hmmType);
 
     protected boolean allSkeletonsAreInitialised() {
@@ -142,7 +141,7 @@ public abstract class HumanActivity {
         }
     }
 
-    protected boolean decreasingOrder(Prediction prediction, HMMTypes hmmType, User user,JointPoint jointPoint){
+    protected boolean decreasingOrder(User user, JointPoint jointPoint) {
 
         Double heights[] = new Double[NUM_SKELETONS + 1];
 
